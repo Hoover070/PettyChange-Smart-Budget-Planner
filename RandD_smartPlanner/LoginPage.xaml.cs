@@ -1,8 +1,4 @@
-using Microsoft.Maui.Controls;
-using System;
-using System.IO;
 using Newtonsoft.Json;
-
 
 
 namespace RandD_smartPlanner
@@ -61,6 +57,23 @@ namespace RandD_smartPlanner
 
             }
         }
+        private void OnTestAIClicked(object sender, EventArgs e)
+        {
+            // OnnxModel model = new OnnxModel("C:\\Users\\jaile\\OneDrive\\Documents\\FullSail University\\Project_portfolio_4\\RandD_smartPlanner\\RandD_smartPlanner\\trained_model\\best_gb_model_15.onnx");
+            OnnxModel model = new OnnxModel();
+
+            if (model == null)
+            {
+                DisplayAlert("AI Test", "The AI model failed to load", "OK");
+                return;
+            }
+           else
+            {
+                DisplayAlert("AI Test", "The AI model loaded successfully", "OK");
+            }
+           
+        }
+
         private void OnCreateUserClicked(object sender, EventArgs e)
         {
             // Navigate to the profile creation page

@@ -2,12 +2,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.BudgetCreationPage">
     <StackLayout>
+        <Label Text="Budget Name:"/>
+        <Entry Placeholder="BudgetName" Text="{Binding BudgetName}"/>
+
+        <Label Text="Income Total:"/>
         <Entry Placeholder="Income" Text="{Binding Income}"/>
+
+        <Label Text="Expenses Total:"/>
         <Entry Placeholder="Expenses" Text="{Binding Expenses}"/>
+
+        <Label Text="Income Difference:"/>
+        <Label Text="{Binding IncomeDiff}"/>
+
+        <Label Text="Savings Goal:"/>
         <Entry Placeholder="Savings Goal" Text="{Binding SavingsGoal}"/>
+        
+        <Label Text="Timeframe (In Months):"/>
         <Entry Placeholder="Timeframe in Months" Text="{Binding Timeframe}"/>
 
+        <Label Text="Minimum Savings Amount to reach your goal:"/>
+        <Label Text="{Binding minSavingsLimit}"/>
+
+        <Label Text="AI Suggested Savings Amount:"/>
+        <Label Text="{Binding AISuggestedSavings}"/>
+
         <Button Text="Save" Clicked="OnSaveClicked"/>
+        <Button Text="Cancel" Clicked="OnCancelClicked"/>
+        <Button Text="AI Calculate" Clicked="OnCalculateClicked"/>
 
         <Label Text="AI Suggested Savings Amount:"/>
         <Label Text="{Binding AISuggestedSavings}"/>

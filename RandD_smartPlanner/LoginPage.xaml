@@ -8,6 +8,7 @@
         <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" Text="{Binding Password}"/>
         <Button x:Name="LoginBtn" Text="Login" Clicked="OnLoginClicked"/>
         <Button x:Name="CreateUserBtn" Text="Create User" Clicked="OnCreateUserClicked"/>
+        <Button x:Name="TestAI" Text="Test the Model" Clicked="OnTestAIClicked"/>
         
     </StackLayout>
 </ContentPage>
