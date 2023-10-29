@@ -26,6 +26,9 @@ namespace RandD_smartPlanner
                    Navigation.PushAsync(new BudgetCreationPage(CurrentUser));
             }
             // Pass in the 'User' object
+            
+
+
             // Or directly open a new 'Budget' if that fits your application
         }
 

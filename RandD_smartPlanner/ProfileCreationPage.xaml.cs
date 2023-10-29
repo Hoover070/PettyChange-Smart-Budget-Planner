@@ -32,7 +32,7 @@ public partial class ProfileCreationPage : ContentPage
         // Add other user information
 
         // Save the user data locally (this could be to a file or database)
-        newUser.SaveUser($"path/to/save/{name}.json");
+        newUser.SaveUser(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"userData.json"));
 
         // Navigate to the next page or log the user in
         Navigation.PushAsync(new LoginPage());

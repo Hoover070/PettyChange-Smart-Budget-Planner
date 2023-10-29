@@ -5,6 +5,7 @@ namespace RandD_smartPlanner
 {
     public class User
     {
+        // Properties
         public double Income { get; set; }
         public double Expenses { get; set; }
         public double IncomeDiff { get; set; }  // Difference between Income and Expenses
@@ -15,7 +16,8 @@ namespace RandD_smartPlanner
         public string UserName { get; set; }
         public string Description { get; set; }
         public string Password { get; set; }
-        public Budget Budgets { get; set; }  // The current budget
+        public List<Budget> Budgets { get; set; }  // A repository of created budgets
+
 
         // Constructor for initializing a new user
         public User(string userName, string password, double income = 0, double expenses = 0, double savingsGoal = 0, int savingsMonths = 0, Budget budget = null )
@@ -27,14 +29,33 @@ namespace RandD_smartPlanner
             SavingsGoal = savingsGoal;
             SavingsMonths = savingsMonths;
             IncomeDiff = Income - Expenses;  // Automatically calculated
+            Budgets = new List<Budget>();  // Initialize the budget list
+            if (budget != null)
+            {
+                Budgets.Add(budget);
+            }
+
             
         }
 
-        public void SaveUser(string filePath)
+        // Constructor for saving a user and loading an existing user
+        
+        public void SaveUser(string username)
         {
-            string json = JsonConvert.SerializeObject(this);
-            File.WriteAllText(filePath, json);
+             string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    string userSubFolderPath = Path.Combine(folderPath, "userData");
+    
+    // Create the userData directory if it doesn't exist
+    if (!Directory.Exists(userSubFolderPath))
+    {
+        Directory.CreateDirectory(userSubFolderPath);
+    }
+
+    string filePath = Path.Combine(userSubFolderPath, $"{username}");
+    string json = JsonConvert.SerializeObject(this);
+    File.WriteAllText(username, json);
         }
+        
 
         public static User LoadUser(string filePath)
         {
@@ -42,6 +63,29 @@ namespace RandD_smartPlanner
             return JsonConvert.DeserializeObject<User>(json);
         }
 
-        //  add methods to update or manipulate user data as needed below
+        // Methods for updating user data
+        public void UpdateIncome(double newIncome)
+        {
+            Income = newIncome;
+            IncomeDiff = Income - Expenses;
+        }
+
+        public void UpdateExpenses(double newExpenses)
+        {
+            Expenses = newExpenses;
+            IncomeDiff = Income - Expenses;
+        }
+
+        public void UpdateSavingsGoal(double newSavingsGoal)
+        {
+            SavingsGoal = newSavingsGoal;
+        }
+
+        public void UpdateSavingsMonths(int newSavingsMonths)
+        {
+            SavingsMonths = newSavingsMonths;
+        }
+
+    
     }
 }

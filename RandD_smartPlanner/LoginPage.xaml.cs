@@ -17,10 +17,10 @@ namespace RandD_smartPlanner
         private void OnLoginClicked(object sender, EventArgs e)
         {
             string username = UsernameEntry.Text;
-            string password = PasswordEntry.Text;  // Normally you would hash this
+            string password = PasswordEntry.Text;  // Need to hash this in the future
 
             // Load the user profile based on the username (here, we use the username as the file name)
-            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{username}.json");
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"userData.json");
 
             if (File.Exists(filePath))
             {
@@ -33,7 +33,7 @@ namespace RandD_smartPlanner
                 {
                     // Successfully logged in
                     // Navigate to the next page or load the user's data
-                    Navigation.PushAsync(new MainPage(loadedUser));
+                    Navigation.PushAsync(new WelcomePage(loadedUser));
                 }
                 else
                 {
@@ -60,6 +60,11 @@ namespace RandD_smartPlanner
 
 
             }
+        }
+        private void OnCreateUserClicked(object sender, EventArgs e)
+        {
+            // Navigate to the profile creation page
+            Navigation.PushAsync(new ProfileCreationPage());
         }
     }
 }
