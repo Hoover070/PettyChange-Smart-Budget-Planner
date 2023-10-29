@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RandD_smartPlanner.ProfileCreationPage"
+             Title="ProfileCreationPage">
+    <StackLayout Spacing="20" Padding="30">
+        <Entry x:Name="NameEntry" Placeholder="Name" Text="{Binding Name}"/>
+        <Entry x:Name="PasswordEntry" Placeholder="Create Password" IsPassword="True" Text="{Binding Password}"/>
+        <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirm Password" IsPassword="True" Text="{Binding ConfirmPassword}"/>
+        <Button x:Name="CreateProfileBtn" Text="Create Profile" Clicked="OnCreateProfileClicked"/>
+    </StackLayout>
+</ContentPage>

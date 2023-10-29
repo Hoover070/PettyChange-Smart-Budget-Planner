@@ -1,0 +1,18 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RandD_smartPlanner.BudgetCreationPage">
+    <StackLayout>
+        <Entry Placeholder="Income" Text="{Binding Income}"/>
+        <Entry Placeholder="Expenses" Text="{Binding Expenses}"/>
+        <Entry Placeholder="Savings Goal" Text="{Binding SavingsGoal}"/>
+        <Entry Placeholder="Timeframe in Months" Text="{Binding Timeframe}"/>
+
+        <Button Text="Save" Clicked="OnSaveClicked"/>
+
+        <Label Text="AI Suggested Savings Amount:"/>
+        <Label Text="{Binding AISuggestedSavings}"/>
+
+        <Label Text="AI Suggested Timeframe:"/>
+        <Label Text="{Binding AISuggestedTimeframe}"/>
+    </StackLayout>
+</ContentPage>
