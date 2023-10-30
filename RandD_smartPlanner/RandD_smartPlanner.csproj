@@ -49,6 +49,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="userData\**" />
+	  <Compile Remove="userData\**" />
+	  <EmbeddedResource Remove="userData\**" />
+	  <MauiCss Remove="userData\**" />
+	  <MauiXaml Remove="userData\**" />
+	  <None Remove="userData\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="trained_model\best_gb_model_15.onnx" />
 	</ItemGroup>
 
