@@ -14,52 +14,39 @@ namespace RandD_smartPlanner
         {
             string username = UsernameEntry.Text;
             string password = PasswordEntry.Text;  // Need to hash this in the future
-
-            // Load the user profile based on the username (here, we use the username as the file name)
-            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"userData.json");
+            string filePath = FileSaveUtility.GetUserFilePath(username);
 
             if (File.Exists(filePath))
             {
-                // Load the existing user profile
+                // Load the matching user profile
                 string json = File.ReadAllText(filePath);
                 User loadedUser = JsonConvert.DeserializeObject<User>(json);
 
-                // Validate password (here, a simple string comparison, but you should use hashed passwords)
+                // Validate password (for now its a string comparison, but in the future it will be hashed)
                 if (loadedUser.Password == password)
                 {
                     // Successfully logged in
-                    // Navigate to the next page or load the user's data
                     Navigation.PushAsync(new WelcomePage(loadedUser));
                 }
                 else
                 {
                     // Invalid password
                     DisplayAlert("Error", "Invalid password. Please try again.", "OK");
-
-                    // Clear the password field
                     PasswordEntry.Text = "";
-
-                    // Set focus to the password field
                     PasswordEntry.Focus();
-
                 }
             }
             else
             {
                 // User doesn't exist
                 DisplayAlert("Error", "User does not exist. Please create a profile.", "OK");
-
-                // Clear the username and password fields
                 UsernameEntry.Text = "";
                 PasswordEntry.Text = "";
-                PasswordEntry.Focus();
-
-
+                UsernameEntry.Focus();
             }
         }
         private void OnTestAIClicked(object sender, EventArgs e)
         {
-            // OnnxModel model = new OnnxModel("C:\\Users\\jaile\\OneDrive\\Documents\\FullSail University\\Project_portfolio_4\\RandD_smartPlanner\\RandD_smartPlanner\\trained_model\\best_gb_model_15.onnx");
             OnnxModel model = new OnnxModel();
 
             if (model == null)
@@ -76,7 +63,6 @@ namespace RandD_smartPlanner
 
         private void OnCreateUserClicked(object sender, EventArgs e)
         {
-            // Navigate to the profile creation page
             Navigation.PushAsync(new ProfileCreationPage());
         }
     }

@@ -27,7 +27,6 @@ namespace RandD_smartPlanner
                 // Load the ONNX model from the temporary file
                 this.session = new InferenceSession(tempFilePath);
 
-                // Optionally, delete the temporary file
                 File.Delete(tempFilePath);
             }
 
@@ -39,15 +38,33 @@ namespace RandD_smartPlanner
             float[] inputData = new float[] { (float)income, (float)expenses, (float)savingsGoal, (float)timeframe, (float)incomeDiff, (float)minSavingsLimit };
             var input = new DenseTensor<float>(inputData, new[] { 1, inputData.Length });
 
-            // Run prediction
             var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("float_input", input) }; // replace "input_name" with the actual input name defined in your model
             using (var results = session.Run(inputs))
             {
-                // Fetch the results
+               
                 var resultTensor = results.First().AsTensor<float>();
                 float result = resultTensor[0];
                 return result;
             }
+        }
+
+        public float UseAi(double Income, double Expenses, double SavingsGoal, int Timeframe, double IncomeDiff, double MinSavingsLimit )
+        {
+            // call from trained_model > best_gb_model.onnx
+            //Output: AISuggestedSavings and AISuggestedTimeframe
+            // Input:  Income, Expenses, SavingsGoal, and Timeframe
+            OnnxModel model = new OnnxModel();
+
+            // Use the model to make a prediction
+            float prediction = model.Predict(Income, Expenses, SavingsGoal, Timeframe, IncomeDiff, MinSavingsLimit);
+
+            // Do something with the prediction
+            float AISuggestedSavings = prediction;
+            
+
+
+
+            return AISuggestedSavings;
         }
     }
 }
