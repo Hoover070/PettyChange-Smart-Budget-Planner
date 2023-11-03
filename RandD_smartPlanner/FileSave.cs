@@ -2,66 +2,11 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 
 namespace RandD_smartPlanner
 {
-    /*
- * FileSaveUtility Class
- * 
- * Provides utility functions for saving and retrieving user and budget data to and from local storage.
- * 
- * Methods:
- * - CreateDirectoriesForUser(string username): Initializes necessary directories for a new user.
- *   Usage: FileSaveUtility.CreateDirectoriesForUser("username");
- * 
- * - GetBudgetFilePath(string username, string budgetName): Retrieves the file path for a specific budget.
- *   Usage: string path = FileSaveUtility.GetBudgetFilePath("username", "budgetName");
- * 
- * - GetBudgetsDirectoryPath(string username): Retrieves the directory path for all user budgets.
- *   Usage: string dirPath = FileSaveUtility.GetBudgetsDirectoryPath("username");
- * 
- * - SaveUserBudgets(User user, Budget budget): Saves budget data for the specified user.
- *   Usage: FileSaveUtility.SaveUserBudgets(userObj, budgetObj);
- * 
- * - LoadAllUserBudgets(string username): Loads all budgets for a specified user.
- *   Usage: List<Budget> budgets = FileSaveUtility.LoadAllUserBudgets("username");
- * 
- * - LoadLatestUserBudget(string username): Loads the most recent budget for a user.
- *   Usage: Budget latestBudget = FileSaveUtility.LoadLatestUserBudget("username");
- * 
- * - DeleteBudget(string username, string budgetName): Deletes a specific budget for a user.
- *   Usage: bool success = FileSaveUtility.DeleteBudget("username", "budgetName");
- * 
- * - UpdateBudget(User user, Budget budget): Updates an existing budget for a user.
- *   Usage: bool success = FileSaveUtility.UpdateBudget(userObj, budgetObj);
- * 
- * - GetUserFilePath(string username): Gets the file path of the user's profile.
- *   Usage: string filePath = FileSaveUtility.GetUserFilePath("username");
- * 
- * - GetUserDirectory(string username): Gets the directory path for the user's data.
- *   Usage: string userDir = FileSaveUtility.GetUserDirectory("username");
- * 
- * - LoadUser(string username): Loads a user's profile from storage.
- *   Usage: User user = FileSaveUtility.LoadUser("username");
- * 
- * - SaveUser(User user): Saves a user's profile to storage.
- *   Usage: FileSaveUtility.SaveUser(userObj);
- * 
- * - DeleteUser(string username): Deletes all data for a specified user.
- *   Usage: bool success = FileSaveUtility.DeleteUser("username");
- * 
- * - UpdateUser(User user): Updates a user's profile data in storage.
- *   Usage: bool success = FileSaveUtility.UpdateUser(userObj);
- * 
- * - DeleteAllUserBudgets(string username): Deletes all budgets for a user.
- *   Usage: bool success = FileSaveUtility.DeleteAllUserBudgets("username");
- * 
- * - DeleteAllUserData(string username): Deletes all data associated with a user.
- *   Usage: bool success = FileSaveUtility.DeleteAllUserData("username");
- * 
- * Note: Replace "username", "budgetName", "userObj", and "budgetObj" with actual instances as needed.
- */
 
 
     public static class FileSaveUtility
@@ -123,11 +68,10 @@ namespace RandD_smartPlanner
             File.WriteAllText(filePath, json);
         }
 
-        public static List<Budget> LoadAllUserBudgets(string username)
+        public static ObservableCollection<Budget> LoadAllUserBudgets(string username)
         {
-            List<Budget> budgets = new List<Budget>();
+            List<Budget> budgetsList = new List<Budget>();
             string budgetsDirectory = GetBudgetsDirectoryPath(username);
-            Console.WriteLine($"Budgets directory: {budgetsDirectory}");
 
             if (Directory.Exists(budgetsDirectory))
             {
@@ -135,34 +79,32 @@ namespace RandD_smartPlanner
 
                 foreach (var filePath in budgetFiles)
                 {
-                    Console.WriteLine($"Reading file: {filePath}");
-
                     string jsonData = File.ReadAllText(filePath);
-                    Console.WriteLine($"JSON Data: {jsonData}");
 
                     try
                     {
                         Budget budget = JsonConvert.DeserializeObject<Budget>(jsonData);
                         if (budget != null)
                         {
-                            Console.WriteLine($"Deserialized Budget Name: {budget.BudgetName}");
-                            budgets.Add(budget);
+                            budgetsList.Add(budget);
                         }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error deserializing budget: {ex.Message}");
+                        // Depending on your error handling policy, you might want to handle this differently.
                     }
                 }
             }
             else
             {
                 Console.WriteLine("Directory does not exist.");
+                // Depending on your error handling policy, you might want to handle this differently.
             }
 
-            return budgets;
+            // Convert the List<Budget> to ObservableCollection<Budget>
+            return new ObservableCollection<Budget>(budgetsList);
         }
-
 
 
         // User Functions
@@ -350,3 +292,59 @@ namespace RandD_smartPlanner
     }
 }
 
+/*
+* FileSaveUtility Class
+* 
+* Provides utility functions for saving and retrieving user and budget data to and from local storage.
+* 
+* Methods:
+* - CreateDirectoriesForUser(string username): Initializes necessary directories for a new user.
+*   Usage: FileSaveUtility.CreateDirectoriesForUser("username");
+* 
+* - GetBudgetFilePath(string username, string budgetName): Retrieves the file path for a specific budget.
+*   Usage: string path = FileSaveUtility.GetBudgetFilePath("username", "budgetName");
+* 
+* - GetBudgetsDirectoryPath(string username): Retrieves the directory path for all user budgets.
+*   Usage: string dirPath = FileSaveUtility.GetBudgetsDirectoryPath("username");
+* 
+* - SaveUserBudgets(User user, Budget budget): Saves budget data for the specified user.
+*   Usage: FileSaveUtility.SaveUserBudgets(userObj, budgetObj);
+* 
+* - LoadAllUserBudgets(string username): Loads all budgets for a specified user.
+*   Usage: List<Budget> budgets = FileSaveUtility.LoadAllUserBudgets("username");
+* 
+* - LoadLatestUserBudget(string username): Loads the most recent budget for a user.
+*   Usage: Budget latestBudget = FileSaveUtility.LoadLatestUserBudget("username");
+* 
+* - DeleteBudget(string username, string budgetName): Deletes a specific budget for a user.
+*   Usage: bool success = FileSaveUtility.DeleteBudget("username", "budgetName");
+* 
+* - UpdateBudget(User user, Budget budget): Updates an existing budget for a user.
+*   Usage: bool success = FileSaveUtility.UpdateBudget(userObj, budgetObj);
+* 
+* - GetUserFilePath(string username): Gets the file path of the user's profile.
+*   Usage: string filePath = FileSaveUtility.GetUserFilePath("username");
+* 
+* - GetUserDirectory(string username): Gets the directory path for the user's data.
+*   Usage: string userDir = FileSaveUtility.GetUserDirectory("username");
+* 
+* - LoadUser(string username): Loads a user's profile from storage.
+*   Usage: User user = FileSaveUtility.LoadUser("username");
+* 
+* - SaveUser(User user): Saves a user's profile to storage.
+*   Usage: FileSaveUtility.SaveUser(userObj);
+* 
+* - DeleteUser(string username): Deletes all data for a specified user.
+*   Usage: bool success = FileSaveUtility.DeleteUser("username");
+* 
+* - UpdateUser(User user): Updates a user's profile data in storage.
+*   Usage: bool success = FileSaveUtility.UpdateUser(userObj);
+* 
+* - DeleteAllUserBudgets(string username): Deletes all budgets for a user.
+*   Usage: bool success = FileSaveUtility.DeleteAllUserBudgets("username");
+* 
+* - DeleteAllUserData(string username): Deletes all data associated with a user.
+*   Usage: bool success = FileSaveUtility.DeleteAllUserData("username");
+* 
+* Note: Replace "username", "budgetName", "userObj", and "budgetObj" with actual instances as needed.
+*/

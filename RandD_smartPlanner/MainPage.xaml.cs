@@ -39,41 +39,31 @@ namespace RandD_smartPlanner
             }
         }*/
 
-     private void OnLoadBudgetClicked(object sender, EventArgs e)
-{
-    // This is just for debugging purposes.
-    // Once confirmed that the button press works, you should remove this line.
-    DisplayAlert("Load Budget", "Load Budget Button Clicked", "OK");
-
-    if (CurrentUser == null)
-    {
-        DisplayAlert("Load Budget", "No current user found. Please log in.", "OK");
-        return;
-    }
-
-    // Attempt to load the user's budgets.
-    var budgets = FileSaveUtility.LoadAllUserBudgets(CurrentUser.UserName);
-    
-    // This is for debugging purposes. Check the Output window for this log.
-    Console.WriteLine($"Budgets loaded: {budgets?.Count ?? 0}");
-    
-
-    if (budgets == null || budgets.Count == 0)
-    {
-        DisplayAlert("Load Budget", "No budgets available to load.", "OK");
-    }
-    else
-    {
-        DisplayAlert("Load Budget", "Budgets did load", "OK");
-        Dispatcher.Dispatch(() =>
+        private async void OnLoadBudgetClicked(object sender, EventArgs e)
+        {
+            try
             {
-                BudgetListView.ItemsSource = budgets;
-                BudgetListView.BeginRefresh();
-                BudgetListView.EndRefresh();
-            });
+                // Get the list of budgets to pass to the new page
+                var budgets = FileSaveUtility.LoadAllUserBudgets(CurrentUser.UserName);
+                if (budgets == null || budgets.Count == 0)
+                {
+                    await DisplayAlert("Load Budget", "No budgets available to load.", "OK");
+                    return;
+                }
 
-    }
-}
+                // Create a new instance of the BudgetListPage
+                var budgetListPage = new BudgetListPage(budgets);
+                budgetListPage.BindingContext = budgets; // Assuming that BudgetListPage can handle a list of budgets as its BindingContext
+
+                // Navigate to the BudgetListPage
+                await Navigation.PushAsync(budgetListPage);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or present an error message to the user
+                await DisplayAlert("Error", $"An error occurred while trying to load budgets: {ex.Message}", "OK");
+            }
+        }
 
         private void OnCreateNewAccountClicked(object sender, EventArgs e)
         {

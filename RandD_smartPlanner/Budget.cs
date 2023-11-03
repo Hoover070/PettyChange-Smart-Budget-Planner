@@ -1,15 +1,15 @@
-﻿#nullable enable
-
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace RandD_smartPlanner
 {
     public class Budget : INotifyPropertyChanged
     {
         private string _budgetName = string.Empty;
-        private double _income;
-        private double _expenses;
+        private ObservableCollection<BudgetItem> _incomeItems = new ObservableCollection<BudgetItem>();
+        private ObservableCollection<BudgetItem> _expenseItems = new ObservableCollection<BudgetItem>();
         private double _savingsGoal;
         private int _timeframe;
         private double _aiSuggestedSavings;
@@ -17,6 +17,27 @@ namespace RandD_smartPlanner
         private double _incomeDiff;
         private double _minSavingsLimit;
         private bool _showTrashcan;
+        private double _totalIncome;
+        private double _totalExpenses;
+        
+
+        public Budget()
+        {
+            IncomeItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalIncome));
+            ExpenseItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalExpenses));
+        }
+
+        public double TotalIncome
+        {
+            get => _totalIncome;
+            set => SetProperty(ref _totalIncome, value);
+        }
+
+        public double TotalExpenses
+        {
+            get => _totalExpenses;
+            set => SetProperty(ref _totalExpenses, value);
+        }
 
         public string BudgetName
         {
@@ -24,16 +45,16 @@ namespace RandD_smartPlanner
             set => SetProperty(ref _budgetName, value);
         }
 
-        public double Income
+        public ObservableCollection<BudgetItem> IncomeItems
         {
-            get => _income;
-            set => SetProperty(ref _income, value);
+            get => _incomeItems;
+            set => SetProperty(ref _incomeItems, value);
         }
 
-        public double Expenses
+        public ObservableCollection<BudgetItem> ExpenseItems
         {
-            get => _expenses;
-            set => SetProperty(ref _expenses, value);
+            get => _expenseItems;
+            set => SetProperty(ref _expenseItems, value);
         }
 
         public double SavingsGoal
@@ -66,7 +87,7 @@ namespace RandD_smartPlanner
             set => SetProperty(ref _incomeDiff, value);
         }
 
-        public double minSavingsLimit
+        public double MinSavingsLimit
         {
             get => _minSavingsLimit;
             set => SetProperty(ref _minSavingsLimit, value);
@@ -80,10 +101,10 @@ namespace RandD_smartPlanner
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName) =>
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        protected bool SetProperty<T>(ref T backingField, T value, [CallerMemberName] string propertyName = "")
+        protected bool SetProperty<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(backingField, value))
                 return false;
@@ -91,6 +112,33 @@ namespace RandD_smartPlanner
             backingField = value;
             OnPropertyChanged(propertyName);
             return true;
+        }
+
+        public class BudgetItem
+        {
+            private decimal _amount;
+
+            public string Description { get; set; }
+
+            public decimal Amount
+            {
+                get => _amount;
+                set
+                {
+                    if (_amount != value)
+                    {
+                        _amount = value;
+                        OnPropertyChanged(nameof(Amount));
+                    }
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            protected virtual void OnPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

@@ -1,11 +1,16 @@
 
 
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace RandD_smartPlanner
 {
     public partial class BudgetCreationPage : ContentPage, INotifyPropertyChanged
     {
+        public ObservableCollection<BudgetItem> IncomeItems { get; } = new ObservableCollection<BudgetItem>();
+        public ObservableCollection<BudgetItem> ExpenseItems { get; } = new ObservableCollection<BudgetItem>();
+
 
         private double _income;
         private double _expenses;
@@ -13,8 +18,25 @@ namespace RandD_smartPlanner
         private int _timeframe;
         private double _incomeDiff;
         private double _minSavingsLimit;
+        public ICommand SaveCommand { get; private set; }
+        public ICommand CancelCommand { get; private set; }
 
         public string BudgetName { get; set; }
+
+        public BudgetCreationPage(User username)
+        {
+            InitializeComponent();
+            BindingContext = this;
+            currentUser = username;
+
+            // Initialize commands
+            SaveCommand = new Command(OnSaveClicked);
+            CancelCommand = new Command(OnCancelClicked);
+
+            // Subscribe to collection changes
+            IncomeItems.CollectionChanged += (s, e) => UpdateCalculations();
+            ExpenseItems.CollectionChanged += (s, e) => UpdateCalculations();
+        }
 
         public double Income
         {
@@ -85,12 +107,7 @@ namespace RandD_smartPlanner
 
         private User currentUser;
 
-        public BudgetCreationPage(User username)
-        {
-            InitializeComponent();
-            BindingContext = this;
-            currentUser = username;
-        }
+   
 
         // New overloaded constructor
         public BudgetCreationPage(User username, Budget existingBudget) : this(username)
@@ -99,8 +116,8 @@ namespace RandD_smartPlanner
             {
                 // Populate the fields with the existing budget information
                 this.BudgetName = existingBudget.BudgetName;
-                this.Income = existingBudget.Income;
-                this.Expenses = existingBudget.Expenses;
+                this.TotalIncome = existingBudget.TotalIncome;
+                this.TotalExpenses = existingBudget.TotalExpenses;
                 this.SavingsGoal = existingBudget.SavingsGoal;
                 this.Timeframe = existingBudget.Timeframe;
                 this.AISuggestedSavings = existingBudget.AISuggestedSavings;
@@ -141,15 +158,19 @@ namespace RandD_smartPlanner
                 Budget newBudget = new Budget
                 {
                     BudgetName = this.BudgetName,
-                    Income = this.Income,
-                    Expenses = this.Expenses,
+                    IncomeItems = this.IncomeItems,
+                    ExpenseItems = this.ExpenseItems,
                     SavingsGoal = this.SavingsGoal,
                     Timeframe = this.Timeframe,
-                    IncomeDiff = this.IncomeDiff,
-                    minSavingsLimit = this.MinSavingsLimit,
+                    // The following properties need to be defined in your Budget class
                     AISuggestedSavings = this.AISuggestedSavings,
                     AISuggestedTimeframe = this.AISuggestedTimeframe,
+                    // IncomeDiff and MinSavingsLimit need to be calculated based on the collections
                 };
+
+                // Calculate the totals based on the collections
+                newBudget.TotalIncome = newBudget.IncomeItems.Sum(item => item.Amount);
+                newBudget.TotalExpenses = newBudget.ExpenseItems.Sum(item => item.Amount);
 
                 // Test the budget saving with a response that says "Budget saved"
                 if (newBudget != null)
