@@ -5,7 +5,11 @@
     <StackLayout VerticalOptions="CenterAndExpand">
         <Label x:Name="WelcomeLabel" Text="Welcome" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
         <Button Text="New Budget" Clicked="OnCreateNewAccountClicked"/>
-        <Label Text="Existing Budgets" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+        
+        
+        <Button Text="Load Budget" Clicked="OnLoadBudgetClicked"/>
+        
+        
         <ListView x:Name="BudgetListView" ItemTapped="OnBudgetSelected">
             <ListView.ItemTemplate>
                 <DataTemplate>

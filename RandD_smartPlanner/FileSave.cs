@@ -6,6 +6,64 @@ using System.Collections.Generic;
 
 namespace RandD_smartPlanner
 {
+    /*
+ * FileSaveUtility Class
+ * 
+ * Provides utility functions for saving and retrieving user and budget data to and from local storage.
+ * 
+ * Methods:
+ * - CreateDirectoriesForUser(string username): Initializes necessary directories for a new user.
+ *   Usage: FileSaveUtility.CreateDirectoriesForUser("username");
+ * 
+ * - GetBudgetFilePath(string username, string budgetName): Retrieves the file path for a specific budget.
+ *   Usage: string path = FileSaveUtility.GetBudgetFilePath("username", "budgetName");
+ * 
+ * - GetBudgetsDirectoryPath(string username): Retrieves the directory path for all user budgets.
+ *   Usage: string dirPath = FileSaveUtility.GetBudgetsDirectoryPath("username");
+ * 
+ * - SaveUserBudgets(User user, Budget budget): Saves budget data for the specified user.
+ *   Usage: FileSaveUtility.SaveUserBudgets(userObj, budgetObj);
+ * 
+ * - LoadAllUserBudgets(string username): Loads all budgets for a specified user.
+ *   Usage: List<Budget> budgets = FileSaveUtility.LoadAllUserBudgets("username");
+ * 
+ * - LoadLatestUserBudget(string username): Loads the most recent budget for a user.
+ *   Usage: Budget latestBudget = FileSaveUtility.LoadLatestUserBudget("username");
+ * 
+ * - DeleteBudget(string username, string budgetName): Deletes a specific budget for a user.
+ *   Usage: bool success = FileSaveUtility.DeleteBudget("username", "budgetName");
+ * 
+ * - UpdateBudget(User user, Budget budget): Updates an existing budget for a user.
+ *   Usage: bool success = FileSaveUtility.UpdateBudget(userObj, budgetObj);
+ * 
+ * - GetUserFilePath(string username): Gets the file path of the user's profile.
+ *   Usage: string filePath = FileSaveUtility.GetUserFilePath("username");
+ * 
+ * - GetUserDirectory(string username): Gets the directory path for the user's data.
+ *   Usage: string userDir = FileSaveUtility.GetUserDirectory("username");
+ * 
+ * - LoadUser(string username): Loads a user's profile from storage.
+ *   Usage: User user = FileSaveUtility.LoadUser("username");
+ * 
+ * - SaveUser(User user): Saves a user's profile to storage.
+ *   Usage: FileSaveUtility.SaveUser(userObj);
+ * 
+ * - DeleteUser(string username): Deletes all data for a specified user.
+ *   Usage: bool success = FileSaveUtility.DeleteUser("username");
+ * 
+ * - UpdateUser(User user): Updates a user's profile data in storage.
+ *   Usage: bool success = FileSaveUtility.UpdateUser(userObj);
+ * 
+ * - DeleteAllUserBudgets(string username): Deletes all budgets for a user.
+ *   Usage: bool success = FileSaveUtility.DeleteAllUserBudgets("username");
+ * 
+ * - DeleteAllUserData(string username): Deletes all data associated with a user.
+ *   Usage: bool success = FileSaveUtility.DeleteAllUserData("username");
+ * 
+ * Note: Replace "username", "budgetName", "userObj", and "budgetObj" with actual instances as needed.
+ */
+
+
     public static class FileSaveUtility
     {
 
@@ -161,7 +219,134 @@ namespace RandD_smartPlanner
                 // same as above, we will handle the exception in the future
             }
         }
+        public static Budget LoadLatestUserBudget(string username)
+        {
+            string budgetsDirectory = GetBudgetsDirectoryPath(username);
+            if (Directory.Exists(budgetsDirectory))
+            {
+                var budgetFiles = new DirectoryInfo(budgetsDirectory).GetFiles("*.json")
+                    .OrderByDescending(f => f.LastWriteTime)
+                    .ToList();
+
+                if (budgetFiles.Count > 0)
+                {
+                    var latestBudgetFile = budgetFiles[0];
+                    string jsonData = File.ReadAllText(latestBudgetFile.FullName);
+                    Budget latestBudget = JsonConvert.DeserializeObject<Budget>(jsonData);
+                    return latestBudget;
+                }
+            }
+            return null;
+        }
+
+        public static bool DeleteBudget(string username, string budgetName)
+        {
+            try
+            {
+                string budgetFilePath = GetBudgetFilePath(username, budgetName);
+                if (File.Exists(budgetFilePath))
+                {
+                    File.Delete(budgetFilePath);
+                    return true; // Success
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine($"Error deleting budget: {ex.Message}");
+            }
+            return false; // Failure
+        }
+
+        public static bool UpdateBudget(User user, Budget budget)
+        {
+            try
+            {
+                SaveUserBudgets(user, budget); // Re-use the save function
+                return true; // Success
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine($"Error updating budget: {ex.Message}");
+            }
+            return false; // Failure
+        }
+
+        public static bool DeleteUser(string username)
+        {
+            try
+            {
+                string userDirectory = GetUserDirectory(username);
+                if (Directory.Exists(userDirectory))
+                {
+                    Directory.Delete(userDirectory, true);
+                    return true; // Success
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine($"Error deleting user: {ex.Message}");
+            }
+            return false; // Failure
+        }
+
+        public static bool UpdateUser(User user)
+        {
+            try
+            {
+                SaveUser(user); // Re-use the save function
+                return true; // Success
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine($"Error updating user: {ex.Message}");
+            }
+            return false; // Failure
+        }
+
+        public static bool DeleteAllUserBudgets(string username)
+        {
+            try
+            {
+                string budgetsDirectory = GetBudgetsDirectoryPath(username);
+                if (Directory.Exists(budgetsDirectory))
+                {
+                    Directory.Delete(budgetsDirectory, true);
+                    return true; // Success
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine($"Error deleting all user budgets: {ex.Message}");
+            }
+            return false; // Failure
+        }
+
+        public static bool DeleteAllUserData(string username)
+        {
+            try
+            {
+                string userDirectory = GetUserDirectory(username);
+                if (Directory.Exists(userDirectory))
+                {
+                    Directory.Delete(userDirectory, true);
+                    return true; // Success
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine($"Error deleting all user data: {ex.Message}");
+            }
+            return false; // Failure
+        }
+
 
 
     }
 }
+
