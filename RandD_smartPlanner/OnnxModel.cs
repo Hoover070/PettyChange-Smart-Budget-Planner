@@ -19,7 +19,7 @@ namespace RandD_smartPlanner
         private InferenceSession session;
         private static OnnxModel _instance;
 
-        public OnnxModel()
+        public OnnxModel() 
         {
             if (_instance == null)
             {

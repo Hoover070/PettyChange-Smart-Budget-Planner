@@ -13,8 +13,6 @@ namespace RandD_smartPlanner
         public ObservableCollection<Budget.BudgetItem> IncomeItems { get; } = new ObservableCollection<Budget.BudgetItem>();
         public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; } = new ObservableCollection<Budget.BudgetItem>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private OnnxModel _model = new OnnxModel();
 
         private User currentUser;
@@ -25,6 +23,9 @@ namespace RandD_smartPlanner
         private double _incomeDiff;
         private double _minSavingsLimit;
         private double _savingsTotal;
+        private string _budgetName;
+        private string _description;
+        private double _cost;
         public ICommand SaveCommand { get; private set; }
         public ICommand SaveItemCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
@@ -33,13 +34,14 @@ namespace RandD_smartPlanner
         public ICommand DeleteIncomeCommand { get; }
         public ICommand DeleteExpenseCommand { get; }
 
+
         public double AISuggestedSavings { get; set; }
         public double AISuggestedTimeframe { get; set; }
 
 
         
 
-        public string BudgetName { get; set; }
+       
 
         public BudgetCreationPage(User username)
         {
@@ -47,18 +49,12 @@ namespace RandD_smartPlanner
             BindingContext = this;
             currentUser = username;
 
-            // Initialize commands
-            SaveCommand = new Command(obj => OnSaveClicked(this, EventArgs.Empty ));
-            CancelCommand = new Command(obj => OnCancelClicked(this, EventArgs.Empty));
-            AddIncomeCommand = new Command(OnAddIncome);
-            AddExpenseCommand = new Command(OnAddExpense);
-            DeleteIncomeCommand = new Command(obj => IncomeItems.Remove(obj as Budget.BudgetItem));
-            DeleteExpenseCommand = new Command(obj => ExpenseItems.Remove(obj as Budget.BudgetItem));
+            
 
             // Subscribe to collection changes
             IncomeItems.CollectionChanged += (s, e) => UpdateCalculations();
             ExpenseItems.CollectionChanged += (s, e) => UpdateCalculations();
-            SaveItemCommand = new Command<Budget.BudgetItem>(OnSaveItem);
+            
         }
 
         // creating a new budget
@@ -93,6 +89,16 @@ namespace RandD_smartPlanner
             }
         }
 
+        public string BudgetName
+        {
+            get { return _budgetName; }
+            set
+            {
+                _budgetName = value;
+                OnPropertyChanged(nameof(BudgetName));
+            }
+        }
+
         public OnnxModel model
         {
             get { return _model; }
@@ -102,6 +108,28 @@ namespace RandD_smartPlanner
                 OnPropertyChanged(nameof(model));
             }
         }
+
+        public string Description
+        {
+            get { return _description; }
+            set
+            {
+                _description = value;
+                OnPropertyChanged(nameof(Description));
+            }
+        }
+
+        public double Cost
+        {
+            get { return _cost; }
+            set
+            {
+                _cost = value;
+                OnPropertyChanged(nameof(Cost));
+            }
+        }
+
+
         public double SavingsTotal
         {
             get { return _savingsTotal; }
@@ -273,6 +301,7 @@ namespace RandD_smartPlanner
                 OnPropertyChanged(nameof(AISuggestedTimeframe));
                 OnPropertyChanged(nameof(IncomeDiff));
                 OnPropertyChanged(nameof(MinSavingsLimit));
+
             }
             catch (Exception ex)
             {
@@ -317,10 +346,7 @@ namespace RandD_smartPlanner
             }
         }
 
-        void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+
 
         void OnEntryFocused(object sender, FocusEventArgs e)
         {
@@ -330,13 +356,7 @@ namespace RandD_smartPlanner
                 entry.Text = string.Empty;
             }
         }
-        void OnSaveItem(Budget.BudgetItem item)
-        {
-            // Implement your save logic here
-        }
-
-
-
+      
 
     }
 }

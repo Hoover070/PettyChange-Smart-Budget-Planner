@@ -34,6 +34,7 @@ namespace RandD_smartPlanner
 
             UserName = userName;
             Password = password;
+  
             // Create a new OnnxModel instance and associate it with this user
             /* Income = income;
              Expenses = expenses;

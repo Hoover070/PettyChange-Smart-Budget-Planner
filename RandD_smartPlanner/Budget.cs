@@ -148,10 +148,33 @@ namespace RandD_smartPlanner
 
         public class BudgetItem
         {
-            private double _cost;
 
-            public string Description { get; set; }
+            private static int count = 0;
+            public string BudgetName { get; set; }
+            private double _cost = 0.00;
+            private string _description = string.Empty;
+            private string _name;
 
+            public BudgetItem()
+            {
+                _name = $"BudgetTest{++count}";
+                BudgetName = _name;
+            }
+            public string Description
+            {                
+                get => _description;
+                set
+                {
+                    if (_description != value)
+                    {
+                        _description = value;
+                        OnPropertyChanged(nameof(Description));
+                    }
+                }
+            }
+
+           
+           
             public double Cost
             {
                 get => _cost;
