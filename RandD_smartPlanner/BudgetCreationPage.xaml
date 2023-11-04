@@ -1,67 +1,79 @@
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.BudgetCreationPage"
              Title="Create New Budget Page">
 
+    <ScrollView>
+        <Grid Padding="20">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-    
-        <ScrollView>
-        <StackLayout Padding="20">
-            <Label Text="Create a new budget" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <!-- Total Section at the Top -->
+            <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                <Label Text="Income Total:"/>
+                <Label Text="{Binding TotalIncome}"/>
 
-            <Entry Placeholder="Name the Budget" Text="{Binding BudgetName}"/>
+                <Label Text="Expense Total:"/>
+                <Label Text="{Binding TotalExpenses}"/>
 
-            <!-- Income Section -->
-            <Label Text="Income" FontAttributes="Bold"/>
-            <!-- Replace this ListView with the proper ItemTemplate and Binding -->
-            <ListView ItemsSource="{Binding IncomeItems}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout Orientation="Horizontal">
-                                <Label Text="{Binding Name}"/>
-                                <Label Text="{Binding Amount, StringFormat='{0:C}'}"/>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                <Label Text="Left over:"/>
+                <Label Text="{Binding IncomeDiff}"/>
 
-            <!-- Expenses Section -->
-            <Label Text="Expenses" FontAttributes="Bold"/>
-            <!-- Replace this ListView with the proper ItemTemplate and Binding -->
-            <ListView ItemsSource="{Binding ExpenseItems}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout Orientation="Horizontal">
-                                <Label Text="{Binding Name}"/>
-                                <Label Text="{Binding Amount, StringFormat='{0:C}'}"/>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                <Label Text="Savings Payment:"/>
+                <Label Text="{Binding MinSavingsLimit}"/>
 
-            <Label Text="Income Total:"/>
-            <Label Text="{Binding Income}"/>
-
-            <Label Text="Expense Total:"/>
-            <Label Text="{Binding Expenses}"/>
-
-            <Label Text="Left over:"/>
-            <Label Text="{Binding IncomeDiff}"/>
-
-            <Label Text="Savings Payment:"/>
-            <Label Text="{Binding MinSavingsLimit}"/>
-
-            <Label Text="Ai Suggested Savings Payment"/>
-            <Label Text="{Binding AISuggestedSavings}"/>
-
-            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
-                <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"/>
-                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"/>
+                <Label Text="Ai Suggested Savings Payment"/>
+                <Label Text="{Binding AISuggestedSavings}"/>
             </StackLayout>
-        </StackLayout>
+
+            <!-- Expenses Section on Left Side -->
+            <StackLayout Grid.Row="1" Grid.Column="0">
+                <Label Text="Expense" FontAttributes="Bold"/>
+                <Button Text="Add" Command="AddExpenseCommand" WidthRequest="100" HeightRequest="30" Margin="5"/>
+                <ListView ItemsSource="{Binding ExpenseItems}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Entry Placeholder="Name" Text="{Binding Name, Mode=TwoWay}" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="$0.00" Text="{Binding Cost, StringFormat='{0:C}', Mode=TwoWay}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Button Text="Save" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SaveCommand}" CommandParameter="{Binding .}"/>
+                                    <Button Text="Delete" Clicked="OnDeleteExpenseItemClicked"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+
+            <!-- Income Section on Right Side -->
+            <StackLayout Grid.Row="1" Grid.Column="1">
+                <Label Text="Income" FontAttributes="Bold"/>
+                <Button Text="Add" Clicked="OnAddIncomeItemClicked" WidthRequest="100" HeightRequest="30" Margin="5"/>
+                <ListView ItemsSource="{Binding IncomeItems}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Entry Placeholder="Name" Text="{Binding Name, Mode=TwoWay}" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="$0.00" Text="{Binding Cost, StringFormat='{0:C}', Mode=TwoWay}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Button Text="Save" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SaveCommand}" CommandParameter="{Binding .}"/>
+                                    <Button Text="Delete" Clicked="OnDeleteIncomeItemClicked"/>
+
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+            
+        </Grid>
     </ScrollView>
 </ContentPage>

@@ -4,22 +4,40 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 
+
+
 namespace RandD_smartPlanner
 {
     public partial class BudgetCreationPage : ContentPage, INotifyPropertyChanged
     {
-        public ObservableCollection<BudgetItem> IncomeItems { get; } = new ObservableCollection<BudgetItem>();
-        public ObservableCollection<BudgetItem> ExpenseItems { get; } = new ObservableCollection<BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> IncomeItems { get; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; } = new ObservableCollection<Budget.BudgetItem>();
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        private OnnxModel _model = new OnnxModel();
+
+        private User currentUser;
         private double _income;
         private double _expenses;
         private double _savingsGoal;
         private int _timeframe;
         private double _incomeDiff;
         private double _minSavingsLimit;
+        private double _savingsTotal;
         public ICommand SaveCommand { get; private set; }
+        public ICommand SaveItemCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
+        public ICommand AddIncomeCommand { get; }
+        public ICommand AddExpenseCommand { get; }
+        public ICommand DeleteIncomeCommand { get; }
+        public ICommand DeleteExpenseCommand { get; }
+
+        public double AISuggestedSavings { get; set; }
+        public double AISuggestedTimeframe { get; set; }
+
+
+        
 
         public string BudgetName { get; set; }
 
@@ -30,12 +48,78 @@ namespace RandD_smartPlanner
             currentUser = username;
 
             // Initialize commands
-            SaveCommand = new Command(OnSaveClicked);
-            CancelCommand = new Command(OnCancelClicked);
+            SaveCommand = new Command(obj => OnSaveClicked(this, EventArgs.Empty ));
+            CancelCommand = new Command(obj => OnCancelClicked(this, EventArgs.Empty));
+            AddIncomeCommand = new Command(OnAddIncome);
+            AddExpenseCommand = new Command(OnAddExpense);
+            DeleteIncomeCommand = new Command(obj => IncomeItems.Remove(obj as Budget.BudgetItem));
+            DeleteExpenseCommand = new Command(obj => ExpenseItems.Remove(obj as Budget.BudgetItem));
 
             // Subscribe to collection changes
             IncomeItems.CollectionChanged += (s, e) => UpdateCalculations();
             ExpenseItems.CollectionChanged += (s, e) => UpdateCalculations();
+            SaveItemCommand = new Command<Budget.BudgetItem>(OnSaveItem);
+        }
+
+        // creating a new budget
+        public BudgetCreationPage(User username, Budget existingBudget) : this(username)
+        {
+            
+            if (existingBudget != null)
+            {
+                // Populate the fields with the existing budget information
+                this.BudgetName = existingBudget.BudgetName;
+                this.SavingsGoal = existingBudget.SavingsGoal;
+                this.Timeframe = existingBudget.Timeframe;
+                this.AISuggestedSavings = existingBudget.AISuggestedSavings;
+                this.AISuggestedTimeframe = existingBudget.AISuggestedTimeframe;
+                this.IncomeDiff = existingBudget.IncomeDiff;
+                this.MinSavingsLimit = existingBudget.MinSavingsLimit;
+                OnPropertyChanged(""); // Update all bindings
+            }
+            else
+            {
+                // Create a new budget
+                this.BudgetName = "New Budget";
+                this.SavingsGoal = 0;
+                this.Timeframe = 0;
+                this.AISuggestedSavings = 0;
+                this.AISuggestedTimeframe = 0;
+                this.IncomeDiff = 0;
+                this.MinSavingsLimit = 0;
+                this.SavingsTotal = 0;
+                OnPropertyChanged(""); // Update all bindings
+
+            }
+        }
+
+        public OnnxModel model
+        {
+            get { return _model; }
+            set
+            {
+                _model = value;
+                OnPropertyChanged(nameof(model));
+            }
+        }
+        public double SavingsTotal
+        {
+            get { return _savingsTotal; }
+            set
+            {
+                _savingsTotal = value;
+                OnPropertyChanged(nameof(SavingsTotal));
+            }
+        }
+
+        public double TotalIncome
+        {
+            get { return IncomeItems.Sum(item => item.Cost); }
+        }
+
+        public double TotalExpenses
+        {
+            get { return ExpenseItems.Sum(item => item.Cost); }
         }
 
         public double Income
@@ -48,6 +132,22 @@ namespace RandD_smartPlanner
                 OnPropertyChanged(nameof(Income));
             }
         }
+        private void OnAddIncome()
+        {
+            DisplayAlert("Income", "Income added", "OK");
+            var newItem = new Budget.BudgetItem { Description = "New Income", Cost = 0 };
+            IncomeItems.Add(newItem);
+        }
+
+        private void OnDeleteIncome(Budget.BudgetItem item)
+        {
+            IncomeItems.Remove(item);
+        }
+
+        private void OnDeleteExpense(Budget.BudgetItem item)
+        {
+            ExpenseItems.Remove(item);
+        }
 
         public double Expenses
         {
@@ -58,6 +158,13 @@ namespace RandD_smartPlanner
                 UpdateCalculations();
                 OnPropertyChanged(nameof(Expenses));
             }
+        }
+
+        private void OnAddExpense()
+        {
+            DisplayAlert("Expense", "Expense added", "OK");
+            var newItem = new Budget.BudgetItem { Description = "New Expense", Cost = 0 };
+            ExpenseItems.Add(newItem);
         }
 
         public double SavingsGoal
@@ -82,8 +189,6 @@ namespace RandD_smartPlanner
             }
         }
 
-        public double AISuggestedSavings { get; set; }
-        public double AISuggestedTimeframe { get; set; }
 
         public double IncomeDiff
         {
@@ -104,32 +209,8 @@ namespace RandD_smartPlanner
                 OnPropertyChanged(nameof(MinSavingsLimit));
             }
         }
-
-        private User currentUser;
-
-   
-
-        // New overloaded constructor
-        public BudgetCreationPage(User username, Budget existingBudget) : this(username)
-        {
-            if (existingBudget != null)
-            {
-                // Populate the fields with the existing budget information
-                this.BudgetName = existingBudget.BudgetName;
-                this.TotalIncome = existingBudget.TotalIncome;
-                this.TotalExpenses = existingBudget.TotalExpenses;
-                this.SavingsGoal = existingBudget.SavingsGoal;
-                this.Timeframe = existingBudget.Timeframe;
-                this.AISuggestedSavings = existingBudget.AISuggestedSavings;
-                this.AISuggestedTimeframe = existingBudget.AISuggestedTimeframe;
-                this.IncomeDiff = existingBudget.IncomeDiff;
-                this.MinSavingsLimit = existingBudget.minSavingsLimit;
-                OnPropertyChanged(""); // Update all bindings
-            }
-        }
-
-
-        private void UpdateCalculations()
+      
+         void UpdateCalculations()
         {
             IncomeDiff = Income - Expenses;
             if (Timeframe != 0)  // Prevent division by zero
@@ -138,19 +219,13 @@ namespace RandD_smartPlanner
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
+         private double OnCalculateClicked(object sender, EventArgs e)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            AISuggestedSavings =  model.UseAi(Income, Expenses, SavingsGoal, Timeframe, model);
+            return AISuggestedSavings;
         }
 
-        private void OnCalculateClicked(object sender, EventArgs e)
-        {
-            UseAi();
-
-        }
-        private void OnSaveClicked(object sender, EventArgs e)
+        void OnSaveClicked(object sender, EventArgs e)
         {
             try
             {
@@ -167,10 +242,6 @@ namespace RandD_smartPlanner
                     AISuggestedTimeframe = this.AISuggestedTimeframe,
                     // IncomeDiff and MinSavingsLimit need to be calculated based on the collections
                 };
-
-                // Calculate the totals based on the collections
-                newBudget.TotalIncome = newBudget.IncomeItems.Sum(item => item.Amount);
-                newBudget.TotalExpenses = newBudget.ExpenseItems.Sum(item => item.Amount);
 
                 // Test the budget saving with a response that says "Budget saved"
                 if (newBudget != null)
@@ -208,33 +279,64 @@ namespace RandD_smartPlanner
                 // Display an error message
                 DisplayAlert("Error, did not save", ex.Message, "OK");
             }
-            Navigation.PushAsync(new WelcomePage(currentUser));
 
         }
 
-        private void OnCancelClicked(object sender, EventArgs e)
+         void OnCancelClicked(object sender, EventArgs e)
         {
             Navigation.PopAsync();
         }
 
-        private void UseAi()
+        void OnAddIncomeItemClicked(object sender, EventArgs e)
         {
-            // call from trained_model > best_gb_model.onnx
-            //Output: AISuggestedSavings and AISuggestedTimeframe
-            // Input:  Income, Expenses, SavingsGoal, and Timeframe
-            OnnxModel model = new OnnxModel();
-
-            float prediction = model.Predict(Income, Expenses, SavingsGoal, Timeframe, IncomeDiff, MinSavingsLimit);
-            AISuggestedSavings = prediction;
-            AISuggestedTimeframe = SavingsGoal / prediction;
-
-            // Update the UI
-            OnPropertyChanged(nameof(AISuggestedSavings));
-            OnPropertyChanged(nameof(AISuggestedTimeframe));
-            OnPropertyChanged(nameof(IncomeDiff));
-            OnPropertyChanged(nameof(MinSavingsLimit));
+            OnAddIncome();
         }
+
+        void OnAddExpenseItemClicked(object sender, EventArgs e)
+        {
+            OnAddExpense();
+        }
+
+        void OnDeleteIncomeItemClicked(object sender, EventArgs e)
+        {
+            var button = sender as Button;
+            var item = button?.BindingContext as Budget.BudgetItem;
+            if (item != null)
+            {
+                IncomeItems.Remove(item);
+            }
+        }
+
+        void OnDeleteExpenseItemClicked(object sender, EventArgs e)
+        {
+            var button = sender as Button;
+            var item = button?.BindingContext as Budget.BudgetItem;
+            if (item != null)
+            {
+                ExpenseItems.Remove(item);
+            }
+        }
+
+        void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        void OnEntryFocused(object sender, FocusEventArgs e)
+        {
+            var entry = sender as Entry;
+            if (entry != null)
+            {
+                entry.Text = string.Empty;
+            }
+        }
+        void OnSaveItem(Budget.BudgetItem item)
+        {
+            // Implement your save logic here
+        }
+
+
+
+
     }
-
-
 }

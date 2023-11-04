@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.ML.OnnxRuntime;
+using Newtonsoft.Json;
 using System.IO;
+using System.Reflection;
 
 namespace RandD_smartPlanner
 {
@@ -17,23 +19,33 @@ namespace RandD_smartPlanner
         public string Description { get; set; }
         public string Password { get; set; }
         public List<Budget> Budgets { get; set; }  // A repository of created budgets
+        public OnnxModel UserModel { get; set; }
+        public string OnnxModelPath { get; set; }
+        public InferenceSession Model { get;  set; }
+
+
+
+
 
 
         // Constructor for initializing a new user
-        public User(string userName, string password, double income = 0, double expenses = 0, double savingsGoal = 0, int savingsMonths = 0, Budget budget = null )
+        public User(string userName, string password, /*double income = 0, double expenses = 0, double savingsGoal = 0, int savingsMonths = 0,*/ Budget budget = null )
         {
+
             UserName = userName;
             Password = password;
-            Income = income;
-            Expenses = expenses;
-            SavingsGoal = savingsGoal;
-            SavingsMonths = savingsMonths;
-            IncomeDiff = Income - Expenses;  // Automatically calculated
+            // Create a new OnnxModel instance and associate it with this user
+            /* Income = income;
+             Expenses = expenses;
+             SavingsGoal = savingsGoal;
+             SavingsMonths = savingsMonths;
+             IncomeDiff = Income - Expenses;  // Automatically calculated*/
             Budgets = new List<Budget>();  // Initialize the budget list
             if (budget != null)
             {
                 Budgets.Add(budget);
             }
+
 
             
         }
@@ -43,19 +55,33 @@ namespace RandD_smartPlanner
         public void SaveUser(string username)
         {
              string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    string userSubFolderPath = Path.Combine(folderPath, "userData");
+             string userSubFolderPath = Path.Combine(folderPath, "userData");
     
-    // Create the userData directory if it doesn't exist
-    if (!Directory.Exists(userSubFolderPath))
-    {
-        Directory.CreateDirectory(userSubFolderPath);
-    }
+             // Create the userData directory if it doesn't exist
+             if (!Directory.Exists(userSubFolderPath))
+             {
+                 Directory.CreateDirectory(userSubFolderPath);
+             }
 
-    string filePath = Path.Combine(userSubFolderPath, $"{username}");
-    string json = JsonConvert.SerializeObject(this);
-    File.WriteAllText(username, json);
+             string filePath = Path.Combine(userSubFolderPath, $"{username}");
+             string json = JsonConvert.SerializeObject(this);
+             File.WriteAllText(username, json);
         }
-        
+
+        public void LoadModel(byte[] modelData)
+        {
+            // Create a temporary file to store the model data
+            var tempFilePath = Path.GetTempFileName();
+
+            // Write the model data to the temporary file
+            File.WriteAllBytes(tempFilePath, modelData);
+
+            // Load the model from the temporary file
+            this.UserModel = new OnnxModel(tempFilePath);
+
+            // Optionally, delete the temporary file if it's no longer needed
+            File.Delete(tempFilePath);
+        }
 
         public static User LoadUser(string filePath)
         {

@@ -19,6 +19,10 @@ namespace RandD_smartPlanner
         private bool _showTrashcan;
         private double _totalIncome;
         private double _totalExpenses;
+        private string _expenseName;
+        private double _expenseCost;
+        private double _incomeCost;
+        private string _incomeName;
         
 
         public Budget()
@@ -26,16 +30,44 @@ namespace RandD_smartPlanner
             IncomeItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalIncome));
             ExpenseItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalExpenses));
         }
+        public double IncomeCost
+        {
+            get => _incomeCost;
+            set => SetProperty(ref _incomeCost, value);
+        }
+
+        public string IncomeName
+        {
+            get => _incomeName;
+            set => SetProperty(ref _incomeName, value);
+        }
+
+        public double ExpenseCost
+        {
+            get => _expenseCost;
+            set => SetProperty(ref _expenseCost, value);
+        }
+
+        public string ExpenseName
+        {
+            get => _expenseName;
+            set => SetProperty(ref _expenseName, value);
+        }
 
         public double TotalIncome
         {
-            get => _totalIncome;
+            // sums up the income item cost for each income line item and sets 
+            // the TotalIncome that the other pages can then call to recieve
+
+            get => IncomeItems.Sum(item => item.Cost);
             set => SetProperty(ref _totalIncome, value);
         }
 
         public double TotalExpenses
         {
-            get => _totalExpenses;
+            // sums up the expense item cost for each expense line item and sets 
+            // the TotalExpenses that the other pages can then call to recieve
+            get => ExpenseItems.Sum(item => item.Cost);
             set => SetProperty(ref _totalExpenses, value);
         }
 
@@ -116,19 +148,19 @@ namespace RandD_smartPlanner
 
         public class BudgetItem
         {
-            private decimal _amount;
+            private double _cost;
 
             public string Description { get; set; }
 
-            public decimal Amount
+            public double Cost
             {
-                get => _amount;
+                get => _cost;
                 set
                 {
-                    if (_amount != value)
+                    if (_cost != value)
                     {
-                        _amount = value;
-                        OnPropertyChanged(nameof(Amount));
+                        _cost = value;
+                        OnPropertyChanged(nameof(Cost));
                     }
                 }
             }

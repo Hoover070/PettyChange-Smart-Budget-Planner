@@ -75,7 +75,7 @@ namespace RandD_smartPlanner
             if (e.Item != null && e.Item is Budget selectedBudget)
             {
                 // Pass the selected budget to the BudgetPage
-                var budgetPage = new BudgetPage();
+                var budgetPage = new BudgetPage(selectedBudget);
                 budgetPage.BindingContext = selectedBudget; // Assuming BudgetPage can work with a Budget object as its BindingContext
                 Navigation.PushAsync(budgetPage);
             }

@@ -21,8 +21,8 @@ public class BudgetViewModel : INotifyPropertyChanged
     public ICommand EditBudgetCommand { get; }
 
 
-    private decimal _totalIncome;
-    public decimal TotalIncome
+    private double _totalIncome;
+    public double TotalIncome
     {
         get => _totalIncome;
         set
@@ -32,8 +32,8 @@ public class BudgetViewModel : INotifyPropertyChanged
         }
     }
 
-    private decimal _totalExpenses;
-    public decimal TotalExpenses
+    private double _totalExpenses;
+    public double TotalExpenses
     {
         get => _totalExpenses;
         set
@@ -43,8 +43,8 @@ public class BudgetViewModel : INotifyPropertyChanged
         }
     }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-    private decimal _totalSavings;
-    public decimal TotalSavings
+    private double _totalSavings;
+    public double TotalSavings
     {
         get => _totalSavings;
         set
@@ -54,18 +54,18 @@ public class BudgetViewModel : INotifyPropertyChanged
         }
     }
 
-    public decimal TotalDifference => TotalIncome - TotalExpenses;
+    public double TotalDifference => TotalIncome - TotalExpenses;
 
     public BudgetViewModel(Budget budget)
     {
 
         // Initialize the IncomeItems and ExpenseItems collections from the budget object
-        foreach (var incomeItem in budget.IncomeItems)
+        foreach (var incomeItem in IncomeItems)
         {
             IncomeItems.Add(incomeItem);
         }
 
-        foreach (var expenseItem in budget.ExpenseItems)
+        foreach (var expenseItem in ExpenseItems)
         {
             ExpenseItems.Add(expenseItem);
         }
@@ -82,14 +82,14 @@ public class BudgetViewModel : INotifyPropertyChanged
 
     private void OnIncomeItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        TotalIncome = IncomeItems.Sum(item => item.Amount);
+        TotalIncome = IncomeItems.Sum(item => item.IncomeCost);
         OnPropertyChanged(nameof(TotalIncome));
         OnPropertyChanged(nameof(TotalDifference));
     }
 
     private void OnExpenseItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        TotalExpenses = ExpenseItems.Sum(item => item.Amount);
+        TotalExpenses = ExpenseItems.Sum(item => item.ExpenseCost);
         OnPropertyChanged(nameof(TotalExpenses));
         OnPropertyChanged(nameof(TotalDifference));
     }
@@ -99,10 +99,4 @@ public class BudgetViewModel : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-}
-
-public class BudgetItem
-{
-    public string Description { get; set; }
-    public decimal Amount { get; set; }
 }

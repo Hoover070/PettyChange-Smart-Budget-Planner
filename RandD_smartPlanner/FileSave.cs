@@ -22,12 +22,14 @@ namespace RandD_smartPlanner
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
             string budgetsDirectory = Path.Combine(specificUserDirectory, "Budgets");
+            string modelsDirectory = Path.Combine(specificUserDirectory, "Models");
 
             // Create directories if they do not exist
             CreateDirectoryIfNotExists(pocketChangeDirectory);
             CreateDirectoryIfNotExists(userDirectory);
             CreateDirectoryIfNotExists(specificUserDirectory);
             CreateDirectoryIfNotExists(budgetsDirectory);
+            CreateDirectoryIfNotExists(modelsDirectory);
         }
 
         private static void CreateDirectoryIfNotExists(string directoryPath)
@@ -70,7 +72,7 @@ namespace RandD_smartPlanner
 
         public static ObservableCollection<Budget> LoadAllUserBudgets(string username)
         {
-            List<Budget> budgetsList = new List<Budget>();
+            ObservableCollection<Budget> budgetsList = new ObservableCollection<Budget>();
             string budgetsDirectory = GetBudgetsDirectoryPath(username);
 
             if (Directory.Exists(budgetsDirectory))
@@ -134,17 +136,27 @@ namespace RandD_smartPlanner
                 if (File.Exists(userFilePath))
                 {
                     string json = File.ReadAllText(userFilePath);
-                    return JsonConvert.DeserializeObject<User>(json);
+                    User user = JsonConvert.DeserializeObject<User>(json);
+
+                    string userDirectory = GetUserDirectory(username);
+                    string modelPath = Path.Combine(userDirectory, "Models", "model.onnx");
+                    if (File.Exists(modelPath))
+                    {
+                        byte[] modelData = File.ReadAllBytes(modelPath);
+                        user.LoadModel(modelData);  // Assuming User class has a LoadModel method
+                    }
+
+                    return user;
                 }
                 else
                 {
-                    return null; 
+                    return null;
                 }
             }
             catch (Exception e)
             {
-                // right now it returns null, but in the future we will handle the exception
-                return null; 
+                // right now it returns null, but in the future, we will handle the exception
+                return null;
             }
         }
 
@@ -285,6 +297,16 @@ namespace RandD_smartPlanner
                 Console.WriteLine($"Error deleting all user data: {ex.Message}");
             }
             return false; // Failure
+        }
+
+        public static void SaveUserModel(string username, byte[] modelData)
+        {
+            string userDirectory = GetUserDirectory(username);
+            string modelDirectory = Path.Combine(userDirectory, "Models");
+            CreateDirectoryIfNotExists(modelDirectory);  // Reuse your existing method to ensure the directory exists
+
+            string modelPath = Path.Combine(modelDirectory, "model.onnx");
+            File.WriteAllBytes(modelPath, modelData);
         }
 
 
