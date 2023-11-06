@@ -7,7 +7,7 @@ namespace RandD_smartPlanner
 {
     public class Budget : INotifyPropertyChanged
     {
-        private string _budgetName = string.Empty;
+        private string _budgetName;
         private ObservableCollection<BudgetItem> _incomeItems = new ObservableCollection<BudgetItem>();
         private ObservableCollection<BudgetItem> _expenseItems = new ObservableCollection<BudgetItem>();
         private double _savingsGoal;
@@ -23,12 +23,27 @@ namespace RandD_smartPlanner
         private double _expenseCost;
         private double _incomeCost;
         private string _incomeName;
+        private double _savingsTotal;
+        private string _description;
+        private OnnxModel UserModel;
         
 
-        public Budget()
+        public Budget(OnnxModel userModel)
         {
+            UserModel = userModel;
             IncomeItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalIncome));
             ExpenseItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalExpenses));
+
+        }
+        public string Description
+        {
+            get => _description;
+            set => SetProperty(ref _description, value);
+        }
+        public double SavingsTotal
+        {
+            get => _savingsTotal;
+            set => SetProperty(ref _savingsTotal, value);
         }
         public double IncomeCost
         {
@@ -146,13 +161,62 @@ namespace RandD_smartPlanner
             return true;
         }
 
-        public class BudgetItem
-        {
+        /* public class BudgetItem
+         {
 
+             private static int count = 0;
+             public string BudgetName { get; set; }
+             private double _cost = 0.00;
+             private string _description = string.Empty;
+             private string _name;
+
+             public BudgetItem()
+             {
+                 _name = $"BudgetTest{++count}";
+                 BudgetName = _name;
+             }
+             public string Description
+             {                
+                 get => _description;
+                 set
+                 {
+                     if (_description != value)
+                     {
+                         _description = value;
+                         OnPropertyChanged(nameof(Description));
+                     }
+                 }
+             }
+
+
+
+             public double Cost
+             {
+                 get => _cost;
+                 set
+                 {
+                     if (_cost != value)
+                     {
+                         _cost = value;
+                         OnPropertyChanged(nameof(Cost));
+                     }
+                 }
+             }
+
+             public event PropertyChangedEventHandler PropertyChanged;
+
+             protected virtual void OnPropertyChanged(string propertyName)
+             {
+                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+             }
+         }*/
+
+        public class BudgetItem : INotifyPropertyChanged
+        {
             private static int count = 0;
             public string BudgetName { get; set; }
-            private double _cost = 0.00;
-            private string _description = string.Empty;
+            private double _cost;
+            private string _description;
             private string _name;
 
             public BudgetItem()
@@ -160,21 +224,20 @@ namespace RandD_smartPlanner
                 _name = $"BudgetTest{++count}";
                 BudgetName = _name;
             }
-            public string Description
-            {                
-                get => _description;
+
+            public string Name
+            {
+                get => _name;
                 set
                 {
-                    if (_description != value)
+                    if (_name != value)
                     {
-                        _description = value;
-                        OnPropertyChanged(nameof(Description));
+                        _name = value;
+                        OnPropertyChanged(nameof(Name));
                     }
                 }
             }
 
-           
-           
             public double Cost
             {
                 get => _cost;
@@ -188,12 +251,26 @@ namespace RandD_smartPlanner
                 }
             }
 
-            public event PropertyChangedEventHandler PropertyChanged;
+            public string Description
+            {
+                get => _description;
+                set
+                {
+                    if (_description != value)
+                    {
+                        _description = value;
+                        OnPropertyChanged(nameof(Description));
+                    }
+                }
+            }
 
+            public event PropertyChangedEventHandler PropertyChanged;
             protected virtual void OnPropertyChanged(string propertyName)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+
     }
 }

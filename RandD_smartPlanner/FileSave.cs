@@ -3,8 +3,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
-
+using Microsoft.ML.OnnxRuntime;
+using System.Diagnostics;
 namespace RandD_smartPlanner
 {
 
@@ -17,7 +17,7 @@ namespace RandD_smartPlanner
         // Create a directory for the user if it does not exist
         public static void CreateDirectoriesForUser(string username)
         {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
@@ -36,36 +36,42 @@ namespace RandD_smartPlanner
         {
             if (!Directory.Exists(directoryPath))
             {
+                Debug.WriteLine($"Creating directory: {directoryPath}");
                 Directory.CreateDirectory(directoryPath);
             }
+            else {                 Debug.WriteLine($"Directory already exists: {directoryPath}");
+                       }
         }
 
         // Budget Functions
         // Get the path to the budget file for the given user and budget name
-        public static string GetBudgetFilePath(string username, string budgetName)
+        public static string GetBudgetFilePath(string username, string budgetName = null)
         {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
             string budgetsDirectory = Path.Combine(specificUserDirectory, "Budgets");
-            return Path.Combine(budgetsDirectory, $"{budgetName}.json");
+            string filePath = Path.Combine(budgetsDirectory, $"{budgetName}.json");
+            Directory.Exists(budgetsDirectory);
+           
+            Debug.WriteLine($"Constructed file path: {filePath}");
+            return filePath;
         }
 
         public static string GetBudgetsDirectoryPath(string username)
         {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
-            string userDirectory = Path.Combine(pocketChangeDirectory, "User");
-            string specificUserDirectory = Path.Combine(userDirectory, username);
-            return Path.Combine(specificUserDirectory, "Budgets");
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string budgetDirectory = Path.Combine(rootDirectory, "PocketChange", "User", username, "Budgets");
+            CreateDirectoryIfNotExists(budgetDirectory);
+            Debug.WriteLine($"Constructed file path: {budgetDirectory}");
+            return budgetDirectory;
         }
 
         public static void SaveUserBudgets(User user, Budget budget)
         {
             string filePath = GetBudgetFilePath(user.UserName, budget.BudgetName);
-            Console.WriteLine($"Saving budget to: {filePath}");
-
+            Debug.WriteLine($"Saving budget to: {filePath}");
             string json = JsonConvert.SerializeObject(budget);
             File.WriteAllText(filePath, json);
         }
@@ -74,6 +80,7 @@ namespace RandD_smartPlanner
         {
             ObservableCollection<Budget> budgetsList = new ObservableCollection<Budget>();
             string budgetsDirectory = GetBudgetsDirectoryPath(username);
+
 
             if (Directory.Exists(budgetsDirectory))
             {
@@ -93,14 +100,14 @@ namespace RandD_smartPlanner
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error deserializing budget: {ex.Message}");
+                        Debug.WriteLine($"Error deserializing budget: {ex.Message}");
                         // Depending on your error handling policy, you might want to handle this differently.
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Directory does not exist.");
+                Debug.WriteLine("Directory does not exist.");
                 // Depending on your error handling policy, you might want to handle this differently.
             }
 
@@ -108,12 +115,58 @@ namespace RandD_smartPlanner
             return new ObservableCollection<Budget>(budgetsList);
         }
 
+        /* public static ObservableCollection<Budget> LoadAllUserBudgets(string username)
+         {
+             ObservableCollection<Budget> budgetsList = new ObservableCollection<Budget>();
+             string budgetsDirectory = GetBudgetsDirectoryPath(username);
+             Debug.WriteLine($"Loading budgets from: {budgetsDirectory}");
+             if (Directory.Exists(budgetsDirectory))
+             {
+                 string[] budgetFiles = Directory.GetFiles(budgetsDirectory, "*.json");
+                 Debug.WriteLine($"Found {budgetFiles.Length} budget files.");
+
+
+                 foreach (var filePath in budgetFiles)
+                 {
+                     var budget_number = 0;
+                     string jsonData = File.ReadAllText(filePath);
+                     Debug.WriteLine($"Deserializing budget{budget_number} from: {filePath}");
+                     try
+                     {
+                         Budget budget = JsonConvert.DeserializeObject<Budget>(jsonData);
+                         if (budget != null)
+                         {
+                             budgetsList.Add(budget);
+                             budget_number++;
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         Debug.WriteLine($"Error deserializing budget: {ex.Message}");
+                         // Handle deserialization error as needed
+
+                     }
+                 }
+             }
+             else
+             {
+                 Debug.WriteLine("Directory does not exist.");
+                 // Handle missing directory as needed
+
+             }
+             Debug.WriteLine($"Loaded {budgetsList.Count} budgets.");
+             foreach (var budget in budgetsList)
+             {
+                 Debug.WriteLine($"Budget Name: {budget.BudgetName}, Description: {budget.Description}");
+             }
+             return budgetsList;
+         }*/
 
         // User Functions
 
         public static string GetUserFilePath(string username)
         {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
@@ -122,7 +175,7 @@ namespace RandD_smartPlanner
 
         public static string GetUserDirectory(string username)
         {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             return Path.Combine(userDirectory, username);
@@ -143,7 +196,7 @@ namespace RandD_smartPlanner
                     if (File.Exists(modelPath))
                     {
                         byte[] modelData = File.ReadAllBytes(modelPath);
-                        user.LoadModel(modelData);  // Assuming User class has a LoadModel method
+                        user.LoadModel(modelData); 
                     }
 
                     return user;
@@ -173,6 +226,7 @@ namespace RandD_smartPlanner
                 // same as above, we will handle the exception in the future
             }
         }
+
         public static Budget LoadLatestUserBudget(string username)
         {
             string budgetsDirectory = GetBudgetsDirectoryPath(username);
@@ -207,7 +261,7 @@ namespace RandD_smartPlanner
             catch (Exception ex)
             {
                 // Handle the exception as needed
-                Console.WriteLine($"Error deleting budget: {ex.Message}");
+                Debug.WriteLine($"Error deleting budget: {ex.Message}");
             }
             return false; // Failure
         }
@@ -222,7 +276,7 @@ namespace RandD_smartPlanner
             catch (Exception ex)
             {
                 // Handle the exception as needed
-                Console.WriteLine($"Error updating budget: {ex.Message}");
+                Debug.WriteLine($"Error updating budget: {ex.Message}");
             }
             return false; // Failure
         }
@@ -241,7 +295,7 @@ namespace RandD_smartPlanner
             catch (Exception ex)
             {
                 // Handle the exception as needed
-                Console.WriteLine($"Error deleting user: {ex.Message}");
+                Debug.WriteLine($"Error deleting user: {ex.Message}");
             }
             return false; // Failure
         }
@@ -256,7 +310,7 @@ namespace RandD_smartPlanner
             catch (Exception ex)
             {
                 // Handle the exception as needed
-                Console.WriteLine($"Error updating user: {ex.Message}");
+                Debug.WriteLine($"Error updating user: {ex.Message}");
             }
             return false; // Failure
         }
@@ -275,7 +329,7 @@ namespace RandD_smartPlanner
             catch (Exception ex)
             {
                 // Handle the exception as needed
-                Console.WriteLine($"Error deleting all user budgets: {ex.Message}");
+                Debug.WriteLine($"Error deleting all user budgets: {ex.Message}");
             }
             return false; // Failure
         }
@@ -294,7 +348,7 @@ namespace RandD_smartPlanner
             catch (Exception ex)
             {
                 // Handle the exception as needed
-                Console.WriteLine($"Error deleting all user data: {ex.Message}");
+                Debug.WriteLine($"Error deleting all user data: {ex.Message}");
             }
             return false; // Failure
         }
@@ -309,64 +363,9 @@ namespace RandD_smartPlanner
             File.WriteAllBytes(modelPath, modelData);
         }
 
+ 
+
 
 
     }
 }
-
-/*
-* FileSaveUtility Class
-* 
-* Provides utility functions for saving and retrieving user and budget data to and from local storage.
-* 
-* Methods:
-* - CreateDirectoriesForUser(string username): Initializes necessary directories for a new user.
-*   Usage: FileSaveUtility.CreateDirectoriesForUser("username");
-* 
-* - GetBudgetFilePath(string username, string budgetName): Retrieves the file path for a specific budget.
-*   Usage: string path = FileSaveUtility.GetBudgetFilePath("username", "budgetName");
-* 
-* - GetBudgetsDirectoryPath(string username): Retrieves the directory path for all user budgets.
-*   Usage: string dirPath = FileSaveUtility.GetBudgetsDirectoryPath("username");
-* 
-* - SaveUserBudgets(User user, Budget budget): Saves budget data for the specified user.
-*   Usage: FileSaveUtility.SaveUserBudgets(userObj, budgetObj);
-* 
-* - LoadAllUserBudgets(string username): Loads all budgets for a specified user.
-*   Usage: List<Budget> budgets = FileSaveUtility.LoadAllUserBudgets("username");
-* 
-* - LoadLatestUserBudget(string username): Loads the most recent budget for a user.
-*   Usage: Budget latestBudget = FileSaveUtility.LoadLatestUserBudget("username");
-* 
-* - DeleteBudget(string username, string budgetName): Deletes a specific budget for a user.
-*   Usage: bool success = FileSaveUtility.DeleteBudget("username", "budgetName");
-* 
-* - UpdateBudget(User user, Budget budget): Updates an existing budget for a user.
-*   Usage: bool success = FileSaveUtility.UpdateBudget(userObj, budgetObj);
-* 
-* - GetUserFilePath(string username): Gets the file path of the user's profile.
-*   Usage: string filePath = FileSaveUtility.GetUserFilePath("username");
-* 
-* - GetUserDirectory(string username): Gets the directory path for the user's data.
-*   Usage: string userDir = FileSaveUtility.GetUserDirectory("username");
-* 
-* - LoadUser(string username): Loads a user's profile from storage.
-*   Usage: User user = FileSaveUtility.LoadUser("username");
-* 
-* - SaveUser(User user): Saves a user's profile to storage.
-*   Usage: FileSaveUtility.SaveUser(userObj);
-* 
-* - DeleteUser(string username): Deletes all data for a specified user.
-*   Usage: bool success = FileSaveUtility.DeleteUser("username");
-* 
-* - UpdateUser(User user): Updates a user's profile data in storage.
-*   Usage: bool success = FileSaveUtility.UpdateUser(userObj);
-* 
-* - DeleteAllUserBudgets(string username): Deletes all budgets for a user.
-*   Usage: bool success = FileSaveUtility.DeleteAllUserBudgets("username");
-* 
-* - DeleteAllUserData(string username): Deletes all data associated with a user.
-*   Usage: bool success = FileSaveUtility.DeleteAllUserData("username");
-* 
-* Note: Replace "username", "budgetName", "userObj", and "budgetObj" with actual instances as needed.
-*/

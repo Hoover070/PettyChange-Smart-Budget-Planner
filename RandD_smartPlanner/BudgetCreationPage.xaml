@@ -1,7 +1,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:RandD_smartPlanner"
              x:Class="RandD_smartPlanner.BudgetCreationPage"
              Title="Create New Budget Page">
+            
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
         <Grid Padding="20">
@@ -32,11 +40,19 @@
                 <Label Text="Left over:"/>
                 <Label Text="{Binding IncomeDiff}"/>
 
+                <Label Text="Savings Goal:"/>
+                <Entry Placeholder="0.00" Text="{Binding SavingsGoal, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Text="Savings Goal Timeframe (in months):"/>
+                <Entry Placeholder="0.00" Text="{Binding Timeframe, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
                 <Label Text="Savings Payment:"/>
                 <Label Text="{Binding MinSavingsLimit}"/>
 
                 <Label Text="Ai Suggested Savings Payment"/>
                 <Label Text="{Binding AISuggestedSavings}"/>
+                <Button Text="AI Calculate" Clicked="OnCalculateClicked"/>
+
             </StackLayout>
 
             <!-- Expenses Section on Left Side -->
@@ -49,7 +65,7 @@
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
                                     <Entry Placeholder="Name" Text="{Binding Description, Mode=TwoWay}" Focused="OnEntryFocused"/>
-                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
                                     <Button Text="Save" Clicked="OnSaveClicked"/>
                                     <Button Text="Delete" Clicked="OnDeleteExpenseItemClicked"/>
                                 </StackLayout>
@@ -69,7 +85,7 @@
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
                                     <Entry Placeholder="Name" Text="{Binding Description, Mode=TwoWay}" Focused="OnEntryFocused"/>
-                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
                                     <Button Text="Save" Clicked="OnSaveClicked"/>
                                     <Button Text="Delete" Clicked="OnDeleteIncomeItemClicked"/>
 
@@ -81,9 +97,8 @@
             </StackLayout>
 
             <Grid Grid.Row="0" Grid.ColumnSpan="2">
-                <!-- ... other elements in row 0 ... -->
                 <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
-                    <Button Text="Cancel" Clicked="OnCancelClicked" WidthRequest="80" HeightRequest="30" />
+                    <Button Text="Back" Clicked="OnCancelClicked" WidthRequest="80" HeightRequest="30" />
                     <Button Text="Save" Clicked="OnSaveClicked" WidthRequest="80" HeightRequest="30" />
                 </StackLayout>
             </Grid>

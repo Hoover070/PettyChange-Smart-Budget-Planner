@@ -1,7 +1,9 @@
 
 
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Input;
 
 
@@ -29,10 +31,10 @@ namespace RandD_smartPlanner
         public ICommand SaveCommand { get; private set; }
         public ICommand SaveItemCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
-        public ICommand AddIncomeCommand { get; }
-        public ICommand AddExpenseCommand { get; }
-        public ICommand DeleteIncomeCommand { get; }
-        public ICommand DeleteExpenseCommand { get; }
+        public ICommand AddIncomeCommand { get; set; }
+        public ICommand AddExpenseCommand { get; set; }
+        public ICommand DeleteIncomeCommand { get; set; }
+        public ICommand DeleteExpenseCommand { get; set; }
 
 
         public double AISuggestedSavings { get; set; }
@@ -43,13 +45,37 @@ namespace RandD_smartPlanner
 
        
 
-        public BudgetCreationPage(User username)
+        public BudgetCreationPage(User username, OnnxModel usermodel)
         {
             InitializeComponent();
             BindingContext = this;
             currentUser = username;
+            this.model = usermodel;
 
-            
+            Budget defaultBudget = new Budget(usermodel)
+            {
+                BudgetName = "Default Budget",
+                SavingsGoal = 0,
+                Timeframe = 0,
+                AISuggestedSavings = 0,
+                AISuggestedTimeframe = 0,
+                IncomeDiff = 0,
+                MinSavingsLimit = 0,
+                SavingsTotal = 0,
+                IncomeItems = new ObservableCollection<Budget.BudgetItem>
+                    {
+                        new Budget.BudgetItem { Description = "Income 1", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Income 2", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Income 3", Cost = 0 },
+                    },
+                ExpenseItems = new ObservableCollection<Budget.BudgetItem>
+                    {
+                        new Budget.BudgetItem { Description = "Expense 1", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Expense 2", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Expense 3", Cost = 0 },
+                    }
+
+            };
 
             // Subscribe to collection changes
             IncomeItems.CollectionChanged += (s, e) => UpdateCalculations();
@@ -58,7 +84,7 @@ namespace RandD_smartPlanner
         }
 
         // creating a new budget
-        public BudgetCreationPage(User username, Budget existingBudget) : this(username)
+        public BudgetCreationPage(User username, OnnxModel usermodel, Budget existingBudget = null) : this(username, usermodel)
         {
             
             if (existingBudget != null)
@@ -71,19 +97,57 @@ namespace RandD_smartPlanner
                 this.AISuggestedTimeframe = existingBudget.AISuggestedTimeframe;
                 this.IncomeDiff = existingBudget.IncomeDiff;
                 this.MinSavingsLimit = existingBudget.MinSavingsLimit;
+                this.SavingsTotal = existingBudget.SavingsTotal;
+                this.IncomeItems.Clear();
+                this.ExpenseItems.Clear();
+                foreach (var item in existingBudget.IncomeItems)
+                {
+                    this.IncomeItems.Add(item);
+                }
+                foreach (var item in existingBudget.ExpenseItems)
+                {
+                    this.ExpenseItems.Add(item);
+                }
                 OnPropertyChanged(""); // Update all bindings
             }
             else
             {
-                // Create a new budget
-                this.BudgetName = "New Budget";
-                this.SavingsGoal = 0;
-                this.Timeframe = 0;
-                this.AISuggestedSavings = 0;
-                this.AISuggestedTimeframe = 0;
-                this.IncomeDiff = 0;
-                this.MinSavingsLimit = 0;
-                this.SavingsTotal = 0;
+                Budget defaultBudget = new Budget(usermodel)
+                {
+                    BudgetName = "Default Budget",
+                    SavingsGoal = 0,
+                    Timeframe = 0,
+                    AISuggestedSavings = 0,
+                    AISuggestedTimeframe = 0,
+                    IncomeDiff = 0,
+                    MinSavingsLimit = 0,
+                    SavingsTotal = 0,
+                    IncomeItems = new ObservableCollection<Budget.BudgetItem>
+                    {
+                        new Budget.BudgetItem { Description = "Income 1", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Income 2", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Income 3", Cost = 0 },
+                    },
+                    ExpenseItems = new ObservableCollection<Budget.BudgetItem>
+                    {
+                        new Budget.BudgetItem { Description = "Expense 1", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Expense 2", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Expense 3", Cost = 0 },
+                    }
+
+                };
+
+                // set the properties of BudgetCreationPage from defaultBudget
+                this.BudgetName = defaultBudget.BudgetName;
+                this.SavingsGoal = defaultBudget.SavingsGoal;
+                this.Timeframe = defaultBudget.Timeframe;
+                this.IncomeDiff = defaultBudget.IncomeDiff;
+                this.MinSavingsLimit = defaultBudget.MinSavingsLimit;
+                this.SavingsTotal = defaultBudget.SavingsTotal;
+                this.IncomeItems.Clear();
+                this.ExpenseItems.Clear();
+                
+
                 OnPropertyChanged(""); // Update all bindings
 
             }
@@ -240,17 +304,23 @@ namespace RandD_smartPlanner
       
          void UpdateCalculations()
         {
+            OnPropertyChanged(nameof(TotalIncome));
+            OnPropertyChanged(nameof(TotalExpenses));
             IncomeDiff = Income - Expenses;
+            OnPropertyChanged(nameof(IncomeDiff));
+
             if (Timeframe != 0)  // Prevent division by zero
             {
                 MinSavingsLimit = SavingsGoal / Timeframe;
             }
+           
         }
 
-         private double OnCalculateClicked(object sender, EventArgs e)
+         void OnCalculateClicked(object sender, EventArgs e)
         {
+            DisplayAlert("Calculating", "Calculating", "OK");
             AISuggestedSavings =  model.UseAi(Income, Expenses, SavingsGoal, Timeframe, model);
-            return AISuggestedSavings;
+            AISuggestedTimeframe = SavingsGoal / AISuggestedSavings;
         }
 
         void OnSaveClicked(object sender, EventArgs e)
@@ -258,7 +328,7 @@ namespace RandD_smartPlanner
             try
             {
                 // Create a new budget object
-                Budget newBudget = new Budget
+                Budget newBudget = new Budget(_model)
                 {
                     BudgetName = this.BudgetName,
                     IncomeItems = this.IncomeItems,
@@ -278,23 +348,18 @@ namespace RandD_smartPlanner
                 }
 
                 // Get the path to save the budget
+                // Get the path to save the budget
                 string filePath = FileSaveUtility.GetBudgetFilePath(currentUser.UserName, newBudget.BudgetName);
+                Debug.WriteLine($"Saving budget to {filePath}");
 
-                // Save the budget locally
-                // Associate this budget with the current user
-                if (currentUser != null)
-                {
-                    currentUser.Budgets.Add(newBudget);
-                    // Assuming SaveUser saves the User object to a file
-                    currentUser.SaveUser(filePath);
+                // Serialize the newBudget object to a JSON string
+                string jsonData = JsonConvert.SerializeObject(newBudget, Formatting.Indented);
 
-                    // Check if the file you just created exists
-                    if (!File.Exists(filePath))
-                    {
-                        // Create the file if it doesn't exist
-                        DisplayAlert("This budget did not get created/saved", "Budget not created", "OK");
-                    }
-                }
+                // Write the JSON string to the file
+                File.WriteAllText(filePath, jsonData);
+
+
+
 
                 // Update the UI
                 OnPropertyChanged(nameof(AISuggestedSavings));
@@ -313,7 +378,7 @@ namespace RandD_smartPlanner
 
          void OnCancelClicked(object sender, EventArgs e)
         {
-            Navigation.PopAsync();
+            Navigation.PushAsync(new WelcomePage(currentUser, currentUser.UserModel));
         }
 
         void OnAddIncomeItemClicked(object sender, EventArgs e)

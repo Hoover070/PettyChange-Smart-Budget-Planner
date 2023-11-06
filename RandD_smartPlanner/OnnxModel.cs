@@ -1,13 +1,6 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using System.Reflection;
-using System.IO;
-using System;
-using Microsoft.Maui.Controls;
-using System;
-using System.IO;
-using Newtonsoft.Json;
-using System.Xml.Serialization;
+
 
 
 
@@ -16,8 +9,9 @@ namespace RandD_smartPlanner
     public class OnnxModel
     {
 
-        private InferenceSession session;
+        
         private static OnnxModel _instance;
+        public InferenceSession Session { get; private set; }
 
         public OnnxModel() 
         {
@@ -33,22 +27,21 @@ namespace RandD_smartPlanner
             File.Copy(filePath, tempFilePath, true);
 
             // Load the ONNX model from the temporary file
-            this.session = new InferenceSession(tempFilePath);
-
-            
+            this.Session = new InferenceSession(tempFilePath);
 
             File.Delete(tempFilePath);
-
+            
         }
 
         public float Predict(double income, double expenses, double savingsGoal, int timeframe, double incomeDiff, double minSavingsLimit, OnnxModel UserModel )
         {
             // Convert your inputs into a tensor
             float[] inputData = new float[] { (float)income, (float)expenses, (float)savingsGoal, (float)timeframe, (float)incomeDiff, (float)minSavingsLimit };
-            var input = new DenseTensor<float>(inputData, new[] { 1, inputData.Length });
+            var input = new DenseTensor<float>(inputData,
+                                               new[] { 1, inputData.Length });
 
             var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("float_input", input) }; // replace "input_name" with the actual input name defined in your model
-            using (var results = UserModel.session.Run(inputs))
+            using (var results = UserModel.Session.Run(inputs))
             {
                
                 var resultTensor = results.First().AsTensor<float>();
@@ -80,5 +73,7 @@ namespace RandD_smartPlanner
             
             return AISuggestedSavings;
         }
+
+
     }
 }

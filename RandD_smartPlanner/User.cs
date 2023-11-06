@@ -29,26 +29,35 @@ namespace RandD_smartPlanner
 
 
         // Constructor for initializing a new user
-        public User(string userName, string password, /*double income = 0, double expenses = 0, double savingsGoal = 0, int savingsMonths = 0,*/ Budget budget = null )
+        public User(string userName, string password, Budget budget = null )
         {
 
             UserName = userName;
             Password = password;
   
-            // Create a new OnnxModel instance and associate it with this user
-            /* Income = income;
-             Expenses = expenses;
-             SavingsGoal = savingsGoal;
-             SavingsMonths = savingsMonths;
-             IncomeDiff = Income - Expenses;  // Automatically calculated*/
             Budgets = new List<Budget>();  // Initialize the budget list
             if (budget != null)
             {
                 Budgets.Add(budget);
             }
+            string userDirectory = FileSaveUtility.GetUserDirectory(userName);
+            string modelDirectory = Path.Combine(userDirectory, "Models");
+            // Set the path to the user's specific model file based on the username
+            this.OnnxModelPath = Path.Combine(modelDirectory, $"{userName}.onnx");
+
+            // Load the model
+            if (File.Exists(this.OnnxModelPath))
+            {
+                this.UserModel = new OnnxModel(this.OnnxModelPath);
+                this.Model = this.UserModel.Session;
+            }
+            else
+            {
+                this.Model = new OnnxModel().Session;
+            }
 
 
-            
+
         }
 
         // Constructor for saving a user and loading an existing user
