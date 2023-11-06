@@ -226,7 +226,6 @@ namespace RandD_smartPlanner
         }
         private void OnAddIncome()
         {
-            DisplayAlert("Income", "Income added", "OK");
             var newItem = new Budget.BudgetItem { Description = "New Income", Cost = 0 };
             IncomeItems.Add(newItem);
         }
@@ -254,7 +253,6 @@ namespace RandD_smartPlanner
 
         private void OnAddExpense()
         {
-            DisplayAlert("Expense", "Expense added", "OK");
             var newItem = new Budget.BudgetItem { Description = "New Expense", Cost = 0 };
             ExpenseItems.Add(newItem);
         }
@@ -306,12 +304,16 @@ namespace RandD_smartPlanner
         {
             OnPropertyChanged(nameof(TotalIncome));
             OnPropertyChanged(nameof(TotalExpenses));
-            IncomeDiff = Income - Expenses;
+            IncomeDiff = TotalIncome - TotalExpenses;
             OnPropertyChanged(nameof(IncomeDiff));
 
             if (Timeframe != 0)  // Prevent division by zero
             {
                 MinSavingsLimit = SavingsGoal / Timeframe;
+            }
+            else
+            {
+                MinSavingsLimit = 0;
             }
            
         }
@@ -319,8 +321,20 @@ namespace RandD_smartPlanner
          void OnCalculateClicked(object sender, EventArgs e)
         {
             DisplayAlert("Calculating", "Calculating", "OK");
-            AISuggestedSavings =  model.UseAi(Income, Expenses, SavingsGoal, Timeframe, model);
+            UpdateCalculations();
+            AISuggestedSavings =  model.UseAi(TotalIncome, TotalExpenses, SavingsGoal, Timeframe, model);
+            if (AISuggestedSavings < MinSavingsLimit)
+            {
+                AISuggestedSavings = MinSavingsLimit;
+            }
+            else if (AISuggestedSavings > IncomeDiff)
+            {
+                AISuggestedSavings = IncomeDiff;
+            }
             AISuggestedTimeframe = SavingsGoal / AISuggestedSavings;
+            OnPropertyChanged(nameof(AISuggestedSavings));
+            
+            
         }
 
         void OnSaveClicked(object sender, EventArgs e)

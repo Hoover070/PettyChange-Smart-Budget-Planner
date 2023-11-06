@@ -33,8 +33,9 @@ namespace RandD_smartPlanner
             
         }
 
-        public float Predict(double income, double expenses, double savingsGoal, int timeframe, double incomeDiff, double minSavingsLimit, OnnxModel UserModel )
+        public float Predict(double income, double expenses, double savingsGoal, int timeframe, double minSavingsLimit, OnnxModel UserModel )
         {
+            double incomeDiff = income - expenses;
             // Convert your inputs into a tensor
             float[] inputData = new float[] { (float)income, (float)expenses, (float)savingsGoal, (float)timeframe, (float)incomeDiff, (float)minSavingsLimit };
             var input = new DenseTensor<float>(inputData,
@@ -61,16 +62,19 @@ namespace RandD_smartPlanner
             var MinimumSavingsPayment = SavingsGoal/Timeframe ;
             if (IncomeDifference < MinimumSavingsPayment)
             {
-                
                 MinimumSavingsPayment = IncomeDifference * .15;
+            }
+            else if (IncomeDifference > MinimumSavingsPayment)
+            {
+                MinimumSavingsPayment = IncomeDifference * .50;
             }
 
             // Use the model to make a prediction
-            var prediction = UserModel.Predict(Income, Expenses, SavingsGoal, Timeframe, IncomeDifference, MinimumSavingsPayment, UserModel);
+            var prediction = UserModel.Predict(Income, Expenses, SavingsGoal, Timeframe, MinimumSavingsPayment, UserModel);
 
             // Do something with the prediction
             float AISuggestedSavings = prediction;
-            
+
             return AISuggestedSavings;
         }
 

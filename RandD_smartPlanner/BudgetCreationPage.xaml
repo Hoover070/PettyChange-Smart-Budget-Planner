@@ -64,7 +64,7 @@
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
-                                    <Entry Placeholder="Name" Text="{Binding Description, Mode=TwoWay}" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="Name" Text="{Binding Name, Mode=TwoWay}" Focused="OnEntryFocused"/>
                                     <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
                                     <Button Text="Save" Clicked="OnSaveClicked"/>
                                     <Button Text="Delete" Clicked="OnDeleteExpenseItemClicked"/>

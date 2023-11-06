@@ -7,7 +7,7 @@
 
         <!-- Top Section -->
         <VerticalStackLayout>
-            <Label Text="Total Savings" FontAttributes="Bold"/>
+            <Label Text="{Binding BudgetName}" FontAttributes="Bold"/>
             <Label Text="{Binding TotalSavings}" />
 
             <HorizontalStackLayout>
@@ -15,17 +15,35 @@
                     <Label Text="Total Income" FontAttributes="Bold"/>
                     <Label Text="{Binding TotalIncome}" />
                 </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
                 <VerticalStackLayout>
                     <Label Text="Total Expenses" FontAttributes="Bold"/>
                     <Label Text="{Binding TotalExpenses}" />
                 </VerticalStackLayout>
             </HorizontalStackLayout>
-
+            
             <BoxView HeightRequest="2" Color="Black" Margin="0,10"/>
+                <Label Text="Total Difference" FontAttributes="Bold"/>
+                <Label Text="{Binding TotalDifference}" />
+            </VerticalStackLayout>
+        <VerticalStackLayout>
+            <Label Text="Savings Goal" FontAttributes="Bold"/>
+            <Entry Text="{Binding SavingsGoal, Mode=TwoWay}" Keyboard="Numeric" />
 
-            <Label Text="Total Difference" FontAttributes="Bold"/>
-            <Label Text="{Binding TotalDifference}" />
+            <Label Text="AI Suggested Savings Rate" FontAttributes="Bold"/>
+            <Label Text="{Binding SuggestedSavingsRate, StringFormat='{0:P2}'}" />
+
+            <Label Text="Total Savings" FontAttributes="Bold"/>
+            <Label Text="{Binding TotalSavings, StringFormat='{0:C}'}" />
+
+            <HorizontalStackLayout>
+                <Entry x:Name="AmountEntry" Placeholder="Amount" Keyboard="Numeric" />
+                <Button Text="Add" Command="{Binding DepositSavingsCommand}" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
+                <Button Text="Subtract" Command="{Binding WithdrawSavingsCommand}" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
+
 
         <BoxView HeightRequest="2" Color="Black" Margin="0,10"/>
 
@@ -33,20 +51,30 @@
         <HorizontalStackLayout>
 
             <!-- Income Column -->
-            <VerticalStackLayout HorizontalOptions="StartAndExpand">
-                <Label Text="Income" FontAttributes="Bold"/>
-                <!-- This could be a ListView or CollectionView to list the income items -->
-                <!-- Binding to an ObservableCollection of income items -->
-                <CollectionView ItemsSource="{Binding IncomeItems}" />
-            </VerticalStackLayout>
+            <CollectionView ItemsSource="{Binding IncomeItems}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <!-- Display the name and cost of the budget item -->
+                            <Label Text="{Binding Description}" />
+                            <Label Text="{Binding Cost, StringFormat='{0:C}'}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-            <!-- Expenses Column -->
-            <VerticalStackLayout HorizontalOptions="EndAndExpand">
-                <Label Text="Expenses" FontAttributes="Bold"/>
-                <!-- This could be a ListView or CollectionView to list the expense items -->
-                <!-- Binding to an ObservableCollection of expense items -->
-                <CollectionView ItemsSource="{Binding ExpenseItems}" />
-            </VerticalStackLayout>
+            <!-- Expense Column -->
+            <CollectionView ItemsSource="{Binding ExpenseItems}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <!-- Display the name and cost of the budget item -->
+                            <Label Text="{Binding Name}" />
+                            <Label Text="{Binding Cost, StringFormat='{0:C}'}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
         </HorizontalStackLayout>
 
