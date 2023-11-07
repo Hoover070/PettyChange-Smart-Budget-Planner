@@ -1,6 +1,7 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using System.Reflection;
+
+
 
 
 namespace RandD_smartPlanner
@@ -8,38 +9,40 @@ namespace RandD_smartPlanner
     public class OnnxModel
     {
 
-        private InferenceSession session;
+        
+        private static OnnxModel _instance;
+        public InferenceSession Session { get; private set; }
 
-        public OnnxModel()
+        public OnnxModel() 
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "RandD_smartPlanner.trained_model.best_gb_model_15.onnx"; 
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            if (_instance == null)
             {
-                // Copy the embedded resource to a temporary file
-                var tempFilePath = Path.GetTempFileName();
-                using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
-                {
-                    stream.CopyTo(fileStream);
-                }
-
-                // Load the ONNX model from the temporary file
-                this.session = new InferenceSession(tempFilePath);
-
-                File.Delete(tempFilePath);
+                _instance = this;
             }
-
         }
 
-        public float Predict(double income, double expenses, double savingsGoal, int timeframe, double incomeDiff, double minSavingsLimit )
+        public OnnxModel(string filePath)
         {
-            // Convert your inputs into a tensor
-            float[] inputData = new float[] { (float)income, (float)expenses, (float)savingsGoal, (float)timeframe, (float)incomeDiff, (float)minSavingsLimit };
-            var input = new DenseTensor<float>(inputData, new[] { 1, inputData.Length });
+            var tempFilePath = Path.GetTempFileName();
+            File.Copy(filePath, tempFilePath, true);
 
-            var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("float_input", input) }; // replace "input_name" with the actual input name defined in your model
-            using (var results = session.Run(inputs))
+            // Load the ONNX model from the temporary file
+            this.Session = new InferenceSession(tempFilePath);
+
+            File.Delete(tempFilePath);
+            
+        }
+
+        public float Predict(double income, double expenses, double savingsGoal, int timeframe, double minSavingsLimit, OnnxModel UserModel )
+        {
+            double incomeDiff = income - expenses;
+
+            float[] inputData = new float[] { (float)income, (float)expenses, (float)savingsGoal, (float)timeframe, (float)incomeDiff, (float)minSavingsLimit };
+            var input = new DenseTensor<float>(inputData,
+                                               new[] { 1, inputData.Length });
+
+            var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("float_input", input) }; 
+            using (var results = UserModel.Session.Run(inputs))
             {
                
                 var resultTensor = results.First().AsTensor<float>();
@@ -48,23 +51,33 @@ namespace RandD_smartPlanner
             }
         }
 
-        public float UseAi(double Income, double Expenses, double SavingsGoal, int Timeframe, double IncomeDiff, double MinSavingsLimit )
+        public float UseAi(double Income, double Expenses, double SavingsGoal, int Timeframe, OnnxModel UserModel)
         {
             // call from trained_model > best_gb_model.onnx
             //Output: AISuggestedSavings and AISuggestedTimeframe
             // Input:  Income, Expenses, SavingsGoal, and Timeframe
-            OnnxModel model = new OnnxModel();
+
+            //Properties of the model
+            var IncomeDifference = Income - Expenses;
+            var MinimumSavingsPayment = SavingsGoal/Timeframe ;
+            if (IncomeDifference < MinimumSavingsPayment)
+            {
+                MinimumSavingsPayment = IncomeDifference * .15;
+            }
+            else if (IncomeDifference > MinimumSavingsPayment)
+            {
+                MinimumSavingsPayment = IncomeDifference * .50;
+            }
 
             // Use the model to make a prediction
-            float prediction = model.Predict(Income, Expenses, SavingsGoal, Timeframe, IncomeDiff, MinSavingsLimit);
+            var prediction = UserModel.Predict(Income, Expenses, SavingsGoal, Timeframe, MinimumSavingsPayment, UserModel);
 
             // Do something with the prediction
             float AISuggestedSavings = prediction;
-            
-
-
 
             return AISuggestedSavings;
         }
+
+
     }
 }

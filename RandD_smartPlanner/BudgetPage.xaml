@@ -1,12 +1,100 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.BudgetPage"
-             Title="BudgetPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Budget Overview">
+    <ScrollView>
+    <VerticalStackLayout Padding="20" Spacing="10">
+        
+        
+        <!-- Top Section -->
+        <VerticalStackLayout>
+            <Label Text="{Binding BudgetName}" FontAttributes="Bold"/>
+            <Label Text="{Binding TotalSavings}" />
+
+            <HorizontalStackLayout>
+                <VerticalStackLayout>
+                    <Label Text="Total Income" FontAttributes="Bold"/>
+                    <Label Text="{Binding TotalIncome}" />
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout>
+                <VerticalStackLayout>
+                    <Label Text="Total Expenses" FontAttributes="Bold"/>
+                    <Label Text="{Binding TotalExpenses}" />
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            
+            <BoxView HeightRequest="2" Color="Black" Margin="0,10"/>
+                <Label Text="Total Difference" FontAttributes="Bold"/>
+                <Label Text="{Binding TotalDifference}" />
+            </VerticalStackLayout>
+        <VerticalStackLayout>
+
+            <Label Text="Savings Total" FontAttributes="Bold"/>
+            <Entry Text="{Binding SavingsTotal, StringFormat='{0:C}'}" Keyboard="Numeric" />
+
+            <Label Text="Savings Goal" FontAttributes="Bold"/>
+            <Entry Text="{Binding SavingsGoal, Mode=TwoWay}" Keyboard="Numeric" />
+
+            <Label Text="AI Suggested Savings Rate" FontAttributes="Bold"/>
+            <Label Text="{Binding SuggestedSavingsRate, StringFormat='{0:P2}'}" />
+
+            <Label Text="Total Savings" FontAttributes="Bold"/>
+            <Label Text="{Binding TotalSavings, StringFormat='{0:C}'}" />
+
+            <HorizontalStackLayout>
+                    <Label Text="Add or Subtract Savings" FontAttributes="Bold"/>
+                    <Entry x:Name="AmountEntry" Placeholder="Amount" Keyboard="Numeric" />
+                <Button Text="Add" Clicked="AddSavings" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
+                <Button Text="Subtract" Clicked="SubtractSavings" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+
+        <BoxView HeightRequest="2" Color="Black" Margin="0,10"/>
+
+        <!-- Bottom Section -->
+        <HorizontalStackLayout>
+
+            <!-- Income Column -->
+            <CollectionView ItemsSource="{Binding IncomeItems}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <!-- Display the name and cost of the Income item -->
+                            <Label Text="{Binding Description}" />
+                            <Label Text="{Binding Cost, StringFormat='{0:C}'}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Expense Column -->
+            <CollectionView ItemsSource="{Binding ExpenseItems}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <!-- Display the name and cost of the Expense item -->
+                            <Label Text="{Binding Name}" />
+                            <Label Text="{Binding Cost, StringFormat='{0:C}'}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            
+        <!-- Back and Edit Buttons-->
+        </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Edit Budget" 
+                        Clicked="EditBudget"
+                        HorizontalOptions="FillAndExpand"/>
+                <Button Text="Back" 
+                        Clicked="BackToMain"
+                        HorizontalOptions="FillAndExpand"/>
+            </HorizontalStackLayout>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

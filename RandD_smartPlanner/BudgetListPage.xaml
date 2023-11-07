@@ -1,0 +1,48 @@
+<!-- BudgetListPage.xaml -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Name="Self"
+             x:Class="RandD_smartPlanner.BudgetListPage">
+
+    <StackLayout Padding="10">
+        <Label Text="Select a Budget" 
+               HorizontalOptions="Center" 
+               FontAttributes="Bold"/>
+        <Label Text="Tap on a budget to view, edit, or delete it."
+                HorizontalOptions="CenterAndExpand"
+                FontAttributes="Italic"/>
+        <Button Text="New Budget"
+                HorizontalOptions="Center"
+                Clicked="OnCreateNewBudgetClicked"/>
+        <Button Text="Refresh Budget list"
+                HorizontalOptions="Center"
+                Clicked="OnRefreshBudgetsClicked"/>
+        <Button Text="Back to Main Menu"
+                HorizontalOptions="Center"
+                Clicked="OnBackButtonClicked"/>
+                
+
+
+
+
+        <ListView x:Name="BudgetsListView"
+                  
+                  BindingContext="{x:Reference Name=Self}"
+                  ItemsSource="{Binding Budgets}"
+                  ItemTapped="OnBudgetSelected"
+                  HasUnevenRows="true"
+                  IsPullToRefreshEnabled="true"
+                  RefreshCommand="{Binding RefreshBudgetsCommand}"
+                  IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                  CachingStrategy="RecycleElement"
+                  ItemSelected="OnBudgetSelected">
+            
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding BudgetName}" Detail="{Binding Description}" />
+                    
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>

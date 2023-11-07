@@ -26,7 +26,10 @@ namespace RandD_smartPlanner
                 if (loadedUser.Password == password)
                 {
                     // Successfully logged in
-                    Navigation.PushAsync(new WelcomePage(loadedUser));
+                    // load the users model
+                    loadedUser.UserModel = new OnnxModel(loadedUser.OnnxModelPath);
+
+                    Navigation.PushAsync(new WelcomePage(loadedUser, loadedUser.UserModel));
                 }
                 else
                 {

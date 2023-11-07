@@ -1,39 +1,108 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RandD_smartPlanner.BudgetCreationPage">
-    <StackLayout>
-        <Label Text="Budget Name:"/>
-        <Entry Placeholder="BudgetName" Text="{Binding BudgetName}"/>
+             xmlns:local="clr-namespace:RandD_smartPlanner"
+             x:Class="RandD_smartPlanner.BudgetCreationPage"
+             Title="Create New Budget Page">
+            
 
-        <Label Text="Income Total:"/>
-        <Entry Placeholder="Income" Text="{Binding Income}"/>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <Label Text="Expenses Total:"/>
-        <Entry Placeholder="Expenses" Text="{Binding Expenses}"/>
+    <ScrollView>
+        <Grid Padding="20">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <Label Text="Income Difference:"/>
-        <Label Text="{Binding IncomeDiff}"/>
+            <!-- New Budget Name Section -->
+            <StackLayout Grid.Row="0" Grid.ColumnSpan="2">
+                <Entry Placeholder="Name the Budget" Text="{Binding BudgetName}"/>
+            </StackLayout>
 
-        <Label Text="Savings Goal:"/>
-        <Entry Placeholder="Savings Goal" Text="{Binding SavingsGoal}"/>
-        
-        <Label Text="Timeframe (In Months):"/>
-        <Entry Placeholder="Timeframe in Months" Text="{Binding Timeframe}"/>
+            <!-- Total Section at the Top -->
+            <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                <Label Text="Income Total:"/>
+                <Label Text="{Binding TotalIncome}"/>
 
-        <Label Text="Minimum Savings Amount to reach your goal:"/>
-        <Label Text="{Binding minSavingsLimit}"/>
+                <Label Text="Expense Total:"/>
+                <Label Text="{Binding TotalExpenses}"/>
 
-        <Label Text="AI Suggested Savings Amount:"/>
-        <Label Text="{Binding AISuggestedSavings}"/>
+                <Label Text="Left over:"/>
+                <Label Text="{Binding IncomeDiff}"/>
 
-        <Button Text="Save" Clicked="OnSaveClicked"/>
-        <Button Text="Cancel" Clicked="OnCancelClicked"/>
-        <Button Text="AI Calculate" Clicked="OnCalculateClicked"/>
+                <Label Text="Savings Goal:"/>
+                <Entry Placeholder="0.00" Text="{Binding SavingsGoal, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-        <Label Text="AI Suggested Savings Amount:"/>
-        <Label Text="{Binding AISuggestedSavings}"/>
+                <Label Text="Savings Goal Timeframe (in months):"/>
+                <Entry Placeholder="0.00" Text="{Binding Timeframe, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-        <Label Text="AI Suggested Timeframe:"/>
-        <Label Text="{Binding AISuggestedTimeframe}"/>
-    </StackLayout>
+                <Label Text="Savings Payment:"/>
+                <Label Text="{Binding MinSavingsLimit}"/>
+
+                <Label Text="Ai Suggested Savings Payment"/>
+                <Label Text="{Binding AISuggestedSavings}"/>
+                <Button Text="AI Calculate" Clicked="OnCalculateClicked"/>
+
+            </StackLayout>
+
+            <!-- Expenses Section on Left Side -->
+            <StackLayout Grid.Row="2" Grid.Column="0">
+                <Label Text="Expense" FontAttributes="Bold"/>
+                <Button Text="Add" Clicked="OnAddExpenseItemClicked" WidthRequest="100" HeightRequest="30" Margin="5"/>
+                <ListView ItemsSource="{Binding ExpenseItems}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Entry Placeholder="Name" Text="{Binding Name, Mode=TwoWay}" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Button Text="Save" Clicked="OnSaveClicked"/>
+                                    <Button Text="Delete" Clicked="OnDeleteExpenseItemClicked"/>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+
+            <!-- Income Section on Right Side -->
+            <StackLayout Grid.Row="2" Grid.Column="1">
+                <Label Text="Income" FontAttributes="Bold"/>
+                <Button Text="Add" Clicked="OnAddIncomeItemClicked" WidthRequest="100" HeightRequest="30" Margin="5"/>
+                <ListView ItemsSource="{Binding IncomeItems}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Orientation="Horizontal">
+                                    <Entry Placeholder="Name" Text="{Binding Description, Mode=TwoWay}" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Button Text="Save" Clicked="OnSaveClicked"/>
+                                    <Button Text="Delete" Clicked="OnDeleteIncomeItemClicked"/>
+
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+
+            <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
+                    <Button Text="Back" Clicked="OnCancelClicked" WidthRequest="80" HeightRequest="30" />
+                    <Button Text="Save" Clicked="OnSaveClicked" WidthRequest="80" HeightRequest="30" />
+                </StackLayout>
+            </Grid>
+
+        </Grid>
+    </ScrollView>
 </ContentPage>
