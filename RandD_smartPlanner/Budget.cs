@@ -161,56 +161,6 @@ namespace RandD_smartPlanner
             return true;
         }
 
-        /* public class BudgetItem
-         {
-
-             private static int count = 0;
-             public string BudgetName { get; set; }
-             private double _cost = 0.00;
-             private string _description = string.Empty;
-             private string _name;
-
-             public BudgetItem()
-             {
-                 _name = $"BudgetTest{++count}";
-                 BudgetName = _name;
-             }
-             public string Description
-             {                
-                 get => _description;
-                 set
-                 {
-                     if (_description != value)
-                     {
-                         _description = value;
-                         OnPropertyChanged(nameof(Description));
-                     }
-                 }
-             }
-
-
-
-             public double Cost
-             {
-                 get => _cost;
-                 set
-                 {
-                     if (_cost != value)
-                     {
-                         _cost = value;
-                         OnPropertyChanged(nameof(Cost));
-                     }
-                 }
-             }
-
-             public event PropertyChangedEventHandler PropertyChanged;
-
-             protected virtual void OnPropertyChanged(string propertyName)
-             {
-                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-             }
-         }*/
-
         public class BudgetItem : INotifyPropertyChanged
         {
             private static int count = 0;

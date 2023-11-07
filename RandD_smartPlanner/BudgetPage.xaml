@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.BudgetPage"
              Title="Budget Overview">
-
+    <ScrollView>
     <VerticalStackLayout Padding="20" Spacing="10">
-
+        
+        
         <!-- Top Section -->
         <VerticalStackLayout>
             <Label Text="{Binding BudgetName}" FontAttributes="Bold"/>
@@ -28,6 +29,10 @@
                 <Label Text="{Binding TotalDifference}" />
             </VerticalStackLayout>
         <VerticalStackLayout>
+
+            <Label Text="Savings Total" FontAttributes="Bold"/>
+            <Entry Text="{Binding SavingsTotal, StringFormat='{0:C}'}" Keyboard="Numeric" />
+
             <Label Text="Savings Goal" FontAttributes="Bold"/>
             <Entry Text="{Binding SavingsGoal, Mode=TwoWay}" Keyboard="Numeric" />
 
@@ -38,9 +43,10 @@
             <Label Text="{Binding TotalSavings, StringFormat='{0:C}'}" />
 
             <HorizontalStackLayout>
-                <Entry x:Name="AmountEntry" Placeholder="Amount" Keyboard="Numeric" />
-                <Button Text="Add" Command="{Binding DepositSavingsCommand}" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
-                <Button Text="Subtract" Command="{Binding WithdrawSavingsCommand}" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
+                    <Label Text="Add or Subtract Savings" FontAttributes="Bold"/>
+                    <Entry x:Name="AmountEntry" Placeholder="Amount" Keyboard="Numeric" />
+                <Button Text="Add" Clicked="AddSavings" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
+                <Button Text="Subtract" Clicked="SubtractSavings" CommandParameter="{Binding Text, Source={x:Reference AmountEntry}}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
 
@@ -55,7 +61,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout>
-                            <!-- Display the name and cost of the budget item -->
+                            <!-- Display the name and cost of the Income item -->
                             <Label Text="{Binding Description}" />
                             <Label Text="{Binding Cost, StringFormat='{0:C}'}" />
                         </StackLayout>
@@ -68,19 +74,27 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout>
-                            <!-- Display the name and cost of the budget item -->
+                            <!-- Display the name and cost of the Expense item -->
                             <Label Text="{Binding Name}" />
                             <Label Text="{Binding Cost, StringFormat='{0:C}'}" />
                         </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
+            
+            
+        <!-- Back and Edit Buttons-->
         </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Edit Budget" 
+                        Clicked="EditBudget"
+                        HorizontalOptions="FillAndExpand"/>
+                <Button Text="Back" 
+                        Clicked="BackToMain"
+                        HorizontalOptions="FillAndExpand"/>
+            </HorizontalStackLayout>
 
-        <!-- Edit Budget Button -->
-        <Button Text="Edit Budget" Command="{Binding EditBudgetCommand}" Margin="0,20,0,0"/>
 
-    </VerticalStackLayout>
-
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

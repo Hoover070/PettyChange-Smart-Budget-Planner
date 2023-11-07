@@ -332,8 +332,7 @@ namespace RandD_smartPlanner
                 AISuggestedSavings = IncomeDiff;
             }
             AISuggestedTimeframe = SavingsGoal / AISuggestedSavings;
-            OnPropertyChanged(nameof(AISuggestedSavings));
-            
+            OnPropertyChanged(nameof(AISuggestedSavings)); 
             
         }
 
@@ -354,28 +353,11 @@ namespace RandD_smartPlanner
                     AISuggestedTimeframe = this.AISuggestedTimeframe,
                     // IncomeDiff and MinSavingsLimit need to be calculated based on the collections
                 };
-
-                // Test the budget saving with a response that says "Budget saved"
-                if (newBudget != null)
-                {
-                    DisplayAlert("Budget successfully created", "Budget created", "OK");
-                }
-
-                // Get the path to save the budget
-                // Get the path to save the budget
                 string filePath = FileSaveUtility.GetBudgetFilePath(currentUser.UserName, newBudget.BudgetName);
                 Debug.WriteLine($"Saving budget to {filePath}");
-
-                // Serialize the newBudget object to a JSON string
                 string jsonData = JsonConvert.SerializeObject(newBudget, Formatting.Indented);
-
-                // Write the JSON string to the file
                 File.WriteAllText(filePath, jsonData);
 
-
-
-
-                // Update the UI
                 OnPropertyChanged(nameof(AISuggestedSavings));
                 OnPropertyChanged(nameof(AISuggestedTimeframe));
                 OnPropertyChanged(nameof(IncomeDiff));
@@ -424,8 +406,6 @@ namespace RandD_smartPlanner
                 ExpenseItems.Remove(item);
             }
         }
-
-
 
         void OnEntryFocused(object sender, FocusEventArgs e)
         {

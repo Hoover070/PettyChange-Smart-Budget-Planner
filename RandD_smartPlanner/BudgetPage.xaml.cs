@@ -10,26 +10,59 @@ namespace RandD_smartPlanner
     {
         public Budget CurrentBudget { get; }
         public User CurrentUser { get; }
+        public BudgetPage() { }
+        public ObservableCollection<Budget.BudgetItem> IncomeItems { get; set; }
+        public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; set; }
+        public BudgetViewModel BudgetViewModel { get; set; }
+        public Double TotalDifference { get; set; }
+        public Double TotalIncome { get; set; }
+        public Double TotalExpenses { get; set; }
+        public Double TotalSavings { get; set; }
+        public Double SavingsGoal { get; set; }
+        public Double SuggestedSavingsRate { get; set; }
+        public int Timeframe { get; set; }
+        public Double MinimumSavingsPayment { get; set; }
+        public Double SavingsTotal { get; set; }
+
+
 
         public BudgetPage(Budget budget, User user)
         {
             InitializeComponent();
             BindingContext = new BudgetViewModel(budget, user);
-            /*CurrentBudget = budget;
-            CurrentUser = user;*/
+            CurrentBudget = budget;
+            CurrentUser = user;
 
         }
-
-
+        public void AddSavings(object sender, EventArgs e)
+        {
+            DisplayAlert("Add Savings", "Add Savings", "OK");
+        }
+        public void SubtractSavings(object sender, EventArgs e)
+        {
+           DisplayAlert("Subtract Savings", "Subtract Savings", "OK");
+        }
         public void EditBudget(object sender, EventArgs e)
         {
-            // Assuming you have a method to navigate to the BudgetCreationPage
-            // and you want to pass the current budget to it
-           /* Navigation.PushAsync(new BudgetCreationPage(CurrentBudget, CurrentUser));*/
+            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel));
+        }
+        private async void BackToMain(object sender, EventArgs e)
+        {
+            await Application.Current.MainPage.Navigation.PopAsync();
         }
 
-
-
+        private void DepositSavings(double amount)
+        {
+            CurrentBudget.SavingsTotal += amount;
+            SavingsTotal = CurrentBudget.SavingsTotal;
+            OnPropertyChanged(nameof(TotalSavings));
+        }
+        private void WithdrawSavings(double amount)
+        {
+            CurrentBudget.SavingsTotal -= amount;
+            SavingsTotal = CurrentBudget.SavingsTotal;
+            OnPropertyChanged(nameof(TotalSavings));
+        }
     }
 
     public class BudgetViewModel : INotifyPropertyChanged
@@ -49,6 +82,7 @@ namespace RandD_smartPlanner
         private int _timeframe;
         private double _suggestedSavingsRate;
         private double _minimumSavingsPayment;
+        private double _savingsTotal;
 
 
         private void OnIncomeItemsChanged(object sender, NotifyCollectionChangedEventArgs e) => RecalculateTotals();
@@ -67,6 +101,7 @@ namespace RandD_smartPlanner
             IncomeItems = new ObservableCollection<Budget.BudgetItem>(budget.IncomeItems ?? new ObservableCollection<Budget.BudgetItem>());
             ExpenseItems = new ObservableCollection<Budget.BudgetItem>(budget.ExpenseItems ?? new ObservableCollection<Budget.BudgetItem>());
             TotalDifference = budget.TotalIncome - budget.TotalExpenses;
+
             // Listen for changes in collections to update totals
             IncomeItems.CollectionChanged += OnIncomeItemsChanged;
             ExpenseItems.CollectionChanged += OnExpenseItemsChanged;
@@ -76,17 +111,18 @@ namespace RandD_smartPlanner
             // Initialize totals
             RecalculateTotals();
         }
+
         private void DepositSavings(double amount)
         {
-            // Logic to add amount to TotalSavings
-            TotalSavings += amount;
+            CurrentBudget.SavingsTotal += amount;
+            TotalSavings = CurrentBudget.SavingsTotal;
             OnPropertyChanged(nameof(TotalSavings));
         }
 
         private void WithdrawSavings(double amount)
         {
-            // Logic to subtract amount from TotalSavings
-            TotalSavings -= amount;
+            CurrentBudget.SavingsTotal -= amount;
+            TotalSavings = CurrentBudget.SavingsTotal;
             OnPropertyChanged(nameof(TotalSavings));
         }
 
@@ -108,17 +144,38 @@ namespace RandD_smartPlanner
             if (SuggestedSavingsRate < baseRate)
             {
                 SuggestedSavingsRate = baseRate;
-            }else if (SuggestedSavingsRate > TotalDifference)
+            }
+            else if (SuggestedSavingsRate > TotalDifference)
             {
                 SuggestedSavingsRate = TotalDifference/2;
             }
+        }
 
+        private void RecalculateTotals()
+        {
+            var oldTotalIncome = TotalIncome;
+            var oldTotalExpenses = TotalExpenses;
+
+            TotalIncome = IncomeItems.Sum(item => item.Cost);
+            TotalExpenses = ExpenseItems.Sum(item => item.Cost);
+            TotalSavings = CurrentBudget.SavingsTotal;
+
+            if (TotalIncome != oldTotalIncome || TotalExpenses != oldTotalExpenses)
+            {
+                OnPropertyChanged(nameof(TotalDifference));
+            }
 
         }
 
 
-
         //Getters and Setters
+        public double SavingsTotal
+        {get => _savingsTotal;
+         set{_savingsTotal = value;
+         OnPropertyChanged(nameof(SavingsTotal));
+            }
+        }
+
         public double MinimumSavingsPayment
         {get => _minimumSavingsPayment;
          set{ _minimumSavingsPayment = SavingsGoal/Timeframe;
@@ -126,11 +183,9 @@ namespace RandD_smartPlanner
             }
         }
         public double TotalDifference
-        {
-            get => _totalDifference;
-            set{_totalDifference = value; 
-                OnPropertyChanged(nameof(TotalDifference));
-            }
+        {get => _totalDifference;
+         set{_totalDifference = value; 
+             OnPropertyChanged(nameof(TotalDifference));}
         }
 
         public double TotalIncome
@@ -190,21 +245,7 @@ namespace RandD_smartPlanner
 
 
 
-        private void RecalculateTotals()
-        {
-            var oldTotalIncome = TotalIncome;
-            var oldTotalExpenses = TotalExpenses;
-
-            TotalIncome = IncomeItems.Sum(item => item.Cost);
-            TotalExpenses = ExpenseItems.Sum(item => item.Cost);
-            TotalSavings = CurrentBudget.SavingsTotal;
-
-            if (TotalIncome != oldTotalIncome || TotalExpenses != oldTotalExpenses)
-            {
-                OnPropertyChanged(nameof(TotalDifference));
-            }
-
-        }
+       
 
      
     }

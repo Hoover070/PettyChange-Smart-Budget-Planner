@@ -36,12 +36,12 @@ namespace RandD_smartPlanner
         public float Predict(double income, double expenses, double savingsGoal, int timeframe, double minSavingsLimit, OnnxModel UserModel )
         {
             double incomeDiff = income - expenses;
-            // Convert your inputs into a tensor
+
             float[] inputData = new float[] { (float)income, (float)expenses, (float)savingsGoal, (float)timeframe, (float)incomeDiff, (float)minSavingsLimit };
             var input = new DenseTensor<float>(inputData,
                                                new[] { 1, inputData.Length });
 
-            var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("float_input", input) }; // replace "input_name" with the actual input name defined in your model
+            var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor("float_input", input) }; 
             using (var results = UserModel.Session.Run(inputs))
             {
                

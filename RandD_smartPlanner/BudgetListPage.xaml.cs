@@ -47,7 +47,6 @@ public partial class BudgetListPage : ContentPage
             {
                 _selectedBudget = value;
                 OnPropertyChanged(nameof(SelectedBudget));
-                // This will de-select the item in the ListView
                 
             }
         }
@@ -76,7 +75,7 @@ public partial class BudgetListPage : ContentPage
 
         try
         {
-            var username = CurrentUser.UserName;  // Assuming you have a CurrentUser property
+            var username = CurrentUser.UserName;  
             var budgets = FileSaveUtility.LoadAllUserBudgets(username);
 
             Budgets.Clear();
@@ -95,31 +94,11 @@ public partial class BudgetListPage : ContentPage
             IsBusy = false;
         }
     }
-   
-
-  /*  public void BudgetSelected(Budget budget)
-    {
-        // Navigate to the budget details page with the selected budget
-        Navigation.PushAsync(new BudgetPage(budget));
-        // Reset selected item
-        SelectedBudget = null;
-    }*/
 
     public void OnCreateNewBudgetClicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel));
     }
-
-
-    /*private void OnDeleteBudgetClicked(object sender, EventArgs e)
-    {
-        var budget = (sender as MenuItem)?.CommandParameter as Budget;
-        if (budget != null)
-        {
-            Budgets.Remove(budget);
-            FileSaveUtility.DeleteBudget(budget);
-        }
-    }*/
 
     public void OnEditBudgetClicked(object sender, EventArgs e)
     {
@@ -129,8 +108,6 @@ public partial class BudgetListPage : ContentPage
             Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, budget));
         }
     }
-
-    
 
     public void OnRefreshBudgetsClicked(object sender, EventArgs e)
     {
