@@ -44,7 +44,7 @@ namespace RandD_smartPlanner
         }
         public void EditBudget(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel));
+            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, CurrentBudget));
         }
         private async void BackToMain(object sender, EventArgs e)
         {
