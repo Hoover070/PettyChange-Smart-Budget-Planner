@@ -56,9 +56,7 @@ public partial class BudgetListPage : ContentPage
         if (e.Item != null && e.Item is Budget selectedBudget)
         {
             // Pass the selected budget to the BudgetPage
-            var budgetPage = new BudgetPage(selectedBudget, CurrentUser);
-            budgetPage.BindingContext = selectedBudget;
-            Navigation.PushAsync(budgetPage);
+            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, selectedBudget));
         }
     }
     void OnBackButtonClicked(object sender, EventArgs e)

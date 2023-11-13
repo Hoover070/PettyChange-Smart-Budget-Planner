@@ -25,6 +25,27 @@ namespace RandD_smartPlanner
         private string _incomeName;
         private double _savingsTotal;
         private string _description;
+        private double _expenses;
+        private double _cost;
+        private double _UserIncome;
+        private double _UserHousingExpense;
+        private double _HouseholdSize;
+        private double _UserPhoneBill;
+        private double _CurrnetSavingsAmount;
+        private double _CurrentEmergencyFund;
+        private double _UserEntertainmentExpense;
+        private double _UserFoodExpense;
+        private double _UserHealthInsuranceCost;
+        private double _UserCarInsuranceCost;
+        private double _UserRentInsuranceCost;
+        private double _UserEducationCost;
+        private double _UserLifeInsuranceCost;
+        private double _UserFuelCost;
+        private double _TotalInsurance;
+        private double _TotalExpenses;
+        private double _TotalIncome;
+        private double _TotalSavings;
+        private double _SuggestedSavingsPayment;
         private OnnxModel UserModel;
         
 
@@ -35,6 +56,102 @@ namespace RandD_smartPlanner
             ExpenseItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalExpenses));
 
         }
+
+
+
+        // Getters and setters for the budget page
+        public double SuggestedSavingsPayment
+        {
+            get => _SuggestedSavingsPayment;
+            set => SetProperty(ref _SuggestedSavingsPayment, value);
+        }
+        public double TotalInsurance
+        {
+            get => _TotalInsurance;
+            set => SetProperty(ref _TotalInsurance, value);
+        }
+        public double UserIncome
+        {
+            get => _UserIncome;
+            set => SetProperty(ref _UserIncome, value);
+        }
+        public double UserHousingExpense
+        {
+            get => _UserHousingExpense;
+            set => SetProperty(ref _UserHousingExpense, value);
+        }
+        public double HouseholdSize
+        {
+            get => _HouseholdSize;
+            set => SetProperty(ref _HouseholdSize, value);
+        }
+        public double UserPhoneBill
+        {
+            get => _UserPhoneBill;
+            set => SetProperty(ref _UserPhoneBill, value);
+        }
+        public double CurrnetSavingsAmount
+        {
+            get => _CurrnetSavingsAmount;
+            set => SetProperty(ref _CurrnetSavingsAmount, value);
+        }
+        public double CurrentEmergencyFund
+        {
+            get => _CurrentEmergencyFund;
+            set => SetProperty(ref _CurrentEmergencyFund, value);
+        }
+        public double UserEntertainmentExpense
+        {
+            get => _UserEntertainmentExpense;
+            set => SetProperty(ref _UserEntertainmentExpense, value);
+        }
+        public double UserFoodExpense
+        {
+            get => _UserFoodExpense;
+            set => SetProperty(ref _UserFoodExpense, value);
+        }
+        public double UserHealthInsuranceCost
+        {
+            get => _UserHealthInsuranceCost;
+            set => SetProperty(ref _UserHealthInsuranceCost, value);
+        }
+        public double UserCarInsuranceCost
+        {
+            get => _UserCarInsuranceCost;
+            set => SetProperty(ref _UserCarInsuranceCost, value);
+        }
+        public double UserRentInsuranceCost
+        {
+            get => _UserRentInsuranceCost;
+            set => SetProperty(ref _UserRentInsuranceCost, value);
+        }
+        public double UserEducationCost
+        {
+            get => _UserEducationCost;
+            set => SetProperty(ref _UserEducationCost, value);
+        }
+        public double UserLifeInsuranceCost
+        {
+            get => _UserLifeInsuranceCost;
+            set => SetProperty(ref _UserLifeInsuranceCost, value);
+        }
+        public double UserFuelCost
+        {
+            get => _UserFuelCost;
+            set => SetProperty(ref _UserFuelCost, value);
+        }
+        public double Cost
+        {
+            get => _cost;
+            set => SetProperty(ref _cost, value);
+        }
+        public double Expenses
+        {
+            get => _expenses;
+            set => SetProperty(ref _expenses, value);
+        }
+
+
         public string Description
         {
             get => _description;
