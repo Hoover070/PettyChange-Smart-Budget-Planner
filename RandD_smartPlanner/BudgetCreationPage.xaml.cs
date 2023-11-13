@@ -149,7 +149,7 @@ namespace RandD_smartPlanner
                 this.ExpenseItems.Clear();
 
 
-                OnPropertyChanged(""); // Update all bindings
+                OnPropertyChanged(""); 
 
             }
         }
@@ -224,8 +224,7 @@ namespace RandD_smartPlanner
 
         private void CalculateAiSuggestions()
         {
-            // Assuming UseAi is a method that calculates AI suggestions
-            // Ensure you pass all required parameters as per your AI model's needs
+         
             var aiResults = model.UseAi(UserModel, UserIncome, UserHousingExpense, HouseholdSize, UserPhoneBill, CurrnetSavingsAmount, CurrentEmergencyFund, UserEntertainmentExpense, UserFoodExpense,
               UserHealthInsuranceCost, UserCarInsuranceCost, UserRentInsuranceCost, UserEducationCost, UserLifeInsuranceCost, UserFuelCost);
             AISuggestedSavings = aiResults;

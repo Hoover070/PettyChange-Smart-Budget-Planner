@@ -109,7 +109,7 @@ namespace RandD_smartPlanner
              AverageMaximumHouseholdSize,  AverageEntertainmentExpense,  AverageFoodBill1Person,  AverageFoodBill4Poeple,  AverageFeulCost,  AverageCarInsurance,  AverageHealthInsuranceCost,  AverageEducationCost,
              AverageChildcareCost,  AverageRentInsuranceCost,  AverageLifeInsuraceCost);
 
-            // Do something with the prediction
+            
             double AISuggestedSavings = prediction;
 
             return AISuggestedSavings;
