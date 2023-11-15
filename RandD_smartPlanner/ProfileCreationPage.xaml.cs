@@ -43,6 +43,7 @@ namespace RandD_smartPlanner {
 
             // Path to the initial model in your project resources
             ExtractResource("RandD_smartPlanner.trained_model.best_gb_model_15.onnx", outputPath);
+            
 
             // Create a new OnnxModel instance and associate it with this user
             newUser.UserModel = new OnnxModel(newUser.OnnxModelPath);

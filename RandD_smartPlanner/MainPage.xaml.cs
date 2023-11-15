@@ -4,6 +4,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace RandD_smartPlanner
 {
@@ -20,6 +21,11 @@ namespace RandD_smartPlanner
             InitializeComponent();
             CurrentUser = user;
             UserModel = userModel;
+            if (userModel != null)
+            {
+                Debug.WriteLine("The model was successfully loaded into the main page");
+            }
+
             WelcomeLabel.Text = $"Welcome, {CurrentUser.UserName}!";
             BindingContext = this;
 
@@ -39,7 +45,7 @@ namespace RandD_smartPlanner
             base.OnAppearing();
             if (UserModel == null)
             {
-                DisplayAlert("Error", "Something went wrong and no model loaded from [Location]", "OK");
+                DisplayAlert("AI Test", $"The AI model failed to load", "OK");
                 return;
             }
             
@@ -103,10 +109,7 @@ namespace RandD_smartPlanner
         {
             if (e.Item != null && e.Item is Budget selectedBudget)
             {
-                // Pass the selected budget to the BudgetPage
-                var budgetPage = new BudgetPage(selectedBudget, CurrentUser);
-                budgetPage.BindingContext = selectedBudget; // Assuming BudgetPage can work with a Budget object as its BindingContext
-                Navigation.PushAsync(budgetPage);
+                Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, selectedBudget));
             }
         }
     }

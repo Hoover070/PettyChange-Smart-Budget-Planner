@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-
+using System.Diagnostics;
 
 namespace RandD_smartPlanner
 {
@@ -28,7 +28,12 @@ namespace RandD_smartPlanner
                     // Successfully logged in
                     // load the users model
                     loadedUser.UserModel = new OnnxModel(loadedUser.OnnxModelPath);
-
+                    Debug.WriteLine($"Loaded model for {loadedUser.UserName} at {loadedUser.OnnxModelPath}");
+                    if (loadedUser.UserModel == null)
+                    {
+                        DisplayAlert("AI Test", $"The AI model failed to load", "OK");
+                        return;
+                    }
                     Navigation.PushAsync(new WelcomePage(loadedUser, loadedUser.UserModel));
                 }
                 else

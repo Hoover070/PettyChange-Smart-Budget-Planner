@@ -23,20 +23,51 @@ namespace RandD_smartPlanner
         public int Timeframe { get; set; }
         public Double MinimumSavingsPayment { get; set; }
         public Double SavingsTotal { get; set; }
+        public Double UserIncome { get; set; }
+        public Double UserHousingExpense { get; set; }
+        public Double HouseholdSize { get; set; }
+        public Double UserPhoneBill { get; set; }
+        public Double CurrnetSavingsAmount { get; set; }
+        public Double CurrentEmergencyFund { get; set; }
+        public Double UserEntertainmentExpense { get; set; }
+        public Double UserFoodExpense { get; set; }
+        public Double UserHealthInsuranceCost { get; set; }
+        public Double UserCarInsuranceCost { get; set; }
+        public Double UserRentInsuranceCost { get; set; }
+        public Double UserEducationCost { get; set; }
+        public Double UserLifeInsuranceCost { get; set; }
+        public Double UserFuelCost { get; set; }
+        public Double TotalInsurance { get; set; }
+        public Double TotalSavingsGoal { get; set; }
+        public Double TotalTimeframe { get; set; }
+        public Double TotalMinimumSavingsPayment { get; set; }
+        public Double TotalSuggestedSavingsRate { get; set; }
+
 
 
 
         public BudgetPage(Budget budget, User user)
         {
             InitializeComponent();
-            BindingContext = new BudgetViewModel(budget, user);
+
             CurrentBudget = budget;
             CurrentUser = user;
+            BudgetViewModel = new BudgetViewModel(budget, user);
+            IncomeItems = new ObservableCollection<Budget.BudgetItem>(budget.IncomeItems ?? new ObservableCollection<Budget.BudgetItem>());
+            ExpenseItems = new ObservableCollection<Budget.BudgetItem>(budget.ExpenseItems ?? new ObservableCollection<Budget.BudgetItem>());
+            TotalDifference = budget.TotalIncome - budget.TotalExpenses;
+            TotalIncome = budget.TotalIncome;
+            TotalExpenses = budget.TotalExpenses;
+            TotalSavings = budget.SavingsTotal;
+            SavingsGoal = budget.SavingsGoal;
+            SuggestedSavingsRate = budget.SuggestedSavingsPayment;
+
 
         }
         public void AddSavings(object sender, EventArgs e)
         {
-            DisplayAlert("Add Savings", "Add Savings", "OK");
+            DepositSavings(100);
+            
         }
         public void SubtractSavings(object sender, EventArgs e)
         {
@@ -44,7 +75,7 @@ namespace RandD_smartPlanner
         }
         public void EditBudget(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel));
+            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, CurrentBudget));
         }
         private async void BackToMain(object sender, EventArgs e)
         {
@@ -73,16 +104,35 @@ namespace RandD_smartPlanner
         public ObservableCollection<Budget.BudgetItem> IncomeItems { get; }
         public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; }
         public Budget CurrentBudget { get; }
-        public User CurrentUser { get; }
-        private double _totalDifference;
-        private double _totalIncome;
-        private double _totalExpenses;
-        private double _totalSavings;
-        private double _savingsGoal;
-        private int _timeframe;
-        private double _suggestedSavingsRate;
-        private double _minimumSavingsPayment;
-        private double _savingsTotal;
+        public User currentUser { get; }
+        public double _expenses;
+        public double _savingsGoal;
+        public double _incomeDiff;
+        public double _minSavingsLimit;
+        public double _savingsTotal;
+        public string _budgetName;
+        public string _description;
+        public double _cost;
+        public double _UserIncome;
+        public double _UserHousingExpense;
+        public double _HouseholdSize;
+        public double _UserPhoneBill;
+        public double _CurrnetSavingsAmount;
+        public double _CurrentEmergencyFund;
+        public double _UserEntertainmentExpense;
+        public double _UserFoodExpense;
+        public double _UserHealthInsuranceCost;
+        public double _UserCarInsuranceCost;
+        public double _UserRentInsuranceCost;
+        public double _UserEducationCost;
+        public double _UserLifeInsuranceCost;
+        public double _UserFuelCost;
+        public double _totalIncome;
+        public double _totalExpenses;
+        public double _timeframe;
+        public double _TotalInsurance;
+        public OnnxModel UserModel;
+
 
 
         private void OnIncomeItemsChanged(object sender, NotifyCollectionChangedEventArgs e) => RecalculateTotals();
@@ -96,7 +146,7 @@ namespace RandD_smartPlanner
 
         public BudgetViewModel(Budget budget, User user)
         {
-            CurrentUser = user;
+            currentUser = user;
             CurrentBudget = budget;
             IncomeItems = new ObservableCollection<Budget.BudgetItem>(budget.IncomeItems ?? new ObservableCollection<Budget.BudgetItem>());
             ExpenseItems = new ObservableCollection<Budget.BudgetItem>(budget.ExpenseItems ?? new ObservableCollection<Budget.BudgetItem>());
@@ -112,52 +162,27 @@ namespace RandD_smartPlanner
             RecalculateTotals();
         }
 
-        private void DepositSavings(double amount)
+        public void DepositSavings(double amount)
         {
             CurrentBudget.SavingsTotal += amount;
             TotalSavings = CurrentBudget.SavingsTotal;
             OnPropertyChanged(nameof(TotalSavings));
         }
 
-        private void WithdrawSavings(double amount)
+        public void WithdrawSavings(double amount)
         {
             CurrentBudget.SavingsTotal -= amount;
             TotalSavings = CurrentBudget.SavingsTotal;
             OnPropertyChanged(nameof(TotalSavings));
         }
 
-        private void UpdateSuggestedSavingsRate()
+        public void RecalculateTotals()
         {
-            OnnxModel model = CurrentUser.UserModel;
-            SuggestedSavingsRate = model.UseAi(TotalIncome, TotalExpenses, SavingsGoal, Timeframe, model);
-            double baseRate = TotalIncome * 0.15;
-            if (baseRate < SavingsGoal / Timeframe)
-            {
-                baseRate = (TotalIncome - TotalExpenses) * 0.50;
-            }
-            else if (baseRate > TotalDifference)
-            {
-                baseRate = TotalDifference / 2;
-            }
-            MinimumSavingsPayment = baseRate;
+            var oldTotalIncome = CurrentBudget.UserIncome + IncomeItems.Sum(item => item.Cost);
+            var oldTotalExpenses = UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserEducationCost + TotalInsurance + (ExpenseItems.Sum(item => item.Cost));
 
-            if (SuggestedSavingsRate < baseRate)
-            {
-                SuggestedSavingsRate = baseRate;
-            }
-            else if (SuggestedSavingsRate > TotalDifference)
-            {
-                SuggestedSavingsRate = TotalDifference/2;
-            }
-        }
-
-        private void RecalculateTotals()
-        {
-            var oldTotalIncome = TotalIncome;
-            var oldTotalExpenses = TotalExpenses;
-
-            TotalIncome = IncomeItems.Sum(item => item.Cost);
-            TotalExpenses = ExpenseItems.Sum(item => item.Cost);
+            TotalIncome += CurrentBudget.UserIncome+ IncomeItems.Sum(item => item.Cost);
+            TotalExpenses += ExpenseItems.Sum(item => item.Cost);
             TotalSavings = CurrentBudget.SavingsTotal;
 
             if (TotalIncome != oldTotalIncome || TotalExpenses != oldTotalExpenses)
@@ -169,79 +194,344 @@ namespace RandD_smartPlanner
 
 
         //Getters and Setters
-        public double SavingsTotal
-        {get => _savingsTotal;
-         set{_savingsTotal = value;
-         OnPropertyChanged(nameof(SavingsTotal));
+
+        public double UserIncome
+        {
+            get => _UserIncome;
+            set
+            {
+                if (_UserIncome != value)
+                {
+                    _UserIncome = CurrentBudget.UserIncome;
+                    OnPropertyChanged(nameof(UserIncome));
+                    RecalculateTotals();
+                }
             }
         }
 
-        public double MinimumSavingsPayment
-        {get => _minimumSavingsPayment;
-         set{ _minimumSavingsPayment = SavingsGoal/Timeframe;
-              OnPropertyChanged(nameof(MinimumSavingsPayment));
+        public double UserHousingExpense
+        {
+            get => _UserHousingExpense;
+            set
+            {
+                if (_UserHousingExpense != value)
+                {
+                    _UserHousingExpense = CurrentBudget.UserHousingExpense;
+                    OnPropertyChanged(nameof(UserHousingExpense));
+                    RecalculateTotals();
+                }
             }
         }
+
+        public double HouseholdSize
+        {
+            get => _HouseholdSize;
+            set
+            {
+                if (_HouseholdSize != value)
+                {
+                    _HouseholdSize = CurrentBudget.HouseholdSize;
+                    OnPropertyChanged(nameof(HouseholdSize));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserPhoneBill
+        {
+            get => _UserPhoneBill;
+            set
+            {
+                if (_UserPhoneBill != value)
+                {
+                    _UserPhoneBill = CurrentBudget.UserPhoneBill;
+                    OnPropertyChanged(nameof(UserPhoneBill));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double CurrnetSavingsAmount
+        {
+            get => _CurrnetSavingsAmount;
+            set
+            {
+                if (_CurrnetSavingsAmount != value)
+                {
+                    _CurrnetSavingsAmount = CurrentBudget.CurrnetSavingsAmount;
+                    OnPropertyChanged(nameof(CurrnetSavingsAmount));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double CurrentEmergencyFund
+        {
+            get => _CurrentEmergencyFund;
+            set
+            {
+                if (_CurrentEmergencyFund != value)
+                {
+                    _CurrentEmergencyFund = CurrentBudget.CurrentEmergencyFund;
+                    OnPropertyChanged(nameof(CurrentEmergencyFund));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserEntertainmentExpense
+        {
+            get => _UserEntertainmentExpense;
+            set
+            {
+                if (_UserEntertainmentExpense != value)
+                {
+                    _UserEntertainmentExpense = CurrentBudget.UserEntertainmentExpense;
+                    OnPropertyChanged(nameof(UserEntertainmentExpense));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserFoodExpense
+        {
+            get => _UserFoodExpense;
+            set
+            {
+                if (_UserFoodExpense != value)
+                {
+                    _UserFoodExpense = CurrentBudget.UserFoodExpense;
+                    OnPropertyChanged(nameof(UserFoodExpense));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserHealthInsuranceCost
+        {
+            get => _UserHealthInsuranceCost;
+            set
+            {
+                if (_UserHealthInsuranceCost != value)
+                {
+                    _UserHealthInsuranceCost = CurrentBudget.UserHealthInsuranceCost;
+                    OnPropertyChanged(nameof(UserHealthInsuranceCost));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserCarInsuranceCost
+        {
+            get => _UserCarInsuranceCost;
+            set
+            {
+                if (_UserCarInsuranceCost != value)
+                {
+                    _UserCarInsuranceCost = CurrentBudget.UserCarInsuranceCost;
+                    OnPropertyChanged(nameof(UserCarInsuranceCost));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserRentInsuranceCost
+        {
+            get => _UserRentInsuranceCost;
+            set
+            {
+                if (_UserRentInsuranceCost != value)
+                {
+                    _UserRentInsuranceCost = CurrentBudget.UserRentInsuranceCost;
+                    OnPropertyChanged(nameof(UserRentInsuranceCost));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserEducationCost
+        {
+            get => _UserEducationCost;
+            set
+            {
+                if (_UserEducationCost != value)
+                {
+                    _UserEducationCost = CurrentBudget.UserEducationCost;
+                    OnPropertyChanged(nameof(UserEducationCost));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserLifeInsuranceCost
+        {
+            get => _UserLifeInsuranceCost;
+            set
+            {
+                if (_UserLifeInsuranceCost != value)
+                {
+                    _UserLifeInsuranceCost = CurrentBudget.UserLifeInsuranceCost;
+                    OnPropertyChanged(nameof(UserLifeInsuranceCost));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double UserFuelCost
+        {
+            get => _UserFuelCost;
+            set
+            {
+                if (_UserFuelCost != CurrentBudget.UserFuelCost)
+                {
+                    _UserFuelCost = value;
+                    OnPropertyChanged(nameof(UserFuelCost));
+                    RecalculateTotals();
+                }
+            }
+        }
+
+        public double TotalInsurance
+        {
+            get => _TotalInsurance;
+            set
+            {
+               
+                    _TotalInsurance = CurrentBudget.TotalInsurance;
+                    OnPropertyChanged(nameof(TotalInsurance));
+                    RecalculateTotals();
+                
+            }
+        }
+
         public double TotalDifference
-        {get => _totalDifference;
-         set{_totalDifference = value; 
-             OnPropertyChanged(nameof(TotalDifference));}
+        {
+            get => _incomeDiff;
+            set
+            {
+               _incomeDiff = TotalIncome - TotalExpenses;
+                OnPropertyChanged(nameof(TotalDifference));
+            }
         }
 
         public double TotalIncome
         {
             get => _totalIncome;
-            set{_totalIncome = value;
+            set
+            {
+                _totalIncome = UserIncome + IncomeItems.Sum(item => item.Cost);
                 OnPropertyChanged(nameof(TotalIncome));
             }
         }
-       
+
         public double TotalExpenses
         {
             get => _totalExpenses;
-            set{_totalExpenses = value;
-             OnPropertyChanged(nameof(TotalExpenses));
-            }
-        }
-    
-        public double TotalSavings
-        {
-            get => _totalSavings;
             set
             {
-                _totalSavings = value;
+                _totalExpenses = UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserEducationCost + TotalInsurance + (ExpenseItems.Sum(item => item.Cost));
+                OnPropertyChanged(nameof(TotalExpenses));
+            }
+        }
+
+        public double TotalSavings
+        {
+            get => _savingsTotal;
+            set
+            {
+                _savingsTotal = CurrnetSavingsAmount + CurrentEmergencyFund;
                 OnPropertyChanged(nameof(TotalSavings));
             }
         }
+
+        public string BudgetName
+        {
+            get => _budgetName;
+            set
+            {
+                if (_budgetName != value)
+                {
+                    _budgetName = value;
+                    OnPropertyChanged(nameof(BudgetName));
+                }
+            }
+        }
+
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                if (_description != value)
+                {
+                    _description = value;
+                    OnPropertyChanged(nameof(Description));
+                }
+            }
+        }
+
+        public double Cost
+        {
+            get => _cost;
+            set
+            {
+                if (_cost != value)
+                {
+                    _cost = value;
+                    OnPropertyChanged(nameof(Cost));
+                }
+            }
+        }
+
         public double SavingsGoal
         {
             get => _savingsGoal;
             set
             {
-                _savingsGoal = value;
-                OnPropertyChanged(nameof(SavingsGoal));
-                UpdateSuggestedSavingsRate();
+                if (_savingsGoal != value)
+                {
+                    _savingsGoal = value;
+                    OnPropertyChanged(nameof(SavingsGoal));
+                }
             }
         }
-        public double SuggestedSavingsRate
-        {
-            get => _suggestedSavingsRate;
-            set
-            {
-                _suggestedSavingsRate = value;
-                OnPropertyChanged(nameof(SuggestedSavingsRate));
-            }
-        }
-        public int Timeframe
+
+        public double Timeframe
         {
             get => _timeframe;
             set
             {
-                _timeframe = value;
+                _timeframe = SavingsGoal / SuggestedSavingsRate;
                 OnPropertyChanged(nameof(Timeframe));
-                UpdateSuggestedSavingsRate();
             }
         }
+
+        public double MinimumSavingsPayment
+        {
+            get => _minSavingsLimit;
+            set
+            {
+                if (_minSavingsLimit != value)
+                {
+                    _minSavingsLimit = value;
+                    OnPropertyChanged(nameof(MinimumSavingsPayment));
+                }
+            }
+        }
+
+        public double SuggestedSavingsRate
+        {
+            get => _savingsGoal;
+            set
+            {
+                if (_savingsGoal != value)
+                {
+                    _savingsGoal = value;
+                    OnPropertyChanged(nameof(SuggestedSavingsRate));
+                }
+            }
+        }
+
 
 
 

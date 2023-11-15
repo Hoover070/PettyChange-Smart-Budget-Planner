@@ -3,32 +3,20 @@
              x:Class="RandD_smartPlanner.BudgetPage"
              Title="Budget Overview">
     <ScrollView>
-    <VerticalStackLayout Padding="20" Spacing="10">
-        
-        
-        <!-- Top Section -->
-        <VerticalStackLayout>
-            <Label Text="{Binding BudgetName}" FontAttributes="Bold"/>
-            <Label Text="{Binding TotalSavings}" />
-
-            <HorizontalStackLayout>
-                <VerticalStackLayout>
-                    <Label Text="Total Income" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalIncome}" />
-                </VerticalStackLayout>
-            </HorizontalStackLayout>
-            <HorizontalStackLayout>
-                <VerticalStackLayout>
-                    <Label Text="Total Expenses" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalExpenses}" />
-                </VerticalStackLayout>
-            </HorizontalStackLayout>
+        <VerticalStackLayout Padding="20" Spacing="10">
             
-            <BoxView HeightRequest="2" Color="Black" Margin="0,10"/>
-                <Label Text="Total Difference" FontAttributes="Bold"/>
-                <Label Text="{Binding TotalDifference}" />
-            </VerticalStackLayout>
-        <VerticalStackLayout>
+            <!-- Top Section -->
+
+            <Label Text="{Binding BudgetName}" FontAttributes="Bold"/>
+            <Label Text="{Binding CurrentBudget.TotalSavings}" />
+            <Label Text="Total Income" FontAttributes="Bold"/>
+            <Label Text="{Binding TotalIncome}" />
+            <Label Text="Total Expenses" FontAttributes="Bold"/>
+            <Label Text="{Binding TotalExpenses}" />
+            <Label Text="Total Difference" FontAttributes="Bold"/>
+            <Label Text="{Binding TotalDifference}" />
+
+            <VerticalStackLayout>
 
             <Label Text="Savings Total" FontAttributes="Bold"/>
             <Entry Text="{Binding SavingsTotal, StringFormat='{0:C}'}" Keyboard="Numeric" />
