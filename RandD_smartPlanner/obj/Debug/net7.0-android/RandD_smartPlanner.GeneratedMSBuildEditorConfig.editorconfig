@@ -32,6 +32,12 @@ build_metadata.AdditionalFiles.ManifestResourceName = RandD_smartPlanner.BudgetC
 build_metadata.AdditionalFiles.TargetPath = BudgetCreationPage.xaml
 build_metadata.AdditionalFiles.RelativePath = BudgetCreationPage.xaml
 
+[C:/Users/jaile/OneDrive/Documents/FullSail University/Project_portfolio_4/RandD_smartPlanner/RandD_smartPlanner/BudgetListPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = RandD_smartPlanner.BudgetListPage.xaml
+build_metadata.AdditionalFiles.TargetPath = BudgetListPage.xaml
+build_metadata.AdditionalFiles.RelativePath = BudgetListPage.xaml
+
 [C:/Users/jaile/OneDrive/Documents/FullSail University/Project_portfolio_4/RandD_smartPlanner/RandD_smartPlanner/BudgetPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = RandD_smartPlanner.BudgetPage.xaml
