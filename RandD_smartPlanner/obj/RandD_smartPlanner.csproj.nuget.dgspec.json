@@ -80,10 +80,22 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "Microsoft.ML": {
+              "target": "Package",
+              "version": "[2.0.1, )"
+            },
+            "Microsoft.ML.OnnxRuntime": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            },
             "Microsoft.Maui.Graphics": {
               "target": "Package",
               "version": "[7.0.96, )",
               "autoReferenced": true
+            },
+            "System.Numerics.Tensors": {
+              "target": "Package",
+              "version": "[0.1.0, )"
             },
             "Xamarin.Android.Glide": {
               "target": "Package",
@@ -193,10 +205,22 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "Microsoft.ML": {
+              "target": "Package",
+              "version": "[2.0.1, )"
+            },
+            "Microsoft.ML.OnnxRuntime": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            },
             "Microsoft.Maui.Graphics": {
               "target": "Package",
               "version": "[7.0.96, )",
               "autoReferenced": true
+            },
+            "System.Numerics.Tensors": {
+              "target": "Package",
+              "version": "[0.1.0, )"
             }
           },
           "imports": [
@@ -251,10 +275,22 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "Microsoft.ML": {
+              "target": "Package",
+              "version": "[2.0.1, )"
+            },
+            "Microsoft.ML.OnnxRuntime": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            },
             "Microsoft.Maui.Graphics": {
               "target": "Package",
               "version": "[7.0.96, )",
               "autoReferenced": true
+            },
+            "System.Numerics.Tensors": {
+              "target": "Package",
+              "version": "[0.1.0, )"
             }
           },
           "imports": [
@@ -310,6 +346,14 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "Microsoft.ML": {
+              "target": "Package",
+              "version": "[2.0.1, )"
+            },
+            "Microsoft.ML.OnnxRuntime": {
+              "target": "Package",
+              "version": "[1.10.0, )"
+            },
             "Microsoft.Maui.Graphics": {
               "target": "Package",
               "version": "[7.0.96, )",
@@ -324,6 +368,10 @@
               "target": "Package",
               "version": "[1.2.221209.1, )",
               "autoReferenced": true
+            },
+            "System.Numerics.Tensors": {
+              "target": "Package",
+              "version": "[0.1.0, )"
             }
           },
           "imports": [
