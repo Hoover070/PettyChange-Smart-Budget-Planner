@@ -48,8 +48,9 @@ namespace RandD_smartPlanner
 
 
 
-        public static void SaveUserBudgets(User user, Budget budget)
+        public static void SaveUserBudgets( Budget budget)
         {
+            var user = App.CurrentUser;
             string filePath = GetBudgetFilePath();
             Debug.WriteLine($"Saving budget to: {filePath}");
             string json = JsonConvert.SerializeObject(budget);
@@ -227,11 +228,11 @@ namespace RandD_smartPlanner
             return false; // Failure
         }
 
-        public static bool UpdateBudget(User user, Budget budget)
+        public static bool UpdateBudget( Budget budget)
         {
             try
             {
-                SaveUserBudgets(user, budget); // Re-use the save function
+                SaveUserBudgets( budget); // Re-use the save function
                 return true; // Success
             }
             catch (Exception ex)
@@ -399,8 +400,13 @@ namespace RandD_smartPlanner
             return budgetDirectory;
         }
 
+        internal static void SaveDefaultBudget(Budget newBudget)
+        {
+            // make the passed in budget default budet for the user
+            App.CurrentUser.DefaultBudgetName = newBudget.BudgetName;
+            SaveUser(App.CurrentUser);
 
-
+        }
 
     }
 }

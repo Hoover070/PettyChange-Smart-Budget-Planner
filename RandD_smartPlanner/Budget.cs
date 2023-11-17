@@ -10,6 +10,10 @@ namespace RandD_smartPlanner
         private string _budgetName;
         private ObservableCollection<BudgetItem> _incomeItems = new ObservableCollection<BudgetItem>();
         private ObservableCollection<BudgetItem> _expenseItems = new ObservableCollection<BudgetItem>();
+        private ObservableCollection<BudgetItem> _tempincomeItems = new ObservableCollection<BudgetItem>();
+        private ObservableCollection<BudgetItem> _tempexpenseItems = new ObservableCollection<BudgetItem>();
+        private ObservableCollection<BudgetItem> _savingsdebitlog = new ObservableCollection<BudgetItem>();
+        private ObservableCollection<BudgetItem> _savingscreditlog = new ObservableCollection<BudgetItem>();
         private double _savingsGoal;
         private int _timeframe;
         private double _aiSuggestedSavings;
@@ -49,17 +53,44 @@ namespace RandD_smartPlanner
         private OnnxModel UserModel;
         
 
-        public Budget(OnnxModel userModel)
+        public Budget()
         {
-            UserModel = userModel;
+            UserModel = App.CurrentUser.UserModel;
+            
             IncomeItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalIncome));
             ExpenseItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalExpenses));
+            TempExpenseItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalExpenses));
+            TempIncomeItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalIncome));
+            SavingsAccountCreditLog.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalSavings));
+            SavingsAccountDebitLog.CollectionChanged += (s, e) => OnPropertyChanged(nameof(TotalSavings));
+
+
+
+            
 
         }
 
-
-
         // Getters and setters for the budget page
+
+        public ObservableCollection<BudgetItem> SavingsAccountDebitLog
+        {
+            get => _savingsdebitlog;
+            set => SetProperty(ref _savingsdebitlog, value);
+        }
+        public ObservableCollection<BudgetItem> SavingsAccountCreditLog
+        {
+            get => _savingscreditlog;
+            set => SetProperty(ref _savingscreditlog, value);
+        }
+        public double TotalSavings
+        {
+            // sums up the Savings Total by adding the current Savingscredititems cost to the current Savings Total and subtracting the current Savingsdebititems cost from the current Savings Total
+           
+            get => SavingsAccountCreditLog.Sum(item => item.Cost) - SavingsAccountDebitLog.Sum(item => item.Cost);
+           
+            set => SetProperty(ref _TotalSavings, value);
+        }
+
         public double SuggestedSavingsPayment
         {
             get => _SuggestedSavingsPayment;
@@ -208,6 +239,18 @@ namespace RandD_smartPlanner
             get => _budgetName;
             set => SetProperty(ref _budgetName, value);
         }
+        public ObservableCollection<BudgetItem> TempIncomeItems
+        {
+            get => _tempincomeItems;
+            set => SetProperty(ref _tempincomeItems, value);
+        }
+
+        public ObservableCollection<BudgetItem> TempExpenseItems
+        {
+            get => _tempexpenseItems;
+            set => SetProperty(ref _tempexpenseItems, value);
+        }
+
 
         public ObservableCollection<BudgetItem> IncomeItems
         {
@@ -285,11 +328,27 @@ namespace RandD_smartPlanner
             private double _cost;
             private string _description;
             private string _name;
+            public bool IsWithdrawal { get; set; }
+           public DateTime _dateAdded { get; set; }
 
             public BudgetItem()
             {
                 _name = $"BudgetTest{++count}";
                 BudgetName = _name;
+            }
+
+
+            public DateTime DateAdded
+            {
+                get => _dateAdded;
+                set
+                {
+                    if (_dateAdded != value)
+                    {
+                        _dateAdded = value;
+                        OnPropertyChanged(nameof(DateAdded));
+                    }
+                }
             }
 
             public string Name

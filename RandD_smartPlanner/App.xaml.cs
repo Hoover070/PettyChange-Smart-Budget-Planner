@@ -17,7 +17,7 @@ namespace RandD_smartPlanner
 
             MainPage = new NavigationPage(new LoginPage())
             {
-                BarBackgroundColor = Color.FromArgb("9278be"), 
+                BarBackgroundColor = Color.FromArgb("B2E2BD"), 
                 BarTextColor = Color.FromArgb("F1F1F1"), 
             };
 
@@ -28,10 +28,12 @@ namespace RandD_smartPlanner
 
 
         // Method to switch to AppShell after successful login (to be called from LoginPage)
-        public void NavigateToMainApp()
+        public void OnSuccessfulLogin()
         {
             MainPage = new AppShell();
         }
+
+
     }
     
 }

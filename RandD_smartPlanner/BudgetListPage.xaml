@@ -1,9 +1,13 @@
 <!-- BudgetListPage.xaml -->
+    
+    
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Name="Self"
+             xmlns:local="clr-namespace:RandD_smartPlanner"
              x:Class="RandD_smartPlanner.BudgetListPage"
-             BackgroundColor="#F1F1F1">
+             Title="Budgets"
+             BackgroundColor="#F1F1F1"
+             Shell.BackgroundColor="#B2E2BD">
 
     <StackLayout Padding="10">
         <Label Text="Select a Budget" 

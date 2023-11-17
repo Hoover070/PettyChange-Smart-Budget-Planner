@@ -15,6 +15,11 @@ namespace RandD_smartPlanner
         public User CurrentUser { get; set; }
         public OnnxModel UserModel { get; set; }
         public ObservableCollection<Budget> Budgets { get; set; }
+        public ObservableCollection<Budget.BudgetItem> IncomeItems { get; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> TempIncomeItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> TempExpenseItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        private ObservableCollection<Budget.BudgetItem> SavingsAccountLog = new ObservableCollection<Budget.BudgetItem>();
         public string DefaultBudgetName { get; set; }
         public Budget SelectedBudget { get; set; }
         private double _totalIncome;
@@ -27,12 +32,14 @@ namespace RandD_smartPlanner
         public WelcomePage()
         {
             InitializeComponent();
+            SelectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+            BindingContext = this;
             UserModel = App.CurrentUser.UserModel;
             CurrentUser = App.CurrentUser;
-            Username = CurrentUser.UserName;
-            DefaultBudgetName = CurrentUser.DefaultBudgetName;
+            Username = App.CurrentUser.UserName;
+            SortTempItems();
 
-            SelectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+
 
 
         }
@@ -59,6 +66,70 @@ namespace RandD_smartPlanner
 
         }
 
+        
+
+        public double TotalIncome
+        {
+            get => _totalIncome;
+            set
+            {
+                if (_totalIncome != value)
+                {
+                    // this should add the user income and the temp income together
+                    _totalIncome = value;
+
+
+                    OnPropertyChanged(nameof(TotalIncome));
+                    OnPropertyChanged(nameof(TotalIncomeFormatted)); 
+                }
+            }
+        }
+
+        public double TotalExpenses
+        {
+            get => _totalExpenses;
+            set
+            {
+                if (_totalExpenses != value)
+                {
+                    _totalExpenses = value;
+                    OnPropertyChanged(nameof(TotalExpenses));
+                    OnPropertyChanged(nameof(TotalExpensesFormatted)); 
+                }
+            }
+        }
+
+        public double TotalSavings
+        {
+            get => _totalSavings;
+            set
+            {
+                if (_totalSavings != value)
+                {
+                    _totalSavings = value;
+                    OnPropertyChanged(nameof(TotalSavings));
+                    OnPropertyChanged(nameof(TotalSavingsFormatted));
+                }
+            }
+        }
+
+        public double TotalDifference
+        {
+           // this needs to set the total difference to the (total income plus Temp income items) - (total expenses plus Temp expense items)
+            get => _totalDifference;
+            set
+            {
+                if (_totalDifference != value)
+                {
+                    _totalDifference = value;
+                    OnPropertyChanged(nameof(TotalDifference));
+                    OnPropertyChanged(nameof(TotalDifferenceFormatted));
+                }
+            }
+           
+        }
+
+
 
         public string TotalIncomeFormatted
         {
@@ -72,7 +143,7 @@ namespace RandD_smartPlanner
 
         public string TotalSavingsFormatted
         {
-            get => SelectedBudget.SavingsTotal.ToString("C", CultureInfo.CurrentCulture);
+            get => SelectedBudget.TotalSavings.ToString("C", CultureInfo.CurrentCulture);
         }
 
         public string AISuggestedSavingsFormatted
@@ -98,15 +169,21 @@ namespace RandD_smartPlanner
 
         public string TotalDifferenceFormatted
         {
-            get => Math.Round(SelectedBudget.TotalIncome - SelectedBudget.TotalExpenses).ToString("C", CultureInfo.CurrentCulture);
+            get
+            {
+                // Calculate the sum of costs for temporary income items
+                double tempIncomeTotal = SelectedBudget.TempIncomeItems.Sum(item => item.Cost);
+
+                // Calculate the sum of costs for temporary expense items
+                double tempExpensesTotal = SelectedBudget.TempExpenseItems.Sum(item => item.Cost);
+
+                // Calculate the total difference
+                double totalDifference = (SelectedBudget.TotalIncome + tempIncomeTotal) - (SelectedBudget.TotalExpenses + tempExpensesTotal);
+
+                // Format the result as currency
+                return Math.Round(totalDifference).ToString("C", CultureInfo.CurrentCulture);
+            }
         }
-
-
-
-
-
-
-
 
         public void LoadUserBudgets()
         {
@@ -137,47 +214,151 @@ namespace RandD_smartPlanner
             SavingsLabel.Text = TotalSavingsFormatted;
             AiSuggestionLabel.Text = AISuggestedSavingsFormatted;
             PocketChangeLabel.Text = TotalDifferenceFormatted;
+            SortTempItems();
         }
 
-        private async void OnLoadBudgetClicked(object sender, EventArgs e)
+        // create new buttons
+        
+        private void OnAddTempIncomeClicked(object sender, EventArgs e)
         {
-            try
+            string description = NameEntry.Text;
+            string amountText = AmountEntry.Text;
+
+            Debug.WriteLine($"Attempting to parse amount: {amountText}");
+
+            if (double.TryParse(amountText, NumberStyles.Any, CultureInfo.CurrentCulture, out double amount))
             {
-               
-                if (Budgets == null || Budgets.Count == 0)
+                // Create a new BudgetItem and add it to TempIncomeItems
+                var newIncomeItem = new Budget.BudgetItem
                 {
-                    await DisplayAlert("Load Budget", "No budgets available to load.", "OK");
-                    return;
-                }
-
-                // Create a new instance of the BudgetListPage
-                var budgetListPage = new BudgetListPage(CurrentUser);
-                budgetListPage.BindingContext = Budgets; // Assuming that BudgetListPage can handle a list of budgets as its BindingContext
-
-                // Navigate to the BudgetListPage
-                await Navigation.PushAsync(budgetListPage);
+                    Description = description,
+                    Cost = amount,
+                    DateAdded = DateTime.Now
+                };
+                SelectedBudget.TempIncomeItems.Add(newIncomeItem);
+                SavingsNameEntry.Text = string.Empty;
+                SavingsAmountEntry.Text = string.Empty;
+   
+                FileSaveUtility.SaveUserBudgets(SelectedBudget);
+                UpdateUI(SelectedBudget);
             }
-            catch (Exception ex)
+            else
             {
-                // Log the exception or present an error message to the user
-                await DisplayAlert("Error", $"An error occurred while trying to load budgets: {ex.Message}", "OK");
+                // Show an error message if the amount is not valid
+                DisplayAlert("Error", "Please enter a valid amount.", "OK");
             }
+
+
+
+
         }
 
-        private void OnCreateNewBudgetClicked(object sender, EventArgs e)
+        private void OnAddTempExpenseClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new BudgetCreationPage(CurrentUser, UserModel));
-        }
+            // Read the input values
+            string description = NameEntry.Text;
+            string amountText = AmountEntry.Text;
 
-        private void OnBudgetSelected(object sender, ItemTappedEventArgs e)
-        {
-            if (e.Item != null && e.Item is Budget selectedBudget)
+            Debug.WriteLine($"Attempting to parse amount: {amountText}");
+
+            if (double.TryParse(amountText, NumberStyles.Any, CultureInfo.CurrentCulture, out double amount))
             {
-                Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, selectedBudget));
+                // Create a new BudgetItem and add it to TempIncomeItems
+                var newIncomeItem = new Budget.BudgetItem
+                {
+                    Description = description,
+                    Cost = amount,
+                    DateAdded = DateTime.Now
+                };
+                SelectedBudget.TempExpenseItems.Add(newIncomeItem);
+                NameEntry.Text = string.Empty;
+                AmountEntry.Text = string.Empty;
+
+                FileSaveUtility.SaveUserBudgets(SelectedBudget);
+                UpdateUI(SelectedBudget);
+            }
+            else
+            {
+                // Show an error message if the amount is not valid
+                DisplayAlert("Error", "Please enter a valid amount.", "OK");
+            }
+
+        }
+
+        private void OnAddSavingsClicked(object sender, EventArgs e)
+        {
+            string description = SavingsNameEntry.Text;
+            string amountText = SavingsAmountEntry.Text;
+
+            Debug.WriteLine($"Attempting to parse amount: {amountText}");
+
+            if (double.TryParse(amountText, NumberStyles.Any, CultureInfo.CurrentCulture, out double amount))
+            {
+                // Parsing succeeded, proceed with adding the savings
+                var newIncomeItem = new Budget.BudgetItem
+                {
+                    Description = description,
+                    Cost = amount,
+                    DateAdded = DateTime.Now
+                };
+                SelectedBudget.SavingsAccountCreditLog.Add(newIncomeItem);
+                SelectedBudget.TempExpenseItems.Add(newIncomeItem);
+
+                // Clear the inputs
+                SavingsNameEntry.Text = string.Empty;
+                SavingsAmountEntry.Text = string.Empty;
+
+                // Save the budget and update UI
+                FileSaveUtility.SaveUserBudgets(SelectedBudget);
+                UpdateUI(SelectedBudget);
+            }
+            else
+            {
+                // Parsing failed, show an error message
+                DisplayAlert("Error", $"Please enter a valid amount. Unable to parse '{amountText}' as a number.", "OK");
             }
         }
 
-      
+        private void OnSubtractSavingsClicked(object sender, EventArgs e)
+        {
+            string description = SavingsNameEntry.Text;
+            description = $"From Savings-{description}";
+            string amountText = SavingsAmountEntry.Text;
+
+            Debug.WriteLine($"Attempting to parse amount: {amountText}");
+
+            if (double.TryParse(amountText, NumberStyles.Any, CultureInfo.CurrentCulture, out double amount))
+            {
+                // Create a new BudgetItem and add it to TempIncomeItems
+                var newIncomeItem = new Budget.BudgetItem
+                {
+                    Description = description,
+                    Cost = amount,
+                    DateAdded = DateTime.Now,
+                    IsWithdrawal = true
+                };
+                SelectedBudget.SavingsAccountDebitLog.Add(newIncomeItem);
+                SelectedBudget.TempIncomeItems.Add(newIncomeItem);
+                SavingsNameEntry.Text = string.Empty;
+                SavingsAmountEntry.Text = string.Empty;
+                FileSaveUtility.SaveUserBudgets(SelectedBudget);
+                UpdateUI(SelectedBudget);
+            }
+            else
+            {
+                // Show an error message if the amount is not valid
+                DisplayAlert("Error", "Please enter a valid amount.", "OK");
+            }
+
+
+        }
+        private void SortTempItems()
+        {
+            SelectedBudget.TempIncomeItems = new ObservableCollection<Budget.BudgetItem>(SelectedBudget.TempIncomeItems.OrderByDescending(item => item.DateAdded));
+            SelectedBudget.TempExpenseItems = new ObservableCollection<Budget.BudgetItem>(SelectedBudget.TempExpenseItems.OrderByDescending(item => item.DateAdded));
+            OnPropertyChanged(nameof(SelectedBudget.TempIncomeItems));
+            OnPropertyChanged(nameof(SelectedBudget.TempExpenseItems));
+        }
 
 
     }

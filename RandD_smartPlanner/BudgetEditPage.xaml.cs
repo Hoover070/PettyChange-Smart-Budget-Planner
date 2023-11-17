@@ -10,13 +10,10 @@ using System.Windows.Input;
 
 namespace RandD_smartPlanner
 {
-    public partial class BudgetCreationPage : ContentPage, INotifyPropertyChanged
+    public partial class BudgetEditPage : ContentPage, INotifyPropertyChanged
     {
         public ObservableCollection<Budget.BudgetItem> IncomeItems { get; } = new ObservableCollection<Budget.BudgetItem>();
         public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; } = new ObservableCollection<Budget.BudgetItem>();
-        public ObservableCollection<Budget.BudgetItem> TempIncomeItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
-        public ObservableCollection<Budget.BudgetItem> TempExpenseItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
-
 
         private OnnxModel _model = new OnnxModel();
 
@@ -52,7 +49,6 @@ namespace RandD_smartPlanner
         private double _AISuggestedTimeframe;
         private double _total;
 
-
      
         private OnnxModel UserModel;
         public ICommand SaveCommand { get; private set; }
@@ -66,9 +62,15 @@ namespace RandD_smartPlanner
         public double AISuggestedTimeframe { get; set; }
 
 
+        
+
+       
+
+       
+       
 
         // creating a new budget
-        public BudgetCreationPage()
+        public BudgetEditPage()
         {
             InitializeComponent();
             BindingContext = this;
@@ -77,6 +79,12 @@ namespace RandD_smartPlanner
             var usermodel = App.CurrentUser.UserModel;
             var existingBudget = FileSaveUtility.LoadDefaultOrLastBudget();
 
+            if (existingBudget != null)
+            {
+                LoadExistingBudget(existingBudget);
+            }
+            else
+            {
                 Budget defaultBudget = new Budget()
                 {
                     BudgetName = "Default Budget",
@@ -102,11 +110,20 @@ namespace RandD_smartPlanner
 
                 };
 
+                // set the properties of BudgetCreationPage from defaultBudget
+                this.BudgetName = defaultBudget.BudgetName;
+                this.SavingsGoal = defaultBudget.SavingsGoal;
+                this.Timeframe = defaultBudget.Timeframe;
+                this.IncomeDiff = defaultBudget.IncomeDiff;
+                this.MinSavingsLimit = defaultBudget.MinSavingsLimit;
+                this.SavingsTotal = defaultBudget.SavingsTotal;
+                this.IncomeItems.Clear();
+                this.ExpenseItems.Clear();
 
 
                 OnPropertyChanged(""); 
 
-            
+            }
         }
 
         // load a budget
@@ -137,13 +154,6 @@ namespace RandD_smartPlanner
                 this.UserEducationCost = existingBudget.UserEducationCost;
                 this.UserLifeInsuranceCost = existingBudget.UserLifeInsuranceCost;
                 this.UserFuelCost = existingBudget.UserFuelCost;
-                this.TotalExpenses = existingBudget.TotalExpenses;
-                this.TotalIncome = existingBudget.TotalIncome;
-                this.TotalSavings = existingBudget.SavingsTotal;
-                this.TotalInsurance = existingBudget.TotalInsurance;
-                this.TempExpenseItems = existingBudget.TempExpenseItems;
-                this.TempIncomeItems = existingBudget.TempIncomeItems;
-
                 this.IncomeItems.Clear();
                 this.ExpenseItems.Clear();
                 foreach (var item in existingBudget.IncomeItems)
@@ -234,8 +244,6 @@ namespace RandD_smartPlanner
                     IncomeDiff = this.IncomeDiff,
                     MinSavingsLimit = this.MinSavingsLimit,
                     TotalInsurance = this.TotalInsurance,
-                    TempExpenseItems = this.TempExpenseItems,
-                    TempIncomeItems = this.TempIncomeItems,
 
 
                    

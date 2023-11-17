@@ -5,22 +5,54 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:RandD_smartPlanner"
     Shell.FlyoutBehavior="Flyout">
-    
-    
-    <FlyoutItem Route="welcome" Title="Home">
+
+
+
+
+    <!-- FlyoutItem for Home -->
+    <FlyoutItem Title="Home">
         <ShellContent ContentTemplate="{DataTemplate local:WelcomePage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Load Budget" >
-        <ShellContent ContentTemplate="{DataTemplate local:BudgetListPage}" />
+
+    <!-- FlyoutItem for Editing Current Budget -->
+    <FlyoutItem Title="Edit Current Budget">
+        <ShellContent ContentTemplate="{DataTemplate local:BudgetEditPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="New Budget" >
+
+    <!-- FlyoutItem for Creating a New Budget -->
+    <FlyoutItem Title="Create New Budget">
         <ShellContent ContentTemplate="{DataTemplate local:BudgetCreationPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Logout" >
-        <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
+
+    <!-- FlyoutItem for Creating a New Budget -->
+    <FlyoutItem Title="Load Budgets">
+        <ShellContent ContentTemplate="{DataTemplate local:BudgetListPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Reset Default Budget">
-        <ShellContent ContentTemplate="{DataTemplate local:WelcomePage}" />
-    </FlyoutItem>
+
+    
+ 
+
+
+
+
+
+
+
+    <Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <StackLayout>
+                <!-- This is where the Logout, Settings button will be-->
+                <Button Text="Logout" Clicked="OnLogoutClicked" />
+                <Button Text="Copy Budget" Clicked="OnCopyBudgetClicked" />
+                <Button Text="Settings" Clicked="OnSettingsButtonClicked" />
+            </StackLayout>
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>
+
+
+
+
+
+
 
 </Shell>

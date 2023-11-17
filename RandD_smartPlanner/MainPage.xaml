@@ -1,33 +1,44 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.WelcomePage"
-             BackgroundColor="#F1F1F1">
+             BackgroundColor="#F1F1F1"
+             Shell.BackgroundColor="#B2E2BD"
+             Shell.ForegroundColor="#000000"
+            
+             
+             
+             >
 
- 
 
-    <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-        <Grid Padding="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
 
-            <!-- Welcome Message -->
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="WelcomeLabel" 
-             Text="{Binding Username, StringFormat='Welcome Back, {0}'}" 
+    <Grid Padding="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Welcome Message -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="WelcomeLabel" 
+             Text="{Binding Username, StringFormat='Welcome Back, {0}'}"
              HorizontalOptions="Center" VerticalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
-
+        <Label x:Name="BudgetNameLabel" Text="{Binding BudgetName}" FontSize="Title" HorizontalOptions="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" LineBreakMode="HeadTruncation" />
 
             <!-- Income and Expenses Display in First Column -->
-            <Grid Grid.Column="0" Grid.Row="1">
+            <Grid Grid.Column="0" Grid.Row="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -36,62 +47,103 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
 
+
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Label x:Name="BudgetNameLabel" Text="{Binding BudgetName}" FontSize="Title" HorizontalOptions="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6"/>
-                <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
-                <Label x:Name="IncomeLabel" Text="{Binding TotalIncomeFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="2" Grid.Column="1"/>
-                <Label Text="Expense Total:" FontSize="Medium" Grid.Row="3" Grid.Column="0"/>
-                <Label x:Name="ExpensesLabel" Text="{Binding TotalExpensesFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="3" Grid.Column="1"/>
-
+                <!-- 
+                    <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
+                    <Label x:Name="IncomeLabel" Text="{Binding TotalIncomeFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="2" Grid.Column="1"/>
+                    <Label Text="Expense Total:" FontSize="Medium" Grid.Row="3" Grid.Column="0"/>
+                    <Label x:Name="ExpensesLabel" Text="{Binding TotalExpensesFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="3" Grid.Column="1"/>
+                    -->
             </Grid>
 
+        <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
+        <Label x:Name="IncomeLabel" Text="{Binding TotalIncomeFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="2" Grid.Column="1"/>
+        <Label Text="Expense Total:" FontSize="Medium" Grid.Row="3" Grid.Column="0"/>
+        <Label x:Name="ExpensesLabel" Text="{Binding TotalExpensesFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="3" Grid.Column="1"/>
+
+        <Label Text="Savings Total:" FontSize="Medium" Grid.Row="2" Grid.Column="3" HorizontalOptions="Start" VerticalOptions="Center"/>
+        <Label x:Name="SavingsLabel" Text="{Binding SavingsTotalFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Column="3" Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" Margin="50,0,0,0 " 
+                   TextColor="{Binding TotalSavings, Converter={StaticResource PocketChangeColorConverter}}"/>
+
+        <!-- User Input for One-Time savings credit/debit -->
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="3" Grid.Column="3" VerticalOptions="Start" >
+            <Button Text="Withdraw Savings" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnSubtractSavingsClicked"/>
+            <Entry x:Name="SavingsNameEntry" Placeholder="Enter description"/>
+            <Entry x:Name="SavingsAmountEntry" Placeholder="Enter amount"  />
+            <Button Text="Deposit Savings" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnAddSavingsClicked"/>
             
-            
-            <Label Text="Savings Total:" FontSize="Medium" Grid.Row="2" Grid.Column="2" HorizontalOptions="End"/>
-            <Label x:Name="SavingsLabel" Text="{Binding SavingsTotalFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Column="3" Grid.Row="2" HorizontalOptions="Center"/>
-            
-            <!-- User Input for One-Time Income/Expense -->
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" VerticalOptions="Start" >
-                <Entry x:Name="SavingsNameEntry" Placeholder="Enter description"/>
-                <Entry x:Name="SavingsAmountEntry" Placeholder="Enter amount"/>
-                <Button Text="+" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300"/>
-                <Button Text="-" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300"/>
+        </StackLayout>
+
+        <!-- AI Savings area -->
+        <Frame BackgroundColor="#7A7F9A" CornerRadius="20" HorizontalOptions="Center" VerticalOptions="End" Grid.Column="3" Grid.Row="4">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
+                <Label Text="AI Suggested Savings Deposit:" Style="{StaticResource SecondaryColor}"/>
+                <Label x:Name="AiSuggestionLabel" Text="{Binding AISuggestedSavingsFormatted, StringFormat='{0:C}'}" Style="{StaticResource SecondaryColor}" Margin="5,0,0,0"/>
             </StackLayout>
-
-
-            <Frame BackgroundColor="#7A7F9A" CornerRadius="20" Padding="20"
-       HorizontalOptions="End" VerticalOptions="End" Margin="100" Grid.Column="4" Grid.Row="4">
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                    <Label Text="AI Suggested Savings Deposit:" Style="{StaticResource SecondaryColor}"/>
-                    <Label x:Name="AiSuggestionLabel" Text="{Binding AISuggestedSavingsFormatted, StringFormat='{0:C}'}" Style="{StaticResource SecondaryColor}" Margin="5,0,0,0"/>
-                </StackLayout>
-            </Frame>
-
-        </Grid>
-
-
-
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="8">
-            <Label Text="Pocket Change : " FontSize="Medium" VerticalOptions="Center"/>
+        </Frame>
+        
+        <!-- PettyChange Area -->
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="8" Grid.Column="2" VerticalOptions="Start" >
+            <Label Text="PettyChange : " FontSize="Medium" VerticalOptions="Center"/>
             <Label x:Name="PocketChangeLabel" Text="{Binding TotalDifferenceFormated, StringFormat='{0:C}'}" 
            FontSize="Large" VerticalOptions="Center"
            TextColor="{Binding TotalDifference, Converter={StaticResource PocketChangeColorConverter}}"/>
         </StackLayout>
 
-
         <!-- User Input for One-Time Income/Expense -->
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="9" Grid.ColumnSpan="2">
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="8" Grid.Column="2" VerticalOptions="Center">
+            <Button Text="Add Expense" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnAddTempExpenseClicked"/>
             <Entry x:Name="NameEntry" Placeholder="Enter description"/>
             <Entry x:Name="AmountEntry" Placeholder="Enter amount"/>
-            <Button Text="+" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300"/>
-            <Button Text="-" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300"/>
+            <Button Text="Add Income" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnAddTempIncomeClicked"/>
         </StackLayout>
 
 
-    </StackLayout>
+        <!--Temp Expense view list -->
+        <Label Text="Temp Expense Items " FontSize="Medium" VerticalOptions="Center" Grid.Row="7" Grid.Column="0" HorizontalOptions="Center"/>
+
+        <Frame Grid.Row="8" Grid.Column="0" Padding="0"
+                HeightRequest="300" WidthRequest="300" VerticalOptions="Start" HorizontalOptions="Center">
+
+            <!-- Bottom Left - Temp Expense Items -->
+            <ListView x:Name="TempExpenseListView"
+                HasUnevenRows="True" 
+                ItemsSource="{Binding SelectedBudget.TempExpenseItems}">
+                <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Description}"
+                              Detail="{Binding Cost, StringFormat='{0:C}'}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        </Frame>
+
+        <!-- Temp Income view list -->
+        <Label Text="Temp Income Items " FontSize="Medium" VerticalOptions="Start" Grid.Row="7" Grid.Column="3" HorizontalOptions="Center"/>
+        <Frame Grid.Row="8" Grid.Column="3" 
+        HeightRequest="300" WidthRequest="300" VerticalOptions="Start" HorizontalOptions="Center">
+
+
+            <ListView x:Name="TempIncomeListView"
+              HasUnevenRows="True" 
+              ItemsSource="{Binding SelectedBudget.TempIncomeItems}">
+                <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Description}"
+                      Detail="{Binding Cost, StringFormat='{0:C}'}"
+                      TextColor="{Binding IsWithdrawal, Converter={StaticResource WithdrawalToColorConverter}}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        </Frame>
+
+    </Grid>
 </ContentPage>

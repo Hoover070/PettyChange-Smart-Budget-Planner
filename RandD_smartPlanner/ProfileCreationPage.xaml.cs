@@ -49,7 +49,7 @@ namespace RandD_smartPlanner {
             newUser.UserModel = new OnnxModel(newUser.OnnxModelPath);
 
             // Display directory creation message
-            DisplayAlert("Success", $"Directories created at {specificUserDirectory}", "OK");
+           /* DisplayAlert("Success", $"Directories created at {specificUserDirectory}", "OK");*/
             FileSaveUtility.SaveUser(newUser);
             Navigation.PushAsync(new LoginPage());
 

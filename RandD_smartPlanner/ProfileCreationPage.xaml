@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.ProfileCreationPage"
              Title="ProfileCreationPage"
-             BackgroundColor="#F1F1F1">
+             BackgroundColor="#F1F1F1"
+             Shell.BackgroundColor="#B2E2BD">
     <StackLayout Spacing="20" Padding="30">
-        <Entry x:Name="NameEntry" Placeholder="Name" Text="{Binding Name}"/>
+        <Entry x:Name="NameEntry" Placeholder="Create Username" Text="{Binding Name}"/>
         <Entry x:Name="PasswordEntry" Placeholder="Create Password" IsPassword="True" Text="{Binding Password}"/>
         <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirm Password" IsPassword="True" Text="{Binding ConfirmPassword}"/>
         <Button x:Name="CreateProfileBtn" Text="Create Profile" Clicked="OnCreateProfileClicked"/>

@@ -8,6 +8,7 @@
         
         <ResourceDictionary>
             <local:PocketChangeColorConverter x:Key="PocketChangeColorConverter"/>
+            <local:WithdrawalToColorConverter x:Key="WithdrawalToColorConverter"/>
 
             <!-- Color section for the app-->
             <!-- Lavender -->

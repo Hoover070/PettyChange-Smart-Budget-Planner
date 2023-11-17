@@ -75,9 +75,11 @@ namespace RandD_smartPlanner
                         DisplayAlert("AI Test", $"The AI model failed to load", "OK");
                         return;
                     }
-                   
-                    // navigate to App to change it to AppShell
-                    App.Current.MainPage = new AppShell();
+
+                    // call the function OnSuccessfulLogin() in App.xaml.cs
+                    ((App)App.Current).OnSuccessfulLogin();
+
+             
 
 
 

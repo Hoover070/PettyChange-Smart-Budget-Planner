@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.LoginPage"
              NavigationPage.HasNavigationBar="True"
-             BackgroundColor="#F1F1F1">
+             BackgroundColor="#F1F1F1"
+             Shell.BackgroundColor="#B2E2BD">
 
    
 
