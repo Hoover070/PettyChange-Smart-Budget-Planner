@@ -61,7 +61,7 @@ public partial class BudgetListPage : ContentPage
     }
     void OnBackButtonClicked(object sender, EventArgs e)
     {
-        Navigation.PushAsync(new WelcomePage(CurrentUser, CurrentUser.UserModel));
+        Application.Current.MainPage = new AppShell();
     }
 
     public async Task RefreshBudgetsAsync()

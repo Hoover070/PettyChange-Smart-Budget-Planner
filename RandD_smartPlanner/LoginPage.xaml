@@ -2,15 +2,26 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.LoginPage"
-             Title="LoginPage">
-    
-    
+             NavigationPage.HasNavigationBar="True"
+             BackgroundColor="#F1F1F1">
+
+   
+
     <StackLayout Spacing="20" Padding="30">
-        <Entry x:Name="UsernameEntry" Placeholder="Username" Text="{Binding Username}"/>
-        <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" Text="{Binding Password}"/>
-        <Button x:Name="LoginBtn" Text="Login" Clicked="OnLoginClicked"/>
-        <Button x:Name="CreateUserBtn" Text="Create User" Clicked="OnCreateUserClicked"/>
-        <Button x:Name="TestAI" Text="Test the Model" Clicked="OnTestAIClicked"/>
+        
+        <!-- PettyChange Logo set the source to the image PettyChangeLogo.png in the images folder within the RandD_smartPlanner-->
+        <Frame CornerRadius="100" WidthRequest="200" HeightRequest="200" HorizontalOptions="Center">
+            <Image Source="petty_change_logo.png" Aspect="AspectFill" Scale="1.25"/>
+        </Frame>
+
+        <!-- Login section on LoginPage-->
+        <Entry x:Name="UsernameEntry" Placeholder="Username" MaximumWidthRequest="300" Text="{Binding Username}" Completed="OnEntryCompleted"/>
+        <Entry x:Name="PasswordEntry" Placeholder="Password" MaximumWidthRequest="300" IsPassword="True" Text="{Binding Password}" Completed="OnEntryCompleted"/>
+
+        <Button Text="Log In" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Command="{Binding LogInCommand}" />
+
+        <Button x:Name="CreateUserBtn" Text="Create User" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Command="{Binding CreatUserCommand}"/>
+        <Button x:Name="TestAI" Text="Test the Model" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Command="{Binding TestAICommand}"/>
         
     </StackLayout>
 </ContentPage>

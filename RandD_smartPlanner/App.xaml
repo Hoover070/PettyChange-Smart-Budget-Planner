@@ -4,7 +4,44 @@
              xmlns:local="clr-namespace:RandD_smartPlanner"
              x:Class="RandD_smartPlanner.App">
     <Application.Resources>
+
+        
         <ResourceDictionary>
+            <local:PocketChangeColorConverter x:Key="PocketChangeColorConverter"/>
+
+            <!-- Color section for the app-->
+            <!-- Lavender -->
+            <Color x:Key="PrimaryColor">#B3AED9</Color>
+            <!-- Soft White -->
+            <Color x:Key="SecondaryColor">#F1F1F1</Color>
+            <!-- Slate Gray -->
+            <Color x:Key="TertiaryColor">#7A7F9A</Color>
+            <!-- Mint Green -->
+            <Color x:Key="HighlightColor">#B2E2BD</Color>
+            <!-- Burnt Sienna -->
+            <Color x:Key="WarningColor">#EE6C4D</Color>
+            
+            <!-- Style section for the app-->
+            <Style x:Key="HeaderTextStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontSize" Value="Large" />
+            </Style>
+
+            <Style x:Key="ButtonTextStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="TextColor" Value="{StaticResource SecondaryColor}" />
+            </Style>
+
+            <Style x:Key="NotificationTextStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource HighlightColor}" />
+            </Style>
+
+            <Style x:Key="WarningTextStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource WarningColor}" />
+            </Style>
+
+            
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />

@@ -8,21 +8,25 @@ namespace RandD_smartPlanner
     public class User
     {
         // Properties
-        public double Income { get; set; }
+        // commented out properties are no longer needed they are now in the budget class
+   /*     public double Income { get; set; }
         public double Expenses { get; set; }
         public double IncomeDiff { get; set; }  // Difference between Income and Expenses
         public double SavingsGoal { get; set; }
         public int SavingsMonths { get; set; }  // The timeframe in months for the savings goal
         public double IdealMonthlySavings { get; set; }  // Calculated ideal monthly savings
-        public double MinSavingsLimit { get; set; }  // The minimum savings limit if any
-        public string UserName { get; set; }
-        public string Description { get; set; }
+        public double MinSavingsLimit { get; set; }  // The minimum savings limit if any*/
+       /* public string Description { get; set; }*/
+
+
+
+        public string DefaultBudgetName { get; set; }
         public string Password { get; set; }
         public List<Budget> Budgets { get; set; }  // A repository of created budgets
         public OnnxModel UserModel { get; set; }
         public string OnnxModelPath { get; set; }
         public InferenceSession Model { get;  set; }
-
+        public string UserName { get; set; }
 
 
 
@@ -93,35 +97,70 @@ namespace RandD_smartPlanner
             File.Delete(tempFilePath);
         }
 
+        // Override LoadUser method to handle DefaultBudgetName
         public static User LoadUser(string filePath)
         {
             string json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<User>(json);
+            User user = JsonConvert.DeserializeObject<User>(json);
+
+            // Load the default or last budget as the default if it's not set
+            if (string.IsNullOrEmpty(user.DefaultBudgetName))
+            {
+                Budget lastBudget = FileSaveUtility.LoadLatestUserBudget();
+                if (lastBudget != null)
+                {
+                    user.DefaultBudgetName = lastBudget.BudgetName;
+                }
+                
+            }
+
+            return user;
         }
 
-        // Methods for updating user data
-        public void UpdateIncome(double newIncome)
+        public void SetDefaultBudget(string budgetName)
         {
-            Income = newIncome;
-            IncomeDiff = Income - Expenses;
+            DefaultBudgetName = budgetName;
+            SaveUser(this.UserName);  // Save the user data after updating the default budget
         }
 
-        public void UpdateExpenses(double newExpenses)
+        public Budget GetDefaultOrLastBudget()
         {
-            Expenses = newExpenses;
-            IncomeDiff = Income - Expenses;
+            if (!string.IsNullOrEmpty(DefaultBudgetName))
+            {
+                return Budgets.FirstOrDefault(b => b.BudgetName == DefaultBudgetName);
+            }
+            else
+            {
+                // Load the last accessed budget
+                return FileSaveUtility.LoadLatestUserBudget();
+            }
         }
 
-        public void UpdateSavingsGoal(double newSavingsGoal)
-        {
-            SavingsGoal = newSavingsGoal;
-        }
+       
+        // Methods for creating a new budget no longer needed they are in the budget class
+        /* // Methods for updating user data
+         public void UpdateIncome(double newIncome)
+         {
+             Income = newIncome;
+             IncomeDiff = Income - Expenses;
+         }
 
-        public void UpdateSavingsMonths(int newSavingsMonths)
-        {
-            SavingsMonths = newSavingsMonths;
-        }
+         public void UpdateExpenses(double newExpenses)
+         {
+             Expenses = newExpenses;
+             IncomeDiff = Income - Expenses;
+         }
 
-    
+         public void UpdateSavingsGoal(double newSavingsGoal)
+         {
+             SavingsGoal = newSavingsGoal;
+         }
+
+         public void UpdateSavingsMonths(int newSavingsMonths)
+         {
+             SavingsMonths = newSavingsMonths;
+         }
+ */
+
     }
 }

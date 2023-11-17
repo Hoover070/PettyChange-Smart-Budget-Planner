@@ -279,7 +279,7 @@ namespace RandD_smartPlanner
                     AISuggestedTimeframe = this.AISuggestedTimeframe,
                   
                 };
-                string filePath = FileSaveUtility.GetBudgetFilePath(currentUser.UserName, newBudget.BudgetName);
+                string filePath = FileSaveUtility.GetBudgetFilePath();
                 Debug.WriteLine($"Saving budget to {filePath}");
                 string jsonData = JsonConvert.SerializeObject(newBudget, Formatting.Indented);
                 File.WriteAllText(filePath, jsonData);
@@ -308,7 +308,7 @@ namespace RandD_smartPlanner
 
         void OnCancelClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new WelcomePage(currentUser, currentUser.UserModel));
+            Application.Current.MainPage = new AppShell();
         }
 
         void OnAddIncomeItemClicked(object sender, EventArgs e)

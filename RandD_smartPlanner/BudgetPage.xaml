@@ -1,7 +1,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.BudgetPage"
-             Title="Budget Overview">
+             Title="Budget Overview"
+             BackgroundColor="#F1F1F1">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10">
             

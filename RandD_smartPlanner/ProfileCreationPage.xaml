@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RandD_smartPlanner.ProfileCreationPage"
-             Title="ProfileCreationPage">
+             Title="ProfileCreationPage"
+             BackgroundColor="#F1F1F1">
     <StackLayout Spacing="20" Padding="30">
         <Entry x:Name="NameEntry" Placeholder="Name" Text="{Binding Name}"/>
         <Entry x:Name="PasswordEntry" Placeholder="Create Password" IsPassword="True" Text="{Binding Password}"/>

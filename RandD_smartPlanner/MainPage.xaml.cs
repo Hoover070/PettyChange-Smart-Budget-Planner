@@ -5,41 +5,38 @@ using Newtonsoft.Json;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace RandD_smartPlanner
 {
     public partial class WelcomePage : ContentPage
     {
+        public string Username { get; set; }
         public User CurrentUser { get; set; }
         public OnnxModel UserModel { get; set; }
-
         public ObservableCollection<Budget> Budgets { get; set; }
+        public string DefaultBudgetName { get; set; }
+        public Budget SelectedBudget { get; set; }
+        private double _totalIncome;
+        private double _totalExpenses;
+        private double _totalSavings;
+        private double _aiSuggestedSavings;
+        private double _totalDifference;
 
 
-        public WelcomePage(User user, OnnxModel userModel)
+        public WelcomePage()
         {
             InitializeComponent();
-            CurrentUser = user;
-            UserModel = userModel;
-            if (userModel != null)
-            {
-                Debug.WriteLine("The model was successfully loaded into the main page");
-            }
+            UserModel = App.CurrentUser.UserModel;
+            CurrentUser = App.CurrentUser;
+            Username = CurrentUser.UserName;
+            DefaultBudgetName = CurrentUser.DefaultBudgetName;
 
-            WelcomeLabel.Text = $"Welcome, {CurrentUser.UserName}!";
-            BindingContext = this;
+            SelectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
 
-            //refresh the listview
-            BudgetListView.RefreshCommand = new Command(() =>
-            {
-                LoadUserBudgets();
-                BudgetListView.IsRefreshing = false;
-            });
-
-            LoadUserBudgets();
 
         }
-
+       
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -48,32 +45,99 @@ namespace RandD_smartPlanner
                 DisplayAlert("AI Test", $"The AI model failed to load", "OK");
                 return;
             }
-            
-        
 
-        }
-        public void LoadUserBudgets()
-        {
-            var budgets = FileSaveUtility.LoadAllUserBudgets(CurrentUser.UserName);
-            BudgetListView.ItemsSource = budgets;
-            Budgets = budgets;
-            OnPropertyChanged(nameof(Budgets));
-        }
-
-        /*private void LoadUserBudgets()
-        {
-            var loadedBudgets = FileSaveUtility.LoadAllUserBudgets(CurrentUser.UserName);
-
-            if (loadedBudgets != null && loadedBudgets.Count > 0)
+            // update the UI methods below
+            if(SelectedBudget != null)
             {
-                CurrentUser.Budgets = loadedBudgets;
-                BudgetListView.ItemsSource = CurrentUser.Budgets;
+                UpdateUI(SelectedBudget);
             }
             else
             {
-                DisplayAlert("No Budgets", "You have not created any budgets.", "OK");
+                UpdateUI();
             }
-        }*/
+
+
+        }
+
+
+        public string TotalIncomeFormatted
+        {
+            get => SelectedBudget.TotalIncome.ToString("C", CultureInfo.CurrentCulture);
+        }
+
+        public string TotalExpensesFormatted
+        {
+            get => SelectedBudget.TotalExpenses.ToString("C", CultureInfo.CurrentCulture);
+        }
+
+        public string TotalSavingsFormatted
+        {
+            get => SelectedBudget.SavingsTotal.ToString("C", CultureInfo.CurrentCulture);
+        }
+
+        public string AISuggestedSavingsFormatted
+        {
+
+            get => Math.Round(SelectedBudget.AISuggestedSavings, 2).ToString("C", CultureInfo.CurrentCulture);
+
+        }
+
+        public double AISuggestedSavings
+        {
+            get => _aiSuggestedSavings;
+            set
+            {
+                if (_aiSuggestedSavings != value)
+                {
+                    _aiSuggestedSavings = value;
+                    OnPropertyChanged(nameof(AISuggestedSavings));
+                    OnPropertyChanged(nameof(AISuggestedSavingsFormatted)); // Notify that the formatted value has changed
+                }
+            }
+        }
+
+        public string TotalDifferenceFormatted
+        {
+            get => Math.Round(SelectedBudget.TotalIncome - SelectedBudget.TotalExpenses).ToString("C", CultureInfo.CurrentCulture);
+        }
+
+
+
+
+
+
+
+
+        public void LoadUserBudgets()
+        {
+            var budgets = FileSaveUtility.LoadAllUserBudgets(CurrentUser.UserName);
+            /*BudgetListView.ItemsSource = budgets;*/
+            Budgets = budgets;
+            OnPropertyChanged(nameof(Budgets));
+        }
+        public void UpdateUI()
+        {
+            // Update the UI elements with default values when no budget is selected
+            BudgetNameLabel.Text = "No Budgets Available";
+            IncomeLabel.Text = "$0.00";
+            ExpensesLabel.Text = "$0.00";
+            SavingsLabel.Text = "$0.00";
+            AiSuggestionLabel.Text = "$0.00";
+            PocketChangeLabel.Text = "$0.00";
+        }
+
+        public void UpdateUI(Budget SelectedBudget)
+        {
+            // Update the UI elements with the budget information
+            BudgetNameLabel.Text = SelectedBudget.BudgetName;
+
+            // Format the values as currency
+            IncomeLabel.Text = TotalIncomeFormatted;
+            ExpensesLabel.Text = TotalExpensesFormatted;
+            SavingsLabel.Text = TotalSavingsFormatted;
+            AiSuggestionLabel.Text = AISuggestedSavingsFormatted;
+            PocketChangeLabel.Text = TotalDifferenceFormatted;
+        }
 
         private async void OnLoadBudgetClicked(object sender, EventArgs e)
         {
@@ -112,5 +176,9 @@ namespace RandD_smartPlanner
                 Navigation.PushAsync(new BudgetCreationPage(CurrentUser, CurrentUser.UserModel, selectedBudget));
             }
         }
+
+      
+
+
     }
 }

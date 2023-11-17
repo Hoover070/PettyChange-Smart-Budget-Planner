@@ -5,16 +5,56 @@ namespace RandD_smartPlanner
 {
     public partial class LoginPage : ContentPage
     {
+        public Command LogInCommand { get;  }
+        public Command CreatUserCommand { get;  }
+        public Command TestAICommand { get;  }
+
+
         public LoginPage()
         {
             InitializeComponent();
+
+            // command bindingv
+            LogInCommand = new Command(OnLoginClicked);
+            CreatUserCommand = new Command(OnCreateUserClicked);
+            TestAICommand = new Command(OnTestAIClicked);
+            BindingContext = this;
+            
+
         }
 
-        private void OnLoginClicked(object sender, EventArgs e)
+        private void OnEntryCompleted(object sender, EventArgs e)
+        {
+            // Check if both username and password are entered
+            if (!string.IsNullOrWhiteSpace(UsernameEntry.Text) && !string.IsNullOrWhiteSpace(PasswordEntry.Text))
+            {
+                OnLoginClicked(); // Attempt to log in
+            }
+            else
+            {
+                // Optionally, display a message or handle empty fields
+                DisplayAlert("Login Failed", "Please enter both username and password.", "OK");
+            }
+        }
+
+
+        private void OnLoginClicked()
         {
             string username = UsernameEntry.Text;
             string password = PasswordEntry.Text;  // Need to hash this in the future
+
+            // check if user has put anything in the password and username fields
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                DisplayAlert("Error", "Please enter a username and password", "OK");
+                return;
+            }
+
+
+
             string filePath = FileSaveUtility.GetUserFilePath(username);
+
+           
 
             if (File.Exists(filePath))
             {
@@ -27,6 +67,7 @@ namespace RandD_smartPlanner
                 {
                     // Successfully logged in
                     // load the users model
+                    App.CurrentUser = loadedUser;
                     loadedUser.UserModel = new OnnxModel(loadedUser.OnnxModelPath);
                     Debug.WriteLine($"Loaded model for {loadedUser.UserName} at {loadedUser.OnnxModelPath}");
                     if (loadedUser.UserModel == null)
@@ -34,7 +75,12 @@ namespace RandD_smartPlanner
                         DisplayAlert("AI Test", $"The AI model failed to load", "OK");
                         return;
                     }
-                    Navigation.PushAsync(new WelcomePage(loadedUser, loadedUser.UserModel));
+                   
+                    // navigate to App to change it to AppShell
+                    App.Current.MainPage = new AppShell();
+
+
+
                 }
                 else
                 {
@@ -53,7 +99,7 @@ namespace RandD_smartPlanner
                 UsernameEntry.Focus();
             }
         }
-        private void OnTestAIClicked(object sender, EventArgs e)
+        private void OnTestAIClicked()
         {
             OnnxModel model = new OnnxModel();
 
@@ -69,7 +115,7 @@ namespace RandD_smartPlanner
            
         }
 
-        private void OnCreateUserClicked(object sender, EventArgs e)
+        private void OnCreateUserClicked()
         {
             Navigation.PushAsync(new ProfileCreationPage());
         }

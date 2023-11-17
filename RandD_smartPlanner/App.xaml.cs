@@ -1,12 +1,37 @@
-﻿namespace RandD_smartPlanner
+﻿using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
+
+namespace RandD_smartPlanner
 {
     public partial class App : Application
     {
         public App()
         {
+
             InitializeComponent();
 
-            MainPage = new NavigationPage( new LoginPage());
+
+            // Set the culture to US
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
+
+            MainPage = new NavigationPage(new LoginPage())
+            {
+                BarBackgroundColor = Color.FromArgb("9278be"), 
+                BarTextColor = Color.FromArgb("F1F1F1"), 
+            };
+
+
+        }
+
+        public static User CurrentUser { get; set; }
+
+
+        // Method to switch to AppShell after successful login (to be called from LoginPage)
+        public void NavigateToMainApp()
+        {
+            MainPage = new AppShell();
         }
     }
+    
 }

@@ -12,6 +12,9 @@ namespace RandD_smartPlanner
     public static class FileSaveUtility
     {
 
+       
+
+
         // Functions for the Directory, File, and User classes
 
         // Create a directory for the user if it does not exist
@@ -43,34 +46,11 @@ namespace RandD_smartPlanner
                        }
         }
 
-        // Budget Functions
-        // Get the path to the budget file for the given user and budget name
-        public static string GetBudgetFilePath(string username, string budgetName = null)
-        {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
-            string userDirectory = Path.Combine(pocketChangeDirectory, "User");
-            string specificUserDirectory = Path.Combine(userDirectory, username);
-            string budgetsDirectory = Path.Combine(specificUserDirectory, "Budgets");
-            string filePath = Path.Combine(budgetsDirectory, $"{budgetName}.json");
-            Directory.Exists(budgetsDirectory);
-           
-            Debug.WriteLine($"Constructed file path: {filePath}");
-            return filePath;
-        }
 
-        public static string GetBudgetsDirectoryPath(string username)
-        {
-            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string budgetDirectory = Path.Combine(rootDirectory, "PocketChange", "User", username, "Budgets");
-            CreateDirectoryIfNotExists(budgetDirectory);
-            Debug.WriteLine($"Constructed file path: {budgetDirectory}");
-            return budgetDirectory;
-        }
 
         public static void SaveUserBudgets(User user, Budget budget)
         {
-            string filePath = GetBudgetFilePath(user.UserName, budget.BudgetName);
+            string filePath = GetBudgetFilePath();
             Debug.WriteLine($"Saving budget to: {filePath}");
             string json = JsonConvert.SerializeObject(budget);
             File.WriteAllText(filePath, json);
@@ -79,7 +59,7 @@ namespace RandD_smartPlanner
         public static ObservableCollection<Budget> LoadAllUserBudgets(string username)
         {
             ObservableCollection<Budget> budgetsList = new ObservableCollection<Budget>();
-            string budgetsDirectory = GetBudgetsDirectoryPath(username);
+            string budgetsDirectory = GetBudgetsDirectoryPath();
 
 
             if (Directory.Exists(budgetsDirectory))
@@ -227,31 +207,12 @@ namespace RandD_smartPlanner
             }
         }
 
-        public static Budget LoadLatestUserBudget(string username)
-        {
-            string budgetsDirectory = GetBudgetsDirectoryPath(username);
-            if (Directory.Exists(budgetsDirectory))
-            {
-                var budgetFiles = new DirectoryInfo(budgetsDirectory).GetFiles("*.json")
-                    .OrderByDescending(f => f.LastWriteTime)
-                    .ToList();
-
-                if (budgetFiles.Count > 0)
-                {
-                    var latestBudgetFile = budgetFiles[0];
-                    string jsonData = File.ReadAllText(latestBudgetFile.FullName);
-                    Budget latestBudget = JsonConvert.DeserializeObject<Budget>(jsonData);
-                    return latestBudget;
-                }
-            }
-            return null;
-        }
-
+       
         public static bool DeleteBudget(string username, string budgetName)
         {
             try
             {
-                string budgetFilePath = GetBudgetFilePath(username, budgetName);
+                string budgetFilePath = GetBudgetFilePath();
                 if (File.Exists(budgetFilePath))
                 {
                     File.Delete(budgetFilePath);
@@ -319,7 +280,7 @@ namespace RandD_smartPlanner
         {
             try
             {
-                string budgetsDirectory = GetBudgetsDirectoryPath(username);
+                string budgetsDirectory = GetBudgetsDirectoryPath();
                 if (Directory.Exists(budgetsDirectory))
                 {
                     Directory.Delete(budgetsDirectory, true);
@@ -363,7 +324,81 @@ namespace RandD_smartPlanner
             File.WriteAllBytes(modelPath, modelData);
         }
 
- 
+        public static Budget LoadDefaultOrLastBudget()
+        {
+            string defaultBudgetName = App.CurrentUser.DefaultBudgetName;
+            string username = App.CurrentUser.UserName;
+
+
+            // First, try to load the default budget if a name is provided
+            if (!string.IsNullOrEmpty(defaultBudgetName))
+            {
+                string defaultBudgetPath = GetBudgetFilePath();
+                if (File.Exists(defaultBudgetPath))
+                {
+                    string jsonData = File.ReadAllText(defaultBudgetPath);
+                    Budget defaultBudget = JsonConvert.DeserializeObject<Budget>(jsonData);
+                    if (defaultBudget != null)
+                    {
+                        return defaultBudget;
+                    }
+                }
+            }
+
+            // If no default budget or unable to load, load the last worked-on budget
+            return LoadLatestUserBudget();
+        }
+
+        public static Budget LoadLatestUserBudget()
+        {
+            string username = App.CurrentUser.UserName;
+            string budgetsDirectory = GetBudgetsDirectoryPath();
+            if (Directory.Exists(budgetsDirectory))
+            {
+                var budgetFiles = new DirectoryInfo(budgetsDirectory).GetFiles("*.json")
+                    .OrderByDescending(f => f.LastWriteTime)
+                    .ToList();
+
+                if (budgetFiles.Count > 0)
+                {
+                    var latestBudgetFile = budgetFiles[0];
+                    string jsonData = File.ReadAllText(latestBudgetFile.FullName);
+                    Budget latestBudget = JsonConvert.DeserializeObject<Budget>(jsonData);
+                    App.CurrentUser.DefaultBudgetName = latestBudget.BudgetName;
+                    return latestBudget;
+                }
+            }
+            return null;
+        }
+
+        // Budget Functions
+        // Get the path to the budget file for the given user and budget name
+        public static string GetBudgetFilePath()
+        {
+            string username = App.CurrentUser.UserName;
+            string budgetName = App.CurrentUser.DefaultBudgetName;
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
+            string userDirectory = Path.Combine(pocketChangeDirectory, "User");
+            string specificUserDirectory = Path.Combine(userDirectory, username);
+            string budgetsDirectory = Path.Combine(specificUserDirectory, "Budgets");
+            string filePath = Path.Combine(budgetsDirectory, $"{budgetName}.json");
+            Directory.Exists(budgetsDirectory);
+
+            Debug.WriteLine($"Constructed file path: {filePath}");
+            return filePath;
+        }
+
+        public static string GetBudgetsDirectoryPath()
+        {
+            string username = App.CurrentUser.UserName;
+            string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string budgetDirectory = Path.Combine(rootDirectory, "PocketChange", "User", username, "Budgets");
+            CreateDirectoryIfNotExists(budgetDirectory);
+            Debug.WriteLine($"Constructed file path: {budgetDirectory}");
+            return budgetDirectory;
+        }
+
 
 
 
