@@ -21,7 +21,7 @@ namespace RandD_smartPlanner
         public static void CreateDirectoriesForUser(string username)
         {
             string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
+            string pocketChangeDirectory = Path.Combine(rootDirectory, "PettyChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
             string budgetsDirectory = Path.Combine(specificUserDirectory, "Budgets");
@@ -48,7 +48,7 @@ namespace RandD_smartPlanner
 
 
 
-        public static void SaveUserBudgets( Budget budget)
+        public static void SaveUserBudgets(Budget budget)
         {
             var user = App.CurrentUser;
             string filePath = GetBudgetFilePath();
@@ -96,59 +96,12 @@ namespace RandD_smartPlanner
             return new ObservableCollection<Budget>(budgetsList);
         }
 
-        /* public static ObservableCollection<Budget> LoadAllUserBudgets(string username)
-         {
-             ObservableCollection<Budget> budgetsList = new ObservableCollection<Budget>();
-             string budgetsDirectory = GetBudgetsDirectoryPath(username);
-             Debug.WriteLine($"Loading budgets from: {budgetsDirectory}");
-             if (Directory.Exists(budgetsDirectory))
-             {
-                 string[] budgetFiles = Directory.GetFiles(budgetsDirectory, "*.json");
-                 Debug.WriteLine($"Found {budgetFiles.Length} budget files.");
-
-
-                 foreach (var filePath in budgetFiles)
-                 {
-                     var budget_number = 0;
-                     string jsonData = File.ReadAllText(filePath);
-                     Debug.WriteLine($"Deserializing budget{budget_number} from: {filePath}");
-                     try
-                     {
-                         Budget budget = JsonConvert.DeserializeObject<Budget>(jsonData);
-                         if (budget != null)
-                         {
-                             budgetsList.Add(budget);
-                             budget_number++;
-                         }
-                     }
-                     catch (Exception ex)
-                     {
-                         Debug.WriteLine($"Error deserializing budget: {ex.Message}");
-                         // Handle deserialization error as needed
-
-                     }
-                 }
-             }
-             else
-             {
-                 Debug.WriteLine("Directory does not exist.");
-                 // Handle missing directory as needed
-
-             }
-             Debug.WriteLine($"Loaded {budgetsList.Count} budgets.");
-             foreach (var budget in budgetsList)
-             {
-                 Debug.WriteLine($"Budget Name: {budget.BudgetName}, Description: {budget.Description}");
-             }
-             return budgetsList;
-         }*/
-
         // User Functions
 
         public static string GetUserFilePath(string username)
         {
             string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
+            string pocketChangeDirectory = Path.Combine(rootDirectory, "PettyChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
             return Path.Combine(specificUserDirectory, "UserProfile.json");
@@ -157,7 +110,7 @@ namespace RandD_smartPlanner
         public static string GetUserDirectory(string username)
         {
             string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
+            string pocketChangeDirectory = Path.Combine(rootDirectory, "PettyChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             return Path.Combine(userDirectory, username);
         }
@@ -379,7 +332,7 @@ namespace RandD_smartPlanner
             string username = App.CurrentUser.UserName;
             string budgetName = App.CurrentUser.DefaultBudgetName;
             string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string pocketChangeDirectory = Path.Combine(rootDirectory, "PocketChange");
+            string pocketChangeDirectory = Path.Combine(rootDirectory, "PettyChange");
             string userDirectory = Path.Combine(pocketChangeDirectory, "User");
             string specificUserDirectory = Path.Combine(userDirectory, username);
             string budgetsDirectory = Path.Combine(specificUserDirectory, "Budgets");
@@ -394,7 +347,7 @@ namespace RandD_smartPlanner
         {
             string username = App.CurrentUser.UserName;
             string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string budgetDirectory = Path.Combine(rootDirectory, "PocketChange", "User", username, "Budgets");
+            string budgetDirectory = Path.Combine(rootDirectory, "PettyChange", "User", username, "Budgets");
             CreateDirectoryIfNotExists(budgetDirectory);
             Debug.WriteLine($"Constructed file path: {budgetDirectory}");
             return budgetDirectory;

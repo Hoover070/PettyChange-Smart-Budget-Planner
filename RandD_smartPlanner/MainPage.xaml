@@ -37,30 +37,30 @@
              HorizontalOptions="Center" VerticalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
         <Label x:Name="BudgetNameLabel" Text="{Binding BudgetName}" FontSize="Title" HorizontalOptions="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" LineBreakMode="HeadTruncation" />
 
-            <!-- Income and Expenses Display in First Column -->
-            <Grid Grid.Column="0" Grid.Row="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+        <!-- Income and Expenses Display in First Column -->
+        <Grid Grid.Column="0" Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
 
 
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <!-- 
+            <!-- 
                     <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
                     <Label x:Name="IncomeLabel" Text="{Binding TotalIncomeFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="2" Grid.Column="1"/>
                     <Label Text="Expense Total:" FontSize="Medium" Grid.Row="3" Grid.Column="0"/>
                     <Label x:Name="ExpensesLabel" Text="{Binding TotalExpensesFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="3" Grid.Column="1"/>
                     -->
-            </Grid>
+        </Grid>
 
         <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
         <Label x:Name="IncomeLabel" Text="{Binding TotalIncomeFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="2" Grid.Column="1"/>
@@ -77,7 +77,7 @@
             <Entry x:Name="SavingsNameEntry" Placeholder="Enter description"/>
             <Entry x:Name="SavingsAmountEntry" Placeholder="Enter amount"  />
             <Button Text="Deposit Savings" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnAddSavingsClicked"/>
-            
+
         </StackLayout>
 
         <!-- AI Savings area -->
@@ -87,7 +87,7 @@
                 <Label x:Name="AiSuggestionLabel" Text="{Binding AISuggestedSavingsFormatted, StringFormat='{0:C}'}" Style="{StaticResource SecondaryColor}" Margin="5,0,0,0"/>
             </StackLayout>
         </Frame>
-        
+
         <!-- PettyChange Area -->
         <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="8" Grid.Column="2" VerticalOptions="Start" >
             <Label Text="PettyChange : " FontSize="Medium" VerticalOptions="Center"/>
@@ -97,7 +97,7 @@
         </StackLayout>
 
         <!-- User Input for One-Time Income/Expense -->
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="8" Grid.Column="2" VerticalOptions="Center">
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="7" Grid.Column="2" VerticalOptions="Center">
             <Button Text="Add Expense" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnAddTempExpenseClicked"/>
             <Entry x:Name="NameEntry" Placeholder="Enter description"/>
             <Entry x:Name="AmountEntry" Placeholder="Enter amount"/>
@@ -116,12 +116,12 @@
                 HasUnevenRows="True" 
                 ItemsSource="{Binding SelectedBudget.TempExpenseItems}">
                 <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextCell Text="{Binding Description}"
+                    <DataTemplate>
+                        <TextCell Text="{Binding Description}"
                               Detail="{Binding Cost, StringFormat='{0:C}'}" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
         </Frame>
 
@@ -135,15 +135,23 @@
               HasUnevenRows="True" 
               ItemsSource="{Binding SelectedBudget.TempIncomeItems}">
                 <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextCell Text="{Binding Description}"
+                    <DataTemplate>
+                        <TextCell Text="{Binding Description}"
                       Detail="{Binding Cost, StringFormat='{0:C}'}"
                       TextColor="{Binding IsWithdrawal, Converter={StaticResource WithdrawalToColorConverter}}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
         </Frame>
+
+
+        <StackLayout Orientation="Vertical" HorizontalOptions="Center" Grid.Row="8" Grid.Column="2" VerticalOptions="End" >
+            <Button Text="Load Budget" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnLoadBudgetClicked"/>
+            <Button Text="New Budget" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnNewBudgetClicked"/>
+            <Button Text="New Month, copy budget" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnCopyBudgetClicked"/>
+            <Button Text="Edit Current Budget" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnEditBudgetClicked"/>
+        </StackLayout>
 
     </Grid>
 </ContentPage>

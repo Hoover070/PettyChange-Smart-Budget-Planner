@@ -31,6 +31,8 @@ namespace RandD_smartPlanner {
             User newUser = new User(name, password);
             newUser.UserName = name;
             newUser.Password = password;
+            
+
 
             FileSaveUtility.CreateDirectoriesForUser(newUser.UserName);
             string specificUserDirectory = FileSaveUtility.GetUserDirectory(newUser.UserName);
@@ -63,6 +65,15 @@ namespace RandD_smartPlanner {
             {
                 resourceStream.CopyTo(outputStream);
             }
+        }
+
+        public void OnBackButtonClicked(object sender, EventArgs e)
+        {
+            App.Current.MainPage = new NavigationPage(new LoginPage())
+            {
+                BarBackgroundColor = Color.FromArgb("B2E2BD"),
+                BarTextColor = Color.FromArgb("F1F1F1"),
+            };
         }
 
     }

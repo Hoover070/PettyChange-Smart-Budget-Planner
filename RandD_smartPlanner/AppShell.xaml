@@ -16,7 +16,7 @@
 
     <!-- FlyoutItem for Editing Current Budget -->
     <FlyoutItem Title="Edit Current Budget">
-        <ShellContent ContentTemplate="{DataTemplate local:BudgetEditPage}" />
+        <ShellContent  ContentTemplate="{DataTemplate local:BudgetEditPage}" />
     </FlyoutItem>
 
     <!-- FlyoutItem for Creating a New Budget -->
@@ -24,13 +24,10 @@
         <ShellContent ContentTemplate="{DataTemplate local:BudgetCreationPage}" />
     </FlyoutItem>
 
-    <!-- FlyoutItem for Creating a New Budget -->
-    <FlyoutItem Title="Load Budgets">
+    <!-- FlyoutItem for seeing a list of budgets to load -->
+    <FlyoutItem Title="Load Budgets" Route="listBudgets" >
         <ShellContent ContentTemplate="{DataTemplate local:BudgetListPage}" />
     </FlyoutItem>
-
-    
- 
 
 
 
@@ -42,6 +39,7 @@
         <DataTemplate>
             <StackLayout>
                 <!-- This is where the Logout, Settings button will be-->
+                <Button Text="Edit" Clicked="OnEditBudgetClicked" />
                 <Button Text="Logout" Clicked="OnLogoutClicked" />
                 <Button Text="Copy Budget" Clicked="OnCopyBudgetClicked" />
                 <Button Text="Settings" Clicked="OnSettingsButtonClicked" />

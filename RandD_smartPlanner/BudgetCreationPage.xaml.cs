@@ -72,10 +72,11 @@ namespace RandD_smartPlanner
         {
             InitializeComponent();
             BindingContext = this;
+            UpdateCalculations();
             var username = App.CurrentUser.UserName;
             var currentUser = App.CurrentUser;
-            var usermodel = App.CurrentUser.UserModel;
-            var existingBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+            OnnxModel usermodel = App.CurrentUser.UserModel;
+           
 
                 Budget defaultBudget = new Budget()
                 {
@@ -86,6 +87,9 @@ namespace RandD_smartPlanner
                     AISuggestedTimeframe = 0,
                     IncomeDiff = 0,
                     MinSavingsLimit = 0,
+                    TotalIncome = 0,
+                    TotalExpenses = 0,
+                    TotalSavings = 0,
                     SavingsTotal = 0,
                     IncomeItems = new ObservableCollection<Budget.BudgetItem>
                     {
@@ -102,7 +106,7 @@ namespace RandD_smartPlanner
 
                 };
 
-
+                
 
                 OnPropertyChanged(""); 
 
@@ -110,7 +114,7 @@ namespace RandD_smartPlanner
         }
 
         // load a budget
-        private void LoadExistingBudget(Budget existingBudget)
+       /* private void LoadExistingBudget(Budget existingBudget)
         {
             if (existingBudget != null)
             {
@@ -157,7 +161,7 @@ namespace RandD_smartPlanner
                 OnPropertyChanged(""); // Update all bindings
             }
         }
-
+*/
 
         void UpdateCalculations()
         {
@@ -186,9 +190,15 @@ namespace RandD_smartPlanner
 
         private void CalculateAiSuggestions()
         {
-         
-            var aiResults = model.UseAi(UserModel, UserIncome, UserHousingExpense, HouseholdSize, UserPhoneBill, CurrnetSavingsAmount, CurrentEmergencyFund, UserEntertainmentExpense, UserFoodExpense,
-              UserHealthInsuranceCost, UserCarInsuranceCost, UserRentInsuranceCost, UserEducationCost, UserLifeInsuranceCost, UserFuelCost);
+            //save the current budget
+            SaveBudget();
+
+
+            OnnxModel UserModel = App.CurrentUser.UserModel;
+            var selectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+
+            var aiResults = model.UseAi(UserModel, selectedBudget.UserIncome, selectedBudget.UserHousingExpense, selectedBudget.HouseholdSize, selectedBudget.UserPhoneBill, selectedBudget.CurrnetSavingsAmount, selectedBudget.CurrentEmergencyFund, selectedBudget.UserEntertainmentExpense, selectedBudget.UserFoodExpense,
+             selectedBudget.UserHealthInsuranceCost, selectedBudget.UserCarInsuranceCost, selectedBudget.UserRentInsuranceCost, selectedBudget.UserEducationCost, selectedBudget.UserLifeInsuranceCost, selectedBudget.UserFuelCost);
             AISuggestedSavings = aiResults;
             AISuggestedTimeframe = SavingsGoal/aiResults;
             OnPropertyChanged(nameof(AISuggestedSavings));
@@ -204,44 +214,56 @@ namespace RandD_smartPlanner
 
         void OnSaveClicked(object sender, EventArgs e)
         {
+
+            SaveBudget();
+            UpdateCalculations();
+            
+
+        }
+
+        void SaveBudget()
+        {
             try
             {
+
+
+
                 // Create a new budget object
                 Budget newBudget = new Budget()
                 {
-                    BudgetName = this.BudgetName,
-                    SavingsGoal = this.SavingsGoal,
-                    Timeframe = this.Timeframe,
-                    IncomeItems = this.IncomeItems,
-                    ExpenseItems = this.ExpenseItems,
-                    UserIncome = this.UserIncome,
-                    UserHousingExpense = this.UserHousingExpense,
-                    HouseholdSize = this.HouseholdSize,
-                    UserPhoneBill = this.UserPhoneBill,
-                    CurrnetSavingsAmount = this.CurrnetSavingsAmount,
-                    CurrentEmergencyFund = this.CurrentEmergencyFund,
-                    UserEntertainmentExpense = this.UserEntertainmentExpense,
-                    UserFoodExpense = this.UserFoodExpense,
-                    UserHealthInsuranceCost = this.UserHealthInsuranceCost,
-                    UserCarInsuranceCost = this.UserCarInsuranceCost,
-                    UserRentInsuranceCost = this.UserRentInsuranceCost,
-                    UserEducationCost = this.UserEducationCost,
-                    UserLifeInsuranceCost = this.UserLifeInsuranceCost,
-                    UserFuelCost = this.UserFuelCost,
-                    TotalExpenses = this.TotalExpenses,
-                    TotalIncome = this.TotalIncome,
-                    SavingsTotal = this.SavingsTotal,
-                    IncomeDiff = this.IncomeDiff,
-                    MinSavingsLimit = this.MinSavingsLimit,
-                    TotalInsurance = this.TotalInsurance,
-                    TempExpenseItems = this.TempExpenseItems,
-                    TempIncomeItems = this.TempIncomeItems,
+                    BudgetName = BudgetName,
+                    SavingsGoal = SavingsGoal,
+                    Timeframe = Timeframe,
+                    IncomeItems = IncomeItems,
+                    ExpenseItems = ExpenseItems,
+                    UserIncome =UserIncome,
+                    UserHousingExpense = UserHousingExpense,
+                    HouseholdSize = HouseholdSize,
+                    UserPhoneBill = UserPhoneBill,
+                    CurrnetSavingsAmount = CurrnetSavingsAmount,
+                    CurrentEmergencyFund = CurrentEmergencyFund,
+                    UserEntertainmentExpense = UserEntertainmentExpense,
+                    UserFoodExpense = UserFoodExpense,
+                    UserHealthInsuranceCost = UserHealthInsuranceCost,
+                    UserCarInsuranceCost = UserCarInsuranceCost,
+                    UserRentInsuranceCost = UserRentInsuranceCost,
+                    UserEducationCost = UserEducationCost,
+                    UserLifeInsuranceCost = UserLifeInsuranceCost,
+                    UserFuelCost = UserFuelCost,
+                    TotalExpenses = TotalExpenses,
+                    TotalIncome = TotalIncome,
+                    SavingsTotal = SavingsTotal,
+                    IncomeDiff = IncomeDiff,
+                    MinSavingsLimit = MinSavingsLimit,
+                    TotalInsurance = TotalInsurance,
+                    TempExpenseItems = TempExpenseItems,
+                    TempIncomeItems = TempIncomeItems,
 
 
-                   
-                    AISuggestedSavings = this.AISuggestedSavings,
-                    AISuggestedTimeframe = this.AISuggestedTimeframe,
-                  
+
+                    AISuggestedSavings = AISuggestedSavings,
+                    AISuggestedTimeframe = AISuggestedTimeframe,
+
                 };
                 string filePath = FileSaveUtility.GetBudgetFilePath();
                 Debug.WriteLine($"Saving budget to {filePath}");
@@ -250,12 +272,16 @@ namespace RandD_smartPlanner
 
                 OnPropertyChanged(nameof(AISuggestedSavings));
                 OnPropertyChanged(nameof(AISuggestedTimeframe));
+                IncomeDiff = TotalIncome - TotalExpenses;
                 OnPropertyChanged(nameof(IncomeDiff));
                 OnPropertyChanged(nameof(MinSavingsLimit));
+                SavingsTotal = CurrnetSavingsAmount + CurrentEmergencyFund;
                 OnPropertyChanged(nameof(SavingsTotal));
                 OnPropertyChanged(nameof(TotalIncome));
                 OnPropertyChanged(nameof(TotalExpenses));
                 OnPropertyChanged(nameof(TotalSavings));
+
+                FileSaveUtility.SaveDefaultBudget(newBudget);
 
 
             }
@@ -264,7 +290,6 @@ namespace RandD_smartPlanner
                 // Display an error message
                 DisplayAlert("Error, did not save", ex.Message, "OK");
             }
-
         }
 
         // Functions for adding and deleting items from the collections
@@ -272,7 +297,7 @@ namespace RandD_smartPlanner
 
         void OnCancelClicked(object sender, EventArgs e)
         {
-            Application.Current.MainPage = new AppShell();
+            Navigation.PushAsync(new WelcomePage());
         }
 
         void OnAddIncomeItemClicked(object sender, EventArgs e)
@@ -315,7 +340,7 @@ namespace RandD_smartPlanner
 
         void OnCreateNewBudgetClicked(object sender, EventArgs e)
         {
-            App.Current.MainPage = new NavigationPage(new BudgetCreationPage()); 
+            Navigation.PushAsync(new WelcomePage());
         }
 
 
@@ -376,7 +401,9 @@ namespace RandD_smartPlanner
         public double TotalIncome
         {
             get { return UserIncome + IncomeItems.Sum(item => item.Cost); }
-            set { _totalIncome = value; 
+            set
+            {
+                _totalIncome = value;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(TotalIncome));
             }
@@ -385,26 +412,37 @@ namespace RandD_smartPlanner
         public double TotalInsurance
         {
             get { return UserLifeInsuranceCost + UserHealthInsuranceCost + UserCarInsuranceCost + UserRentInsuranceCost; }
-            set { _totalInsurance = value; UpdateCalculations(); OnPropertyChanged(nameof(TotalInsurance)); }
+            set { _totalInsurance = value; OnPropertyChanged(nameof(TotalInsurance)); }
         }
 
         public double TotalExpenses
         {
-            get { return (UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserEducationCost + TotalInsurance + (ExpenseItems.Sum(item => item.Cost))); }
-            set {
+            get { return (this.UserHousingExpense + this.UserPhoneBill + this.UserEntertainmentExpense + this.UserFoodExpense + this.UserEducationCost + this.TotalInsurance + (this.ExpenseItems.Sum(item => item.Cost))); }
+            set
+            {
                 _totalExpenses = value;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(TotalExpenses));
             }
-            
-            
+
+
         }
+        public double IncomeDiff
+        {
+            get { return _incomeDiff; }
+            private set
+            {
+                _incomeDiff = value;
+                OnPropertyChanged(nameof(IncomeDiff));
+            }
+        }
+
 
         public double TotalSavings
         {
             get { return CurrentEmergencyFund + CurrnetSavingsAmount; }
             set { _totalSavings = value;
-                UpdateCalculations();
+              
                 OnPropertyChanged(nameof(TotalSavings));
                     }
         }
@@ -475,15 +513,7 @@ namespace RandD_smartPlanner
         }
 
 
-        public double IncomeDiff
-        {
-            get { return _incomeDiff; }
-            private set
-            {
-                _incomeDiff = value;
-                OnPropertyChanged(nameof(IncomeDiff));
-            }
-        }
+  
 
         public double MinSavingsLimit
         {

@@ -46,11 +46,11 @@ namespace RandD_smartPlanner
         private double _UserLifeInsuranceCost;
         private double _UserFuelCost;
         private double _TotalInsurance;
-        private double _TotalExpenses;
-        private double _TotalIncome;
         private double _TotalSavings;
         private double _SuggestedSavingsPayment;
         private OnnxModel UserModel;
+        private double _totalutiliies;
+        private DateTime _dateCreated;
         
 
         public Budget()
@@ -71,6 +71,19 @@ namespace RandD_smartPlanner
         }
 
         // Getters and setters for the budget page
+
+        public DateTime DateCreated
+        {
+            get => DateTime.Now;
+            set => SetProperty(ref _dateCreated, value);
+        }
+
+
+        public double TotalUtilities
+        {
+            get => _totalutiliies;
+            set => SetProperty(ref _totalutiliies, value);
+        }
 
         public ObservableCollection<BudgetItem> SavingsAccountDebitLog
         {
@@ -222,7 +235,7 @@ namespace RandD_smartPlanner
             // sums up the income item cost for each income line item and sets 
             // the TotalIncome that the other pages can then call to recieve
 
-            get => IncomeItems.Sum(item => item.Cost);
+            get => IncomeItems.Sum(item => item.Cost) + UserIncome + TempIncomeItems.Sum(item=>item.Cost);
             set => SetProperty(ref _totalIncome, value);
         }
 
@@ -230,7 +243,7 @@ namespace RandD_smartPlanner
         {
             // sums up the expense item cost for each expense line item and sets 
             // the TotalExpenses that the other pages can then call to recieve
-            get => ExpenseItems.Sum(item => item.Cost);
+            get => ExpenseItems.Sum(item => item.Cost) + UserHousingExpense + UserCarInsuranceCost + UserEducationCost + UserEntertainmentExpense + UserFoodExpense + UserFuelCost + UserLifeInsuranceCost + UserPhoneBill + UserRentInsuranceCost + TempExpenseItems.Sum(item=>item.Cost);
             set => SetProperty(ref _totalExpenses, value);
         }
 
@@ -290,7 +303,7 @@ namespace RandD_smartPlanner
 
         public double IncomeDiff
         {
-            get => _incomeDiff;
+            get => TotalIncome - TotalExpenses;
             set => SetProperty(ref _incomeDiff, value);
         }
 

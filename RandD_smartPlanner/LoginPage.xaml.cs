@@ -119,7 +119,11 @@ namespace RandD_smartPlanner
 
         private void OnCreateUserClicked()
         {
-            Navigation.PushAsync(new ProfileCreationPage());
+            App.Current.MainPage = new NavigationPage(new ProfileCreationPage())
+            {
+                BarBackgroundColor = Color.FromArgb("B2E2BD"),
+                BarTextColor = Color.FromArgb("F1F1F1"),
+            };
         }
     }
 }

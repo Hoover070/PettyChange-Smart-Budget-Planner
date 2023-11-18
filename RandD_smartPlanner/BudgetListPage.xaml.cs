@@ -51,15 +51,18 @@ namespace RandD_smartPlanner
         }
         private void OnBudgetSelected(object sender, ItemTappedEventArgs e)
         {
+            
             if (e.Item != null && e.Item is Budget selectedBudget)
             {
-                // Pass the selected budget to the BudgetPage
-                Navigation.PushAsync(new BudgetEditPage());
+              
+                FileSaveUtility.SaveDefaultBudget(selectedBudget);
+                // pass selectedBudget to edit budget page without using shell
+                Navigation.PushAsync(new BudgetEditPage(selectedBudget));
             }
         }
         void OnBackButtonClicked(object sender, EventArgs e)
         {
-            Application.Current.MainPage = new AppShell();
+            Shell.Current.GoToAsync(nameof(WelcomePage));
         }
 
         public async Task RefreshBudgetsAsync()
@@ -94,7 +97,7 @@ namespace RandD_smartPlanner
         public void OnCreateNewBudgetClicked(object sender, EventArgs e)
 
         {
-            App.Current.MainPage = new NavigationPage(new BudgetCreationPage());
+            Navigation.PushAsync(new BudgetCreationPage());
         }
 
         public void OnEditBudgetClicked(object sender, EventArgs e)
@@ -102,7 +105,7 @@ namespace RandD_smartPlanner
             var budget = (sender as MenuItem)?.CommandParameter as Budget;
             if (budget != null)
             {
-                App.Current.MainPage = new NavigationPage(new BudgetEditPage());
+                Navigation.PushAsync(new BudgetEditPage(budget));
             }
 
         }

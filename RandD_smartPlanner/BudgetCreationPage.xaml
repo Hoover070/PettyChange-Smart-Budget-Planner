@@ -4,8 +4,13 @@
              x:Class="RandD_smartPlanner.BudgetCreationPage"
              Title="Budgets"
              BackgroundColor="#F1F1F1"
-             Shell.BackgroundColor="#B2E2BD">
-            
+             Shell.BackgroundColor="#B2E2BD"
+             Shell.ForegroundColor="#000000"
+             Shell.TitleColor="AliceBlue"
+             Shell.DisabledColor="Gray"
+             
+             >
+
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -15,7 +20,7 @@
 
     <ScrollView>
         <Grid Padding="20">
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -30,7 +35,7 @@
             <StackLayout Grid.Row="0" Grid.Column="0" WidthRequest="200">
                 <Entry Placeholder="Name the Budget" Text="{Binding BudgetName}"/>
             </StackLayout>
-            
+
             <!-- Total Section at the Top -->
             <StackLayout Grid.Row="1" Grid.ColumnSpan="2">
                 <Label Text="Income Total:"/>
@@ -48,27 +53,18 @@
                 <Label Text="Left over:"/>
                 <Label Text="{Binding IncomeDiff}"/>
 
-                <Label Text="Savings Goal:"/>
-                <Entry Placeholder="0.00" Text="{Binding SavingsGoal, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Text="Savings Goal Timeframe (in months):"/>
-                <Entry Placeholder="0.00" Text="{Binding Timeframe, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
-
-                <Label Text="Savings Payment:"/>
-                <Label Text="{Binding MinSavingsLimit}"/>
-
-                <Label Text="Ai Suggested Savings Payment"/>
+                <Label Text="Ai Suggested Minimum Monthly Savings Payment"/>
                 <Label Text="{Binding AISuggestedSavings}"/>
-                <Label Text="Ai Suggested Savings Timeline (In months)"/>
-                <Label Text="{Binding AISuggestedTimeframe}"/>
-                <Button Text="AI Calculate" Clicked="OnCalculateClicked"/>
+
+
 
             </StackLayout>
 
             <!-- Expenses Section on Left Side -->
             <StackLayout Grid.Row="2" Grid.Column="0">
                 <Label Text="Expense" FontAttributes="Bold"/>
-                
+
                 <Label Text="Housing Cost:"/>
                 <Entry Placeholder="0.00" Text="{Binding UserHousingExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Label Text="Phone Bill:"/>
@@ -92,7 +88,7 @@
                 <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
                     <Button Text="+ Expenses" Clicked="OnAddExpenseItemClicked" WidthRequest="100" HeightRequest="30" Margin="5"/>
                 </StackLayout>
-            <ListView ItemsSource="{Binding ExpenseItems}">
+                <ListView ItemsSource="{Binding ExpenseItems}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -137,21 +133,14 @@
                 </ListView>
             </StackLayout>
 
-            <StackLayout Grid.Row="0" Grid.Column="2">
-                <Label Text="Savings" FontAttributes="Bold"/>
-                <Label Text="Current Savings Account Balance:"/>
-                <Entry Placeholder="0.00" Text="{Binding CurrnetSavingsAmount, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
-                <Label Text="Current Emergency Funds Account Balance:"/>
-                <Entry Placeholder="0.00" Text="{Binding CurrentEmergencyFund, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
-                
-            </StackLayout>
 
 
             <Grid Grid.Row="0" Grid.ColumnSpan="2">
                 <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
-                    <Button Text="Back" Clicked="OnCancelClicked" WidthRequest="80" HeightRequest="30"/>
+                    <Button Text="Home" Clicked="OnCancelClicked" WidthRequest="80" HeightRequest="30"/>
                     <Button Text="Save" Clicked="OnSaveClicked" WidthRequest="80" HeightRequest="30"/>
                     <Button Text="New" Clicked="OnCreateNewBudgetClicked" WidthRequest="150" HeightRequest="30"/>
+                    <Button Text="AI Calculate" Clicked="OnCalculateClicked"/>
                 </StackLayout>
             </Grid>
 

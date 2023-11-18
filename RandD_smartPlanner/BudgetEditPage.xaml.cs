@@ -12,8 +12,12 @@ namespace RandD_smartPlanner
 {
     public partial class BudgetEditPage : ContentPage, INotifyPropertyChanged
     {
-        public ObservableCollection<Budget.BudgetItem> IncomeItems { get; } = new ObservableCollection<Budget.BudgetItem>();
-        public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> IncomeItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> ExpenseItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> TempIncomeItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> TempExpenseItems { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> SavingsCreditLog { get; set; } = new ObservableCollection<Budget.BudgetItem>();
+        public ObservableCollection<Budget.BudgetItem> SavingsDebitLog { get; set; } = new ObservableCollection<Budget.BudgetItem>();
 
         private OnnxModel _model = new OnnxModel();
 
@@ -48,6 +52,7 @@ namespace RandD_smartPlanner
         private double _AISuggestedSavings;
         private double _AISuggestedTimeframe;
         private double _total;
+
 
      
         private OnnxModel UserModel;
@@ -121,7 +126,67 @@ namespace RandD_smartPlanner
                 this.ExpenseItems.Clear();
 
 
-                OnPropertyChanged(""); 
+                OnPropertyChanged("");
+                
+
+            }
+        }
+
+
+        //loading a specific budget
+        public BudgetEditPage(Budget existingBudget)
+        {
+            InitializeComponent();
+            BindingContext = this;
+            var username = App.CurrentUser.UserName;
+            var currentUser = App.CurrentUser;
+            var usermodel = App.CurrentUser.UserModel;
+           
+
+            if (existingBudget != null)
+            {
+                LoadExistingBudget(existingBudget);
+            }
+            else
+            {
+                Budget defaultBudget = new Budget()
+                {
+                    BudgetName = "Default Budget",
+                    SavingsGoal = 0,
+                    Timeframe = 0,
+                    AISuggestedSavings = 0,
+                    AISuggestedTimeframe = 0,
+                    IncomeDiff = 0,
+                    MinSavingsLimit = 0,
+                    SavingsTotal = 0,
+                    IncomeItems = new ObservableCollection<Budget.BudgetItem>
+                    {
+                        new Budget.BudgetItem { Description = "Income 1", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Income 2", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Income 3", Cost = 0 },
+                    },
+                    ExpenseItems = new ObservableCollection<Budget.BudgetItem>
+                    {
+                        new Budget.BudgetItem { Description = "Expense 1", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Expense 2", Cost = 0 },
+                        new Budget.BudgetItem { Description = "Expense 3", Cost = 0 },
+                    }
+
+                };
+
+                // set the properties of BudgetCreationPage from defaultBudget
+                this.BudgetName = defaultBudget.BudgetName;
+                this.SavingsGoal = defaultBudget.SavingsGoal;
+                this.Timeframe = defaultBudget.Timeframe;
+                this.IncomeDiff = defaultBudget.IncomeDiff;
+                this.MinSavingsLimit = defaultBudget.MinSavingsLimit;
+                this.SavingsTotal = defaultBudget.SavingsTotal;
+                this.IncomeItems.Clear();
+                this.ExpenseItems.Clear();
+
+
+                OnPropertyChanged("");
+                
 
             }
         }
@@ -154,6 +219,15 @@ namespace RandD_smartPlanner
                 this.UserEducationCost = existingBudget.UserEducationCost;
                 this.UserLifeInsuranceCost = existingBudget.UserLifeInsuranceCost;
                 this.UserFuelCost = existingBudget.UserFuelCost;
+                this.TotalExpenses = existingBudget.TotalExpenses;
+                this.TotalIncome = existingBudget.TotalIncome;
+                this.TotalSavings = existingBudget.TotalSavings;
+                this.TotalInsurance = existingBudget.TotalInsurance;
+                this.TempExpenseItems = existingBudget.TempExpenseItems;
+                this.TempIncomeItems = existingBudget.TempIncomeItems;
+
+                // Copy the income and expense items from the existing budget
+
                 this.IncomeItems.Clear();
                 this.ExpenseItems.Clear();
                 foreach (var item in existingBudget.IncomeItems)
@@ -196,74 +270,75 @@ namespace RandD_smartPlanner
 
         private void CalculateAiSuggestions()
         {
-         
-            var aiResults = model.UseAi(UserModel, UserIncome, UserHousingExpense, HouseholdSize, UserPhoneBill, CurrnetSavingsAmount, CurrentEmergencyFund, UserEntertainmentExpense, UserFoodExpense,
-              UserHealthInsuranceCost, UserCarInsuranceCost, UserRentInsuranceCost, UserEducationCost, UserLifeInsuranceCost, UserFuelCost);
+            SaveBudget();
+            var SelectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+            var aiResults = model.UseAi(App.CurrentUser.UserModel, SelectedBudget.UserIncome, SelectedBudget.UserHousingExpense, SelectedBudget.HouseholdSize, SelectedBudget.UserPhoneBill, SelectedBudget.CurrnetSavingsAmount, SelectedBudget.CurrentEmergencyFund, SelectedBudget.UserEntertainmentExpense, SelectedBudget.UserFoodExpense,
+            SelectedBudget.UserHealthInsuranceCost, SelectedBudget.UserCarInsuranceCost, SelectedBudget.UserRentInsuranceCost, SelectedBudget.UserEducationCost, SelectedBudget.UserLifeInsuranceCost, SelectedBudget.UserFuelCost);
             AISuggestedSavings = aiResults;
             AISuggestedTimeframe = SavingsGoal/aiResults;
             OnPropertyChanged(nameof(AISuggestedSavings));
             OnPropertyChanged(nameof(AISuggestedTimeframe));
         }
-
-        void OnCalculateClicked(object sender, EventArgs e)
-        {
-            CalculateAiSuggestions();
-            UpdateCalculations();
-
-        }
-
-        void OnSaveClicked(object sender, EventArgs e)
+        void SaveBudget()
         {
             try
             {
                 // Create a new budget object
                 Budget newBudget = new Budget()
                 {
-                    BudgetName = this.BudgetName,
-                    SavingsGoal = this.SavingsGoal,
-                    Timeframe = this.Timeframe,
-                    IncomeItems = this.IncomeItems,
-                    ExpenseItems = this.ExpenseItems,
-                    UserIncome = this.UserIncome,
-                    UserHousingExpense = this.UserHousingExpense,
-                    HouseholdSize = this.HouseholdSize,
-                    UserPhoneBill = this.UserPhoneBill,
-                    CurrnetSavingsAmount = this.CurrnetSavingsAmount,
-                    CurrentEmergencyFund = this.CurrentEmergencyFund,
-                    UserEntertainmentExpense = this.UserEntertainmentExpense,
-                    UserFoodExpense = this.UserFoodExpense,
-                    UserHealthInsuranceCost = this.UserHealthInsuranceCost,
-                    UserCarInsuranceCost = this.UserCarInsuranceCost,
-                    UserRentInsuranceCost = this.UserRentInsuranceCost,
-                    UserEducationCost = this.UserEducationCost,
-                    UserLifeInsuranceCost = this.UserLifeInsuranceCost,
-                    UserFuelCost = this.UserFuelCost,
-                    TotalExpenses = this.TotalExpenses,
-                    TotalIncome = this.TotalIncome,
-                    SavingsTotal = this.SavingsTotal,
-                    IncomeDiff = this.IncomeDiff,
-                    MinSavingsLimit = this.MinSavingsLimit,
-                    TotalInsurance = this.TotalInsurance,
+                    BudgetName = BudgetName,
+                    SavingsGoal = SavingsGoal,
+                    Timeframe = Timeframe,
+                    IncomeItems = IncomeItems,
+                    ExpenseItems = ExpenseItems,
+                    UserIncome = UserIncome,
+                    UserHousingExpense = UserHousingExpense,
+                    HouseholdSize = HouseholdSize,
+                    UserPhoneBill = UserPhoneBill,
+                    CurrnetSavingsAmount = CurrnetSavingsAmount,
+                    CurrentEmergencyFund = CurrentEmergencyFund,
+                    UserEntertainmentExpense = UserEntertainmentExpense,
+                    UserFoodExpense = UserFoodExpense,
+                    UserHealthInsuranceCost = UserHealthInsuranceCost,
+                    UserCarInsuranceCost = UserCarInsuranceCost,
+                    UserRentInsuranceCost = UserRentInsuranceCost,
+                    UserEducationCost = UserEducationCost,
+                    UserLifeInsuranceCost = UserLifeInsuranceCost,
+                    UserFuelCost = UserFuelCost,
+                    TotalExpenses = TotalExpenses,
+                    TotalIncome = TotalIncome,
+                    SavingsTotal = SavingsTotal,
+                    IncomeDiff = IncomeDiff,
+                    MinSavingsLimit = MinSavingsLimit,
+                    TotalInsurance = TotalInsurance,
+                    TempExpenseItems = TempExpenseItems,
+                    TempIncomeItems = TempIncomeItems,
 
 
-                   
-                    AISuggestedSavings = this.AISuggestedSavings,
-                    AISuggestedTimeframe = this.AISuggestedTimeframe,
-                  
+
+                    AISuggestedSavings = AISuggestedSavings,
+                    AISuggestedTimeframe = AISuggestedTimeframe,
+
                 };
                 string filePath = FileSaveUtility.GetBudgetFilePath();
                 Debug.WriteLine($"Saving budget to {filePath}");
                 string jsonData = JsonConvert.SerializeObject(newBudget, Formatting.Indented);
                 File.WriteAllText(filePath, jsonData);
+                FileSaveUtility.SaveUserBudgets(newBudget);
+
 
                 OnPropertyChanged(nameof(AISuggestedSavings));
                 OnPropertyChanged(nameof(AISuggestedTimeframe));
-                OnPropertyChanged(nameof(IncomeDiff));
                 OnPropertyChanged(nameof(MinSavingsLimit));
+                SavingsTotal = CurrnetSavingsAmount + CurrentEmergencyFund;
                 OnPropertyChanged(nameof(SavingsTotal));
                 OnPropertyChanged(nameof(TotalIncome));
                 OnPropertyChanged(nameof(TotalExpenses));
                 OnPropertyChanged(nameof(TotalSavings));
+                IncomeDiff = TotalIncome - TotalExpenses;
+                OnPropertyChanged(nameof(IncomeDiff));
+
+                FileSaveUtility.SaveDefaultBudget(newBudget);
 
 
             }
@@ -272,6 +347,21 @@ namespace RandD_smartPlanner
                 // Display an error message
                 DisplayAlert("Error, did not save", ex.Message, "OK");
             }
+        }
+
+        void OnCalculateClicked(object sender, EventArgs e)
+        {
+            CalculateAiSuggestions();
+            UpdateCalculations();
+            
+
+        }
+
+        void OnSaveClicked(object sender, EventArgs e)
+        {
+            SaveBudget();
+            UpdateCalculations();
+            
 
         }
 
@@ -280,7 +370,7 @@ namespace RandD_smartPlanner
 
         void OnCancelClicked(object sender, EventArgs e)
         {
-            Application.Current.MainPage = new AppShell();
+            Navigation.PushAsync(new WelcomePage()); ;
         }
 
         void OnAddIncomeItemClicked(object sender, EventArgs e)
@@ -323,7 +413,8 @@ namespace RandD_smartPlanner
 
         void OnCreateNewBudgetClicked(object sender, EventArgs e)
         {
-            App.Current.MainPage = new NavigationPage(new BudgetCreationPage()); 
+            Navigation.PushAsync(new BudgetCreationPage());
+
         }
 
 
@@ -369,22 +460,30 @@ namespace RandD_smartPlanner
             }
         }
 
- 
-
         public double SavingsTotal
         {
-            get { return _savingsTotal; }
+            get => _totalSavings;
             set
             {
-                _savingsTotal = value;
-                OnPropertyChanged(nameof(SavingsTotal));
+                if (_totalSavings != value)
+                {
+                    _totalSavings = value;
+                    OnPropertyChanged(nameof(SavingsTotal));
+                    
+                }
             }
+        }
+
+        public double total_income_calculated()
+        {
+            return UserIncome + IncomeItems.Sum(item => item.Cost);
         }
 
         public double TotalIncome
         {
             get { return UserIncome + IncomeItems.Sum(item => item.Cost); }
-            set { _totalIncome = value; 
+            set {
+                _totalIncome = total_income_calculated(); 
                 UpdateCalculations();
                 OnPropertyChanged(nameof(TotalIncome));
             }
@@ -393,14 +492,14 @@ namespace RandD_smartPlanner
         public double TotalInsurance
         {
             get { return UserLifeInsuranceCost + UserHealthInsuranceCost + UserCarInsuranceCost + UserRentInsuranceCost; }
-            set { _totalInsurance = value; UpdateCalculations(); OnPropertyChanged(nameof(TotalInsurance)); }
+            set { _totalInsurance = TotalInsurance; UpdateCalculations(); OnPropertyChanged(nameof(TotalInsurance)); }
         }
 
         public double TotalExpenses
         {
             get { return (UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserEducationCost + TotalInsurance + (ExpenseItems.Sum(item => item.Cost))); }
             set {
-                _totalExpenses = value;
+                _totalExpenses = TotalExpenses;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(TotalExpenses));
             }
@@ -411,7 +510,7 @@ namespace RandD_smartPlanner
         public double TotalSavings
         {
             get { return CurrentEmergencyFund + CurrnetSavingsAmount; }
-            set { _totalSavings = value;
+            set { _totalSavings = SavingsDebitLog.Sum(item=>item.Cost) - SavingsCreditLog.Sum(item=>item.Cost);
                 UpdateCalculations();
                 OnPropertyChanged(nameof(TotalSavings));
                     }
@@ -422,7 +521,7 @@ namespace RandD_smartPlanner
             get { return _UserIncome; }
             set
             {
-                _UserIncome = value;
+                _UserIncome = Income;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(Income));
             }
@@ -448,7 +547,7 @@ namespace RandD_smartPlanner
             get { return _expenses; }
             set
             {
-                _expenses = TotalExpenses;
+                _expenses = Expenses;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(Expenses));
             }
@@ -465,7 +564,7 @@ namespace RandD_smartPlanner
             get { return _savingsGoal; }
             set
             {
-                _savingsGoal = value;
+                _savingsGoal = SavingsGoal;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(SavingsGoal));
             }
@@ -476,7 +575,7 @@ namespace RandD_smartPlanner
             get { return _timeframe; }
             set
             {
-                _timeframe = value;
+                _timeframe = Timeframe;
                 UpdateCalculations();
                 OnPropertyChanged(nameof(Timeframe));
             }
@@ -488,7 +587,7 @@ namespace RandD_smartPlanner
             get { return _incomeDiff; }
             private set
             {
-                _incomeDiff = value;
+                _incomeDiff = IncomeDiff;
                 OnPropertyChanged(nameof(IncomeDiff));
             }
         }
@@ -498,7 +597,7 @@ namespace RandD_smartPlanner
             get { return _minSavingsLimit; }
             private set
             {
-                _minSavingsLimit = value;
+                _minSavingsLimit = MinSavingsLimit;
                 OnPropertyChanged(nameof(MinSavingsLimit));
             }
         }

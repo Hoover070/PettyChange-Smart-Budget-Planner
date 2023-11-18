@@ -5,10 +5,14 @@
              Title="ProfileCreationPage"
              BackgroundColor="#F1F1F1"
              Shell.BackgroundColor="#B2E2BD">
+    
+    
+    
     <StackLayout Spacing="20" Padding="30">
         <Entry x:Name="NameEntry" Placeholder="Create Username" Text="{Binding Name}"/>
         <Entry x:Name="PasswordEntry" Placeholder="Create Password" IsPassword="True" Text="{Binding Password}"/>
         <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirm Password" IsPassword="True" Text="{Binding ConfirmPassword}"/>
-        <Button x:Name="CreateProfileBtn" Text="Create Profile" Clicked="OnCreateProfileClicked"/>
+        <Button x:Name="CreateProfileBtn" Style="{StaticResource ButtonTextStyle}" Text="Create Profile" Clicked="OnCreateProfileClicked"/>
+        <Button x:Name="BackButton" Style="{StaticResource ButtonTextStyle}" Text="Back" Clicked="OnBackButtonClicked"/>
     </StackLayout>
 </ContentPage>

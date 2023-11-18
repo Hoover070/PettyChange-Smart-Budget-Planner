@@ -33,17 +33,26 @@ namespace RandD_smartPlanner
         {
             InitializeComponent();
             SelectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+            if (SelectedBudget == null)
+            {
+                UpdateUI();
+
+            }
+            else
+            {
+                SortTempItems();
+            }
             BindingContext = this;
             UserModel = App.CurrentUser.UserModel;
             CurrentUser = App.CurrentUser;
             Username = App.CurrentUser.UserName;
-            SortTempItems();
+          
 
 
 
 
         }
-       
+
         protected override void OnAppearing()
         {
             base.OnAppearing();
@@ -54,7 +63,7 @@ namespace RandD_smartPlanner
             }
 
             // update the UI methods below
-            if(SelectedBudget != null)
+            if (SelectedBudget != null)
             {
                 UpdateUI(SelectedBudget);
             }
@@ -66,7 +75,7 @@ namespace RandD_smartPlanner
 
         }
 
-        
+
 
         public double TotalIncome
         {
@@ -80,7 +89,7 @@ namespace RandD_smartPlanner
 
 
                     OnPropertyChanged(nameof(TotalIncome));
-                    OnPropertyChanged(nameof(TotalIncomeFormatted)); 
+                    OnPropertyChanged(nameof(TotalIncomeFormatted));
                 }
             }
         }
@@ -94,7 +103,7 @@ namespace RandD_smartPlanner
                 {
                     _totalExpenses = value;
                     OnPropertyChanged(nameof(TotalExpenses));
-                    OnPropertyChanged(nameof(TotalExpensesFormatted)); 
+                    OnPropertyChanged(nameof(TotalExpensesFormatted));
                 }
             }
         }
@@ -115,7 +124,7 @@ namespace RandD_smartPlanner
 
         public double TotalDifference
         {
-           // this needs to set the total difference to the (total income plus Temp income items) - (total expenses plus Temp expense items)
+            // this needs to set the total difference to the (total income plus Temp income items) - (total expenses plus Temp expense items)
             get => _totalDifference;
             set
             {
@@ -126,7 +135,7 @@ namespace RandD_smartPlanner
                     OnPropertyChanged(nameof(TotalDifferenceFormatted));
                 }
             }
-           
+
         }
 
 
@@ -195,7 +204,7 @@ namespace RandD_smartPlanner
         public void UpdateUI()
         {
             // Update the UI elements with default values when no budget is selected
-            BudgetNameLabel.Text = "No Budgets Available";
+            BudgetNameLabel.Text = "No Budgets Available, /n Please Create a New Budget now";
             IncomeLabel.Text = "$0.00";
             ExpensesLabel.Text = "$0.00";
             SavingsLabel.Text = "$0.00";
@@ -218,7 +227,7 @@ namespace RandD_smartPlanner
         }
 
         // create new buttons
-        
+
         private void OnAddTempIncomeClicked(object sender, EventArgs e)
         {
             string description = NameEntry.Text;
@@ -238,7 +247,7 @@ namespace RandD_smartPlanner
                 SelectedBudget.TempIncomeItems.Add(newIncomeItem);
                 SavingsNameEntry.Text = string.Empty;
                 SavingsAmountEntry.Text = string.Empty;
-   
+
                 FileSaveUtility.SaveUserBudgets(SelectedBudget);
                 UpdateUI(SelectedBudget);
             }
@@ -251,6 +260,140 @@ namespace RandD_smartPlanner
 
 
 
+        }
+
+
+        private void OnNewBudgetClicked(object sender, EventArgs e)
+        {
+
+
+            // Navigate to the NewBudgetPage
+            Navigation.PushAsync(new BudgetCreationPage());
+        }
+
+        private void OnLoadBudgetClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new BudgetListPage());
+
+        }
+
+        private void OnEditBudgetClicked(object sender, EventArgs e)
+        {
+
+
+            // Navigate to the EditBudgetPage
+            Navigation.PushAsync(new BudgetEditPage(SelectedBudget)); ;
+           
+        }
+
+        private async void OnCopyBudgetClicked(object sender, EventArgs e)
+        {
+            // Assuming you have a method to get the current budget
+            var currentBudget = FileSaveUtility.LoadDefaultOrLastBudget();
+
+            if (currentBudget != null)
+            {
+                // Clear the temporary expenses and income items from the current budget
+                currentBudget.TempExpenseItems.Clear();
+                currentBudget.TempIncomeItems.Clear();
+
+                // Create a copy of the current budget
+                var newBudget = CopyBudget(currentBudget);
+
+                // Save the new budget
+                FileSaveUtility.SaveUserBudgets(newBudget);
+
+                // make the new budget the default budget
+                FileSaveUtility.SaveDefaultBudget(newBudget);
+
+                if (App.CurrentUser.DefaultBudgetName == newBudget.BudgetName)
+                {
+                    await DisplayAlert("Budget Copied", $"Budget for {newBudget.BudgetName} has been created.", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Budget Copied", $"Budget for {newBudget.BudgetName} has been created. Please set it as your default budget.", "OK");
+                }
+                await Shell.Current.GoToAsync(nameof(WelcomePage));
+            }
+            else
+            {
+                await Shell.Current.GoToAsync(nameof(WelcomePage));
+
+
+            }
+        }
+
+        private Budget CopyBudget(Budget budget)
+        {
+            // concat the month and year to the budget name
+            
+            // Create a new budget with the same name as the current budget
+            var newBudget = new Budget
+            {
+                BudgetName = $"{budget.BudgetName}_{DateTime.Now.Month}_{DateTime.Now.Year}",
+                UserIncome = budget.UserIncome,
+                TotalInsurance = budget.TotalInsurance,
+                TotalIncome = budget.TotalIncome,
+                TotalExpenses = budget.TotalExpenses,
+                SavingsTotal = budget.SavingsTotal,
+                IncomeDiff = budget.IncomeDiff,
+                AISuggestedSavings = budget.AISuggestedSavings,
+                UserPhoneBill = budget.UserPhoneBill,
+                UserHousingExpense = budget.UserHousingExpense,
+                HouseholdSize = budget.HouseholdSize,
+                UserEducationCost = budget.UserEducationCost,
+                UserFoodExpense = budget.UserFoodExpense,
+                UserFuelCost = budget.UserFuelCost,
+                TotalUtilities = budget.TotalUtilities,
+
+            };
+
+            // Copy the income items
+            foreach (var item in budget.IncomeItems)
+            {
+                newBudget.IncomeItems.Add(item);
+            }
+
+            // Copy the expense items
+            foreach (var item in budget.ExpenseItems)
+            {
+                newBudget.ExpenseItems.Add(item);
+            }
+
+            // Copy the savings account credit log
+            foreach (var item in budget.SavingsAccountCreditLog)
+            {
+                newBudget.SavingsAccountCreditLog.Add(item);
+            }
+
+            // Copy the savings account debit log
+            foreach (var item in budget.SavingsAccountDebitLog)
+            {
+                newBudget.SavingsAccountDebitLog.Add(item);
+            }
+
+            // Copy the temporary income items
+            foreach (var item in budget.TempIncomeItems)
+            {
+                newBudget.TempIncomeItems.Add(item);
+            }
+
+            // Copy the temporary expense items
+            foreach (var item in budget.TempExpenseItems)
+            {
+                newBudget.TempExpenseItems.Add(item);
+            }
+
+            // Copy the AI suggested savings
+            newBudget.AISuggestedSavings = budget.AISuggestedSavings;
+
+            // the rest of the properties of budget need to be copied here
+
+
+
+            // Return the new budget
+            return newBudget;
         }
 
         private void OnAddTempExpenseClicked(object sender, EventArgs e)
