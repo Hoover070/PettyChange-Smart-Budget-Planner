@@ -1,6 +1,3 @@
-<!-- BudgetListPage.xaml -->
-    
-    
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:RandD_smartPlanner"
@@ -17,24 +14,11 @@
                 HorizontalOptions="CenterAndExpand"
                 FontAttributes="Italic"/>
         <Button Text="New Budget" Style="{StaticResource ButtonTextStyle}"
-                HorizontalOptions="End"
+                HorizontalOptions="Center"
                 Clicked="OnCreateNewBudgetClicked"/>
         <Button Text="Refresh Budget list" Style="{StaticResource ButtonTextStyle}"
-                HorizontalOptions="Start" Margin="0,0,0,50"
+                HorizontalOptions="Center" Margin="0,0,0,50"
                 Clicked="OnRefreshBudgetsClicked"/>
-        <Button Text="Back to Main Menu" Style="{StaticResource ButtonTextStyle}"
-                HorizontalOptions="Start"
-                Clicked="OnBackButtonClicked"/>
-       
-        <Button Text="Load Budget" Padding="75,25,75,25" Style="{StaticResource ButtonTextStyle}" Clicked="OnRefreshBudgetsClicked" HorizontalOptions="Center" FontSize="Large"/>
-        <Button Text="Delete Budget" Style="{StaticResource WarningColor}" Clicked="OnRefreshBudgetsClicked" HorizontalOptions="Center" FontSize="Medium" />
-
-
-
-
-
-
-
 
         <ListView x:Name="BudgetsListView"
                   
@@ -57,5 +41,13 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Button Text="Back to Main Menu" Style="{StaticResource ButtonTextStyle}"
+             HorizontalOptions="Center"
+             Clicked="OnBackButtonClicked"/>
+
+
+
+
     </StackLayout>
 </ContentPage>

@@ -48,10 +48,6 @@ namespace RandD_smartPlanner
             UserModel = App.CurrentUser.UserModel;
             CurrentUser = App.CurrentUser;
             Username = App.CurrentUser.UserName;
-          
-
-
-
 
         }
 
@@ -126,7 +122,6 @@ namespace RandD_smartPlanner
 
         public double TotalDifference
         {
-            // this needs to set the total difference to the (total income plus Temp income items) - (total expenses plus Temp expense items)
             get => _totalDifference;
             set
             {
@@ -182,16 +177,9 @@ namespace RandD_smartPlanner
         {
             get
             {
-                // Calculate the sum of costs for temporary income items
-                double tempIncomeTotal = SelectedBudget.TempIncomeItems.Sum(item => item.Cost);
-
-                // Calculate the sum of costs for temporary expense items
+                double tempIncomeTotal = SelectedBudget.TempIncomeItems.Sum(item => item.Cost);             
                 double tempExpensesTotal = SelectedBudget.TempExpenseItems.Sum(item => item.Cost);
-
-                // Calculate the total difference
                 double totalDifference = SelectedBudget.IncomeDiff;
-
-                // Format the result as currency
                 return Math.Round(totalDifference).ToString("C", CultureInfo.CurrentCulture);
             }
         }
@@ -199,7 +187,6 @@ namespace RandD_smartPlanner
         public void LoadUserBudgets()
         {
             var budgets = FileSaveUtility.LoadAllUserBudgets(CurrentUser.UserName);
-            /*BudgetListView.ItemsSource = budgets;*/
             Budgets = budgets;
             OnPropertyChanged(nameof(Budgets));
         }
@@ -228,7 +215,6 @@ namespace RandD_smartPlanner
             SortTempItems();
         }
 
-        // create new buttons
 
         private void OnAddTempIncomeClicked(object sender, EventArgs e)
         {
@@ -255,7 +241,7 @@ namespace RandD_smartPlanner
             }
             else
             {
-                // Show an error message if the amount is not valid
+               
                 DisplayAlert("Error", "Please enter a valid amount.", "OK");
             }
 
@@ -290,22 +276,15 @@ namespace RandD_smartPlanner
 
         private async void OnCopyBudgetClicked(object sender, EventArgs e)
         {
-            // Assuming you have a method to get the current budget
+           
             var currentBudget = FileSaveUtility.LoadDefaultOrLastBudget();
-
             if (currentBudget != null)
             {
-                // Clear the temporary expenses and income items from the current budget
+              
                 currentBudget.TempExpenseItems.Clear();
                 currentBudget.TempIncomeItems.Clear();
-
-                // Create a copy of the current budget
                 var newBudget = CopyBudget(currentBudget);
-
-                // Save the new budget
                 FileSaveUtility.SaveUserBudgets(newBudget);
-
-                // make the new budget the default budget
                 FileSaveUtility.SaveDefaultBudget(newBudget);
 
                 if (App.CurrentUser.DefaultBudgetName == newBudget.BudgetName)
@@ -328,9 +307,7 @@ namespace RandD_smartPlanner
 
         private Budget CopyBudget(Budget budget)
         {
-            // concat the month and year to the budget name
-            
-            // Create a new budget with the same name as the current budget
+           
             var newBudget = new Budget
             {
                 BudgetName = $"{budget.BudgetName}_{DateTime.Now.Month}_{DateTime.Now.Year}",
@@ -360,50 +337,38 @@ namespace RandD_smartPlanner
 
             };
 
-            // Copy the income items
+            
             foreach (var item in budget.IncomeItems)
             {
                 newBudget.IncomeItems.Add(item);
             }
 
-            // Copy the expense items
             foreach (var item in budget.ExpenseItems)
             {
                 newBudget.ExpenseItems.Add(item);
             }
 
-            // Copy the savings account credit log
             foreach (var item in budget.SavingsAccountCreditLog)
             {
                 newBudget.SavingsAccountCreditLog.Add(item);
             }
 
-            // Copy the savings account debit log
             foreach (var item in budget.SavingsAccountDebitLog)
             {
                 newBudget.SavingsAccountDebitLog.Add(item);
             }
 
-            // Copy the temporary income items
             foreach (var item in budget.TempIncomeItems)
             {
                 newBudget.TempIncomeItems.Add(item);
             }
 
-            // Copy the temporary expense items
             foreach (var item in budget.TempExpenseItems)
             {
                 newBudget.TempExpenseItems.Add(item);
             }
 
-            // Copy the AI suggested savings
             newBudget.AISuggestedSavings = budget.AISuggestedSavings;
-
-            // the rest of the properties of budget need to be copied here
-
-
-
-            // Return the new budget
             return newBudget;
         }
 

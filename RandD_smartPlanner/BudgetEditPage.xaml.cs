@@ -354,7 +354,6 @@ namespace RandD_smartPlanner
             }
             catch (Exception ex)
             {
-                // Display an error message
                 DisplayAlert("Error, did not save", ex.Message, "OK");
             }
         }
@@ -375,7 +374,7 @@ namespace RandD_smartPlanner
 
         }
 
-        // Functions for adding and deleting items from the collections
+        
 
 
         void OnCancelClicked(object sender, EventArgs e)

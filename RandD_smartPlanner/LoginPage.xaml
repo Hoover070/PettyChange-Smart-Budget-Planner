@@ -10,7 +10,7 @@
 
     <StackLayout Spacing="20" Padding="30">
         
-        <!-- PettyChange Logo set the source to the image PettyChangeLogo.png in the images folder within the RandD_smartPlanner-->
+       
         <Frame CornerRadius="100" WidthRequest="200" HeightRequest="200" HorizontalOptions="Center">
             <Image Source="petty_change_logo.png" Aspect="AspectFill" Scale="1.25"/>
         </Frame>

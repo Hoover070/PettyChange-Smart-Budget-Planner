@@ -4,7 +4,6 @@
              xmlns:local="clr-namespace:RandD_smartPlanner"
              x:Class="RandD_smartPlanner.App">
     <Application.Resources>
-
         
         <ResourceDictionary>
             <local:PocketChangeColorConverter x:Key="PocketChangeColorConverter"/>
@@ -40,8 +39,6 @@
             <Style x:Key="WarningTextStyle" TargetType="Label">
                 <Setter Property="TextColor" Value="{StaticResource WarningColor}" />
             </Style>
-
-            
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />

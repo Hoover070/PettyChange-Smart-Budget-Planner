@@ -12,8 +12,6 @@ namespace RandD_smartPlanner
     public static class FileSaveUtility
     {
 
-       
-
 
         // Functions for the Directory, File, and User classes
 
@@ -82,17 +80,17 @@ namespace RandD_smartPlanner
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error deserializing budget: {ex.Message}");
-                        // Depending on your error handling policy, you might want to handle this differently.
+                        
                     }
                 }
             }
             else
             {
                 Debug.WriteLine("Directory does not exist.");
-                // Depending on your error handling policy, you might want to handle this differently.
+                
             }
 
-            // Convert the List<Budget> to ObservableCollection<Budget>
+           
             return new ObservableCollection<Budget>(budgetsList);
         }
 
@@ -170,15 +168,14 @@ namespace RandD_smartPlanner
                 if (File.Exists(budgetFilePath))
                 {
                     File.Delete(budgetFilePath);
-                    return true; // Success
+                    return true;
                 }
             }
             catch (Exception ex)
             {
-                // Handle the exception as needed
                 Debug.WriteLine($"Error deleting budget: {ex.Message}");
             }
-            return false; // Failure
+            return false; 
         }
 
         public static bool UpdateBudget( Budget budget)
@@ -186,14 +183,14 @@ namespace RandD_smartPlanner
             try
             {
                 SaveUserBudgets( budget); // Re-use the save function
-                return true; // Success
+                return true; 
             }
             catch (Exception ex)
             {
                 // Handle the exception as needed
                 Debug.WriteLine($"Error updating budget: {ex.Message}");
             }
-            return false; // Failure
+            return false; 
         }
 
         public static bool DeleteUser(string username)
@@ -204,30 +201,30 @@ namespace RandD_smartPlanner
                 if (Directory.Exists(userDirectory))
                 {
                     Directory.Delete(userDirectory, true);
-                    return true; // Success
+                    return true; 
                 }
             }
             catch (Exception ex)
             {
-                // Handle the exception as needed
+                
                 Debug.WriteLine($"Error deleting user: {ex.Message}");
             }
-            return false; // Failure
+            return false; 
         }
 
         public static bool UpdateUser(User user)
         {
             try
             {
-                SaveUser(user); // Re-use the save function
-                return true; // Success
+                SaveUser(user); 
+                return true; 
             }
             catch (Exception ex)
             {
-                // Handle the exception as needed
+                
                 Debug.WriteLine($"Error updating user: {ex.Message}");
             }
-            return false; // Failure
+            return false; 
         }
 
         public static bool DeleteAllUserBudgets(string username)
@@ -238,15 +235,14 @@ namespace RandD_smartPlanner
                 if (Directory.Exists(budgetsDirectory))
                 {
                     Directory.Delete(budgetsDirectory, true);
-                    return true; // Success
+                    return true; 
                 }
             }
             catch (Exception ex)
             {
-                // Handle the exception as needed
                 Debug.WriteLine($"Error deleting all user budgets: {ex.Message}");
             }
-            return false; // Failure
+            return false; 
         }
 
         public static bool DeleteAllUserData(string username)
@@ -257,22 +253,22 @@ namespace RandD_smartPlanner
                 if (Directory.Exists(userDirectory))
                 {
                     Directory.Delete(userDirectory, true);
-                    return true; // Success
+                    return true; 
                 }
             }
             catch (Exception ex)
             {
-                // Handle the exception as needed
+               
                 Debug.WriteLine($"Error deleting all user data: {ex.Message}");
             }
-            return false; // Failure
+            return false;
         }
 
         public static void SaveUserModel(string username, byte[] modelData)
         {
             string userDirectory = GetUserDirectory(username);
             string modelDirectory = Path.Combine(userDirectory, "Models");
-            CreateDirectoryIfNotExists(modelDirectory);  // Reuse your existing method to ensure the directory exists
+            CreateDirectoryIfNotExists(modelDirectory);  
 
             string modelPath = Path.Combine(modelDirectory, "model.onnx");
             File.WriteAllBytes(modelPath, modelData);
@@ -325,8 +321,7 @@ namespace RandD_smartPlanner
             return null;
         }
 
-        // Budget Functions
-        // Get the path to the budget file for the given user and budget name
+        
         public static string GetBudgetFilePath()
         {
             string username = App.CurrentUser.UserName;

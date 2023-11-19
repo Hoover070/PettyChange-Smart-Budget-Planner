@@ -33,7 +33,7 @@
 
             <!-- New Budget Name Section -->
             <StackLayout Grid.Row="0" Grid.Column="0" WidthRequest="200">
-                <Entry Placeholder="Name the Budget" Text="{Binding BudgetName}"/>
+                <Entry Placeholder="Name the Budget" Text="{Binding BudgetName, Mode=TwoWay}"/>
             </StackLayout>
 
             <!-- Total Section at the Top -->
@@ -61,31 +61,33 @@
 
             </StackLayout>
 
+
+
             <!-- Expenses Section on Left Side -->
-            <StackLayout Grid.Row="2" Grid.Column="0">
-                <Label Text="Expense" FontAttributes="Bold"/>
+            <StackLayout Grid.Row="2" Grid.Column="0" >
+                <Label Text="Expense" FontAttributes="Bold" Margin="50,50,0,0"/>
 
                 <Label Text="Housing Cost:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserHousingExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserHousingExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start" Grid.Column="1"/>
                 <Label Text="Phone Bill:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserPhoneBill, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserPhoneBill, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Monthly Food budget:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserFoodExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserFoodExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Entertainment budget:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserEntertainmentExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserEntertainmentExpense, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Student Loans/Child School Tuition:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserEducationCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserEducationCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Monthly Fuel budget:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserFuelCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserFuelCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Renters Insurance:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserRentInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserRentInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Car Insurance:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserCarInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserCarInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Health Insurance:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserHealthInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Entry Placeholder="0.00" Text="{Binding UserHealthInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
                 <Label Text="Life Insurance:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserLifeInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
-                <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
+                <Entry Placeholder="0.00" Text="{Binding UserLifeInsuranceCost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
+                <StackLayout Grid.Row="0" Orientation="Horizontal" HorizontalOptions="Start" >
                     <Button Text="+ Expenses" Clicked="OnAddExpenseItemClicked" WidthRequest="100" HeightRequest="30" Margin="5" Style="{StaticResource ButtonTextStyle}"/>
                 </StackLayout>
                 <ListView ItemsSource="{Binding ExpenseItems}">
@@ -93,8 +95,8 @@
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
-                                    <Entry Placeholder="Name" Text="{Binding Name, Mode=TwoWay}" Focused="OnEntryFocused"/>
-                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="Name" Text="{Binding Name, Mode=TwoWay}" WidthRequest="200"  />
+                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" WidthRequest="200"/>
                                     <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
                                         <Button Text="Save" Clicked="OnSaveClicked" Style="{StaticResource ButtonTextStyle}"/>
                                         <Button Text="Delete" Clicked="OnDeleteExpenseItemClicked" Style="{StaticResource ButtonTextStyle}"/>
@@ -108,10 +110,10 @@
 
             <!-- Income Section on Right Side -->
             <StackLayout Grid.Row="2" Grid.Column="1">
-                <Label Text="Income" FontAttributes="Bold"/>
+                <Label Text="Income" FontAttributes="Bold" Margin="50,50,0,0"/>
                 <Label Text="Household Income:"/>
-                <Entry Placeholder="0.00" Text="{Binding UserIncome, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
-                <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start" >
+                <Entry Placeholder="0.00" Text="{Binding UserIncome, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused" WidthRequest="200" HorizontalOptions="Start"/>
+                <StackLayout Grid.Row="0"  Orientation="Horizontal" HorizontalOptions="Start" VerticalOptions="Start">
                     <Button Text="+ Income" Clicked="OnAddIncomeItemClicked" WidthRequest="100" HeightRequest="30" Margin="5" Style="{StaticResource ButtonTextStyle}" />
                 </StackLayout>
                 <ListView ItemsSource="{Binding IncomeItems}">
@@ -119,8 +121,8 @@
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout Orientation="Horizontal">
-                                    <Entry Placeholder="Name" Text="{Binding Description, Mode=TwoWay}" Focused="OnEntryFocused"/>
-                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                                    <Entry Placeholder="Name" Text="{Binding Description, Mode=TwoWay}" WidthRequest="200" />
+                                    <Entry Placeholder="0.00" Text="{Binding Cost, Mode=TwoWay, Converter={StaticResource StringToDoubleConverter}}" Keyboard="Numeric" WidthRequest="200" />
                                     <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
                                         <Button Text="Save" Clicked="OnSaveClicked" Style="{StaticResource ButtonTextStyle}"/>
                                         <Button Text="Delete" Clicked="OnDeleteIncomeItemClicked" Style="{StaticResource ButtonTextStyle}"/>
@@ -136,11 +138,11 @@
 
 
             <Grid Grid.Row="0" Grid.ColumnSpan="2">
-                <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start" Style="{StaticResource ButtonTextStyle}">
+                <StackLayout Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
                     <Button Text="Home" Clicked="OnCancelClicked" WidthRequest="80" HeightRequest="30" Style="{StaticResource ButtonTextStyle}"/>
                     <Button Text="Save" Clicked="OnSaveClicked" WidthRequest="80" HeightRequest="30" Style="{StaticResource ButtonTextStyle}"/>
                     <Button Text="New" Clicked="OnCreateNewBudgetClicked" WidthRequest="150" HeightRequest="30" Style="{StaticResource ButtonTextStyle}"/>
-                    <Button Text="AI Calculate" Clicked="OnCalculateClicked" Style="{StaticResource WarningColor}"/>
+                    <Button Text="AI Calculate" Clicked="OnCalculateClicked" Style="{StaticResource ButtonTextStyle}"/>
                 </StackLayout>
             </Grid>
 

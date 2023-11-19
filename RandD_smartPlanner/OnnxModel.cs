@@ -85,9 +85,6 @@ namespace RandD_smartPlanner
             double AverageMaximumHouseholdSize = 4, double AverageEntertainmentExpense = 418, double AverageFoodBill1Person = 528, double AverageFoodBill4Poeple = 1385, double AverageFeulCost = 200, double AverageCarInsurance = 212, double AverageHealthInsuranceCost = 1465.21, double AverageEducationCost = 1316,
             double AverageChildcareCost = 671.61, double AverageRentInsuranceCost = 18, double AverageLifeInsuraceCost = 26)
         {
-            // call from trained_model > best_gb_model.onnx
-            //Output: AISuggestedSavings and AISuggestedTimeframe
-            // Input:  Income, Expenses, SavingsGoal, and Timeframe
 
             //Properties of the model
             var expenses = UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserHealthInsuranceCost + UserCarInsuranceCost + UserRentInsuranceCost + UserEducationCost + UserLifeInsuranceCost + UserFuelCost;

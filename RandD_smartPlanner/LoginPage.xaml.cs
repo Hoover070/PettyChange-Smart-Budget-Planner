@@ -14,7 +14,6 @@ namespace RandD_smartPlanner
         {
             InitializeComponent();
 
-            // command bindingv
             LogInCommand = new Command(OnLoginClicked);
             CreatUserCommand = new Command(OnCreateUserClicked);
             TestAICommand = new Command(OnTestAIClicked);
@@ -41,9 +40,8 @@ namespace RandD_smartPlanner
         private void OnLoginClicked()
         {
             string username = UsernameEntry.Text;
-            string password = PasswordEntry.Text;  // Need to hash this in the future
+            string password = PasswordEntry.Text;  
 
-            // check if user has put anything in the password and username fields
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 DisplayAlert("Error", "Please enter a username and password", "OK");
@@ -58,11 +56,10 @@ namespace RandD_smartPlanner
 
             if (File.Exists(filePath))
             {
-                // Load the matching user profile
+               
                 string json = File.ReadAllText(filePath);
                 User loadedUser = JsonConvert.DeserializeObject<User>(json);
 
-                // Validate password (for now its a string comparison, but in the future it will be hashed)
                 if (loadedUser.Password == password)
                 {
                     // Successfully logged in

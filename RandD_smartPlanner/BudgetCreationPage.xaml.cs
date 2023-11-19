@@ -113,56 +113,7 @@ namespace RandD_smartPlanner
             
         }
 
-        // load a budget
-       /* private void LoadExistingBudget(Budget existingBudget)
-        {
-            if (existingBudget != null)
-            {
-                // Populate the fields with the existing budget information
-                this.BudgetName = existingBudget.BudgetName;
-                this.SavingsGoal = existingBudget.SavingsGoal;
-                this.Timeframe = existingBudget.Timeframe;
-                this.AISuggestedSavings = existingBudget.AISuggestedSavings;
-                this.AISuggestedTimeframe = existingBudget.AISuggestedTimeframe;
-                this.IncomeDiff = existingBudget.IncomeDiff;
-                this.MinSavingsLimit = existingBudget.MinSavingsLimit;
-                this.SavingsTotal = existingBudget.SavingsTotal;
-                this.UserIncome = existingBudget.UserIncome;
-                this.UserHousingExpense = existingBudget.UserHousingExpense;
-                this.HouseholdSize = existingBudget.HouseholdSize;
-                this.UserPhoneBill = existingBudget.UserPhoneBill;
-                this.CurrnetSavingsAmount = existingBudget.CurrnetSavingsAmount;
-                this.CurrentEmergencyFund = existingBudget.CurrentEmergencyFund;
-                this.UserEntertainmentExpense = existingBudget.UserEntertainmentExpense;
-                this.UserFoodExpense = existingBudget.UserFoodExpense;
-                this.UserHealthInsuranceCost = existingBudget.UserHealthInsuranceCost;
-                this.UserCarInsuranceCost = existingBudget.UserCarInsuranceCost;
-                this.UserRentInsuranceCost = existingBudget.UserRentInsuranceCost;
-                this.UserEducationCost = existingBudget.UserEducationCost;
-                this.UserLifeInsuranceCost = existingBudget.UserLifeInsuranceCost;
-                this.UserFuelCost = existingBudget.UserFuelCost;
-                this.TotalExpenses = existingBudget.TotalExpenses;
-                this.TotalIncome = existingBudget.TotalIncome;
-                this.TotalSavings = existingBudget.SavingsTotal;
-                this.TotalInsurance = existingBudget.TotalInsurance;
-                this.TempExpenseItems = existingBudget.TempExpenseItems;
-                this.TempIncomeItems = existingBudget.TempIncomeItems;
-
-                this.IncomeItems.Clear();
-                this.ExpenseItems.Clear();
-                foreach (var item in existingBudget.IncomeItems)
-                {
-                    this.IncomeItems.Add(item);
-                }
-                foreach (var item in existingBudget.ExpenseItems)
-                {
-                    this.ExpenseItems.Add(item);
-                }
-                OnPropertyChanged(""); // Update all bindings
-            }
-        }
-*/
-
+      
         void UpdateCalculations()
         {
             OnPropertyChanged(nameof(TotalIncome));
@@ -292,8 +243,7 @@ namespace RandD_smartPlanner
             }
         }
 
-        // Functions for adding and deleting items from the collections
-
+      
 
         void OnCancelClicked(object sender, EventArgs e)
         {

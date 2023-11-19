@@ -1,4 +1,4 @@
-// BudgetListPage.xaml.cs
+
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -56,7 +56,6 @@ namespace RandD_smartPlanner
             {
               
                 FileSaveUtility.SaveDefaultBudget(selectedBudget);
-                // pass selectedBudget to edit budget page without using shell
                 Navigation.PushAsync(new BudgetEditPage(selectedBudget));
             }
         }
@@ -85,7 +84,7 @@ namespace RandD_smartPlanner
             }
             catch (Exception ex)
             {
-                // Log the exception or present an error message to the user
+                
                 await DisplayAlert("Error", $"An error occurred while trying to refresh budgets: {ex.Message}", "OK");
             }
             finally

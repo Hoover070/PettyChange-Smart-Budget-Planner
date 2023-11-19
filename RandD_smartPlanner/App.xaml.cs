@@ -26,8 +26,6 @@ namespace RandD_smartPlanner
 
         public static User CurrentUser { get; set; }
 
-
-        // Method to switch to AppShell after successful login (to be called from LoginPage)
         public void OnSuccessfulLogin()
         {
             MainPage = new AppShell();
