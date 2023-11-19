@@ -10,22 +10,28 @@
              Shell.BackgroundColor="#B2E2BD">
 
     <StackLayout Padding="10">
-        <Label Text="Select a Budget" 
+        <Label Text="Select a Budget"  
                HorizontalOptions="Center" 
                FontAttributes="Bold"/>
-        <Label Text="Tap on a budget to view, edit, or delete it."
+        <Label Text="Tap on a budget to select it then press the corosponding button."
                 HorizontalOptions="CenterAndExpand"
                 FontAttributes="Italic"/>
-        <Button Text="New Budget"
-                HorizontalOptions="Center"
+        <Button Text="New Budget" Style="{StaticResource ButtonTextStyle}"
+                HorizontalOptions="End"
                 Clicked="OnCreateNewBudgetClicked"/>
-        <Button Text="Refresh Budget list"
-                HorizontalOptions="Center"
+        <Button Text="Refresh Budget list" Style="{StaticResource ButtonTextStyle}"
+                HorizontalOptions="Start" Margin="0,0,0,50"
                 Clicked="OnRefreshBudgetsClicked"/>
-        <Button Text="Back to Main Menu"
-                HorizontalOptions="Center"
+        <Button Text="Back to Main Menu" Style="{StaticResource ButtonTextStyle}"
+                HorizontalOptions="Start"
                 Clicked="OnBackButtonClicked"/>
-                
+       
+        <Button Text="Load Budget" Padding="75,25,75,25" Style="{StaticResource ButtonTextStyle}" Clicked="OnRefreshBudgetsClicked" HorizontalOptions="Center" FontSize="Large"/>
+        <Button Text="Delete Budget" Style="{StaticResource WarningColor}" Clicked="OnRefreshBudgetsClicked" HorizontalOptions="Center" FontSize="Medium" />
+
+
+
+
 
 
 
@@ -41,11 +47,13 @@
                   IsRefreshing="{Binding IsBusy, Mode=OneWay}"
                   CachingStrategy="RecycleElement"
                   ItemSelected="OnBudgetSelected">
-            
+                  
             <ListView.ItemTemplate>
+                
                 <DataTemplate>
                     <TextCell Text="{Binding BudgetName}" Detail="{Binding Description}" />
                     
+
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
