@@ -22,7 +22,7 @@
         <Button Text="Log In" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Command="{Binding LogInCommand}" />
 
         <Button x:Name="CreateUserBtn" Text="Create User" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Command="{Binding CreatUserCommand}"/>
-        <Button x:Name="TestAI" Text="Test the Model" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Command="{Binding TestAICommand}"/>
+        
         
     </StackLayout>
 </ContentPage>
