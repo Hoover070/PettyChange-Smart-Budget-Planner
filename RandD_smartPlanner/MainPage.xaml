@@ -54,12 +54,6 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 
-                    <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
-                    <Label x:Name="IncomeLabel" Text="{Binding TotalIncomeFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="2" Grid.Column="1"/>
-                    <Label Text="Expense Total:" FontSize="Medium" Grid.Row="3" Grid.Column="0"/>
-                    <Label x:Name="ExpensesLabel" Text="{Binding TotalExpensesFormated, StringFormat='{0:C}'}" FontSize="Medium" Grid.Row="3" Grid.Column="1"/>
-                    -->
         </Grid>
 
         <Label Text="Income Total: " FontSize="Medium" Grid.Row="2" Grid.Column="0"/>
@@ -97,7 +91,7 @@
         </StackLayout>
 
         <!-- User Input for One-Time Income/Expense -->
-        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Grid.Row="7" Grid.Column="2" VerticalOptions="Center">
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Grid.Row="7" Grid.Column="2" VerticalOptions="Start">
             <Button Text="Add Expense" Style="{StaticResource ButtonTextStyle}" MaximumWidthRequest="300" Clicked="OnAddTempExpenseClicked"/>
             <Entry x:Name="NameEntry" Placeholder="Enter description"/>
             <Entry x:Name="AmountEntry" Placeholder="Enter amount"/>

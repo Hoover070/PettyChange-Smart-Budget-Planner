@@ -27,6 +27,8 @@ namespace RandD_smartPlanner
         private double _totalSavings;
         private double _aiSuggestedSavings;
         private double _totalDifference;
+        private double _entertainmentExpense;
+
 
 
         public WelcomePage()
@@ -187,7 +189,7 @@ namespace RandD_smartPlanner
                 double tempExpensesTotal = SelectedBudget.TempExpenseItems.Sum(item => item.Cost);
 
                 // Calculate the total difference
-                double totalDifference = (SelectedBudget.TotalIncome + tempIncomeTotal) - (SelectedBudget.TotalExpenses + tempExpensesTotal);
+                double totalDifference = SelectedBudget.IncomeDiff;
 
                 // Format the result as currency
                 return Math.Round(totalDifference).ToString("C", CultureInfo.CurrentCulture);
@@ -346,6 +348,15 @@ namespace RandD_smartPlanner
                 UserFoodExpense = budget.UserFoodExpense,
                 UserFuelCost = budget.UserFuelCost,
                 TotalUtilities = budget.TotalUtilities,
+                UserCarInsuranceCost = budget.UserCarInsuranceCost,
+                UserHealthInsuranceCost = budget.UserHealthInsuranceCost,
+                UserLifeInsuranceCost = budget.UserLifeInsuranceCost,
+                UserRentInsuranceCost = budget.UserRentInsuranceCost,
+
+                DateCreated = DateTime.Now,
+                UserEntertainmentExpense = budget.UserEntertainmentExpense,
+                
+                
 
             };
 
@@ -395,6 +406,8 @@ namespace RandD_smartPlanner
             // Return the new budget
             return newBudget;
         }
+
+
 
         private void OnAddTempExpenseClicked(object sender, EventArgs e)
         {

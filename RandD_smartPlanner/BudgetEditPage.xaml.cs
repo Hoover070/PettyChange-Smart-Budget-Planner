@@ -268,12 +268,22 @@ namespace RandD_smartPlanner
 
         }
 
+        public double AiSuggestedSavings
+        {
+            get { return _AISuggestedSavings; }
+            set
+            {
+                _AISuggestedSavings = AiSuggestedSavings;
+                OnPropertyChanged(nameof(AiSuggestedSavings));
+            }
+        }
+
         private void CalculateAiSuggestions()
         {
             SaveBudget();
             var SelectedBudget = FileSaveUtility.LoadDefaultOrLastBudget();
-            var aiResults = model.UseAi(App.CurrentUser.UserModel, SelectedBudget.UserIncome, SelectedBudget.UserHousingExpense, SelectedBudget.HouseholdSize, SelectedBudget.UserPhoneBill, SelectedBudget.CurrnetSavingsAmount, SelectedBudget.CurrentEmergencyFund, SelectedBudget.UserEntertainmentExpense, SelectedBudget.UserFoodExpense,
-            SelectedBudget.UserHealthInsuranceCost, SelectedBudget.UserCarInsuranceCost, SelectedBudget.UserRentInsuranceCost, SelectedBudget.UserEducationCost, SelectedBudget.UserLifeInsuranceCost, SelectedBudget.UserFuelCost);
+            var aiResults = model.UseAi(App.CurrentUser.UserModel, TotalIncome, UserHousingExpense, HouseholdSize, UserPhoneBill, CurrnetSavingsAmount, CurrentEmergencyFund, UserEntertainmentExpense, UserFoodExpense,
+            UserHealthInsuranceCost, UserCarInsuranceCost, UserRentInsuranceCost, UserEducationCost, UserLifeInsuranceCost, UserFuelCost);
             AISuggestedSavings = aiResults;
             AISuggestedTimeframe = SavingsGoal/aiResults;
             OnPropertyChanged(nameof(AISuggestedSavings));
@@ -286,7 +296,7 @@ namespace RandD_smartPlanner
                 // Create a new budget object
                 Budget newBudget = new Budget()
                 {
-                    BudgetName = BudgetName,
+                    BudgetName = this.BudgetName,
                     SavingsGoal = SavingsGoal,
                     Timeframe = Timeframe,
                     IncomeItems = IncomeItems,
@@ -476,12 +486,12 @@ namespace RandD_smartPlanner
 
         public double total_income_calculated()
         {
-            return UserIncome + IncomeItems.Sum(item => item.Cost);
+            return UserIncome + IncomeItems.Sum(item => item.Cost) + TempIncomeItems.Sum(item => item.Cost);
         }
 
         public double TotalIncome
         {
-            get { return UserIncome + IncomeItems.Sum(item => item.Cost); }
+            get { return UserIncome + IncomeItems.Sum(item => item.Cost) + TempIncomeItems.Sum(item=>item.Cost); }
             set {
                 _totalIncome = total_income_calculated(); 
                 UpdateCalculations();
@@ -497,7 +507,8 @@ namespace RandD_smartPlanner
 
         public double TotalExpenses
         {
-            get { return (UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserEducationCost + TotalInsurance + (ExpenseItems.Sum(item => item.Cost))); }
+            get { return (UserHousingExpense + UserPhoneBill + UserEntertainmentExpense + UserFoodExpense + UserEducationCost + TotalInsurance + ExpenseItems.Sum(item => item.Cost))
+                    + TempExpenseItems.Sum(item=>item.Cost); }
             set {
                 _totalExpenses = TotalExpenses;
                 UpdateCalculations();
@@ -587,7 +598,7 @@ namespace RandD_smartPlanner
             get { return _incomeDiff; }
             private set
             {
-                _incomeDiff = IncomeDiff;
+                _incomeDiff = TotalIncome - TotalExpenses;
                 OnPropertyChanged(nameof(IncomeDiff));
             }
         }
